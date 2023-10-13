@@ -1,5 +1,6 @@
 
-import shader from "./shader.wgsl";
+import triangleShader from "./triangleShader.wgsl";
+import lineShader from "./lineShader.wgsl";
 import { Mesh } from "./mesh"
 import { Scene } from "./scene"
 import { Pipeline, PipelinePrimitive } from "./Pipeline"
@@ -12,7 +13,8 @@ export class Renderer {
 	private context!: GPUCanvasContext;
 	private canvas!: HTMLCanvasElement;
 	private canvasFormat!: GPUTextureFormat;
-	private shaderModule!: GPUShaderModule;
+	private triangleShaderModule!: GPUShaderModule;
+	private lineShaderModule!: GPUShaderModule;
 	private viewProjBuffer!: GPUBuffer;
 	private depthTexture!: GPUTexture;
 	private bindGroup!: GPUBindGroup;
@@ -71,9 +73,14 @@ export class Renderer {
 	private createResources() {
 
 
-		this.shaderModule = this.device.createShaderModule({
+		this.triangleShaderModule = this.device.createShaderModule({
 			label: "shader module",
-			code: shader,
+			code: triangleShader,
+		});
+
+		this.lineShaderModule = this.device.createShaderModule({
+			label: "shader module",
+			code: lineShader,
 		});
 
 		this.bindGroupLayout = this.device.createBindGroupLayout({
@@ -113,8 +120,8 @@ export class Renderer {
 
 	private createPipelines() {
 
-        this.trianglePipeline = new Pipeline(this.device, this.canvasFormat, this.bindGroupLayout, this.shaderModule, PipelinePrimitive.Triangle);
-        this.linePipeline = new Pipeline(this.device, this.canvasFormat, this.bindGroupLayout, this.shaderModule, PipelinePrimitive.Line);
+        this.trianglePipeline = new Pipeline(this.device, this.canvasFormat, this.bindGroupLayout, this.triangleShaderModule, PipelinePrimitive.Triangle);
+        this.linePipeline = new Pipeline(this.device, this.canvasFormat, this.bindGroupLayout, this.lineShaderModule, PipelinePrimitive.Line);
 
 	}
 

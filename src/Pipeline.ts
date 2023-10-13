@@ -1,4 +1,5 @@
 import { Mesh } from "./mesh"
+import { Lines } from "./lines"
 
 export enum PipelinePrimitive {
     Triangle,
@@ -31,7 +32,7 @@ export class Pipeline {
 			vertex: {
 				module: shaderModule,
 				entryPoint: "vertexMain",
-				buffers: [Mesh.getVertexBufferLayout()] // TODO: Update based on primitive type
+				buffers: [getVertexBufferLayout(primitive)]
 			},
 			fragment: {
 				module: shaderModule,
@@ -58,5 +59,14 @@ function getTopology(primitive: PipelinePrimitive): GPUPrimitiveTopology {
         default:
             console.error("unimplemented primitive");
             return "triangle-list";
+    }
+}
+function getVertexBufferLayout(primitive: PipelinePrimitive): GPUVertexBufferLayout {
+    switch (primitive) {
+        case PipelinePrimitive.Triangle: return Mesh.getVertexBufferLayout();
+        case PipelinePrimitive.Line: return Lines.getVertexBufferLayout();
+        default:
+            console.error("unimplemented primitive");
+            return Mesh.getVertexBufferLayout();
     }
 }
