@@ -1,10 +1,8 @@
 
 import triangleShader from "./triangleShader.wgsl";
 import lineShader from "./lineShader.wgsl";
-import { Mesh } from "./mesh"
 import { Scene } from "./scene"
 import { Pipeline, PipelinePrimitive } from "./Pipeline"
-import { Timer } from "./timer"
 
 const compatibilityCheck : HTMLElement = <HTMLElement> document.getElementById("compatibility-check");
 
@@ -13,11 +11,13 @@ export class Renderer {
 	private device!: GPUDevice;
 	private context!: GPUCanvasContext;
 	private canvas!: HTMLCanvasElement;
-    private canvasContext2D!: CanvasRenderingContext2D | null;
 	private canvasFormat!: GPUTextureFormat;
 	private triangleShaderModule!: GPUShaderModule;
 	private lineShaderModule!: GPUShaderModule;
 	private viewProjBuffer!: GPUBuffer;
+    private colorBuffer!: GPUBuffer;
+    private colorBufferAlignment!: number;
+
 	private depthTexture!: GPUTexture;
 	private bindGroup!: GPUBindGroup;
 	private bindGroupLayout!: GPUBindGroupLayout;
@@ -60,6 +60,13 @@ export class Renderer {
 			compatibilityCheck.innerText = "No valid gpu adapter. Check here for a list of supported browsers https://caniuse.com/webgpu";
 			return;
 		}
+        if (adapter.limits.maxDynamicUniformBuffersPerPipelineLayout < 1) {
+            alert("Your adapter does not support dynamic uniforms.");
+            return;
+        }
+        this.colorBufferAlignment = adapter.limits.minUniformBufferOffsetAlignment;
+        while (this.colorBufferAlignment < 16) this.colorBufferAlignment += adapter.limits.minUniformBufferOffsetAlignment;
+
 		this.device = <GPUDevice> await adapter.requestDevice();
 		this.canvas = <HTMLCanvasElement> document.getElementById("screen");
 		this.context = <GPUCanvasContext> this.canvas.getContext("webgpu");
@@ -93,7 +100,14 @@ export class Renderer {
 					binding: 0,
 					visibility: GPUShaderStage.VERTEX,
 					buffer: {}
-				}
+				}, {
+                    binding: 1,
+                    visibility: GPUShaderStage.FRAGMENT,
+                    buffer: {
+                       // hasDynamicOffset: true,
+                       // minBindingSize: 16,
+                    },
+                }
 			]
 		});
 
@@ -103,16 +117,6 @@ export class Renderer {
 			usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
 		});
 
-		this.bindGroup = this.device.createBindGroup({
-			label: "bind group",
-			layout: this.bindGroupLayout,
-			entries: [
-				{
-					binding: 0,
-					resource: { buffer: this.viewProjBuffer },
-				}
-			]
-		});
 		this.depthTexture = this.device.createTexture({
 			size: [this.canvas.width, this.canvas.height],
 			format: "depth24plus",
@@ -120,6 +124,23 @@ export class Renderer {
 		});
 
 	}
+
+    private updateBindGroup() {
+
+		this.bindGroup = this.device.createBindGroup({
+			label: "bind group",
+			layout: this.bindGroupLayout,
+			entries: [
+				{
+					binding: 0,
+					resource: { buffer: this.viewProjBuffer },
+				}, {
+                    binding: 1,
+                    resource: { buffer: this.colorBuffer },
+                }
+			]
+		});
+    }
 
 	private createPipelines() {
 
@@ -144,13 +165,20 @@ export class Renderer {
 
         this.device.queue.writeBuffer(this.viewProjBuffer, 0, scene.getCamera().getViewProj());
 
+        this.colorBuffer = this.device.createBuffer({
+            label: "color buffer",
+            size: this.colorBufferAlignment * (scene.getMeshes().length + scene.getLines().length),
+            usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+        });
+        this.updateBindGroup();
+
         const encoder: GPUCommandEncoder = this.device.createCommandEncoder();
         const pass: GPURenderPassEncoder = encoder.beginRenderPass({
             colorAttachments: [
                 {
                     view: this.context.getCurrentTexture().createView(),
                     loadOp: "clear",
-                    clearValue: [0.7,0.8,1,1],
+                    clearValue: [0.1, 0.1, 0.1, 1.0],
                     storeOp: "store",
                 },
             ],
@@ -164,47 +192,37 @@ export class Renderer {
 
         pass.setBindGroup(0, this.bindGroup);
 
+        var drawCall = 0;
+
         pass.setPipeline(this.trianglePipeline.get());
         for (let mesh of scene.getMeshes()) {
+          //  this.device.queue.writeBuffer(this.colorBuffer, this.colorBufferAlignment * drawCall, mesh.getColor(), 0, 4);
+          //  pass.setBindGroup(0, this.bindGroup, new Uint32Array([this.colorBufferAlignment * drawCall]), drawCall, 1);
             pass.setVertexBuffer(0, mesh.getVertexBuffer());
             pass.setIndexBuffer(mesh.getIndexBuffer(), "uint32");
             pass.drawIndexed(mesh.getIndexCount());
+            drawCall++;
         };
 
         pass.setPipeline(this.linePipeline.get());
-        for (let line of scene.getLines()) {
-            pass.setVertexBuffer(0, line.getVertexBuffer());
-            pass.setIndexBuffer(line.getIndexBuffer(), "uint32");
-            pass.drawIndexed(line.getIndexCount());
+        for (let lines of scene.getLines()) {
+          //  this.device.queue.writeBuffer(this.colorBuffer, this.colorBufferAlignment * drawCall, lines.getColor(), 0, 4);
+          //  pass.setBindGroup(0, this.bindGroup, new Uint32Array([this.colorBufferAlignment * drawCall]), drawCall, 1);
+            pass.setVertexBuffer(0, lines.getVertexBuffer());
+            pass.setIndexBuffer(lines.getIndexBuffer(), "uint32");
+            pass.drawIndexed(lines.getIndexCount());
+            drawCall++;
         };
 
         pass.end();
         const commandBuffer = encoder.finish();
         this.device.queue.submit([commandBuffer]);
 
-
         await this.device.queue.onSubmittedWorkDone();
-
-        this.canvasContext2D = this.canvas.getContext("2d");
-        if (this.canvasContext2D) {
-            console.log("here");
-            this.canvasContext2D.font = "30px Arial";
-            this.canvasContext2D.strokeText("Hello World", 10, 50);
-        }
 
 	}
 
 }
-
-
-
-
-
-
-
-
-
-
 
 
 

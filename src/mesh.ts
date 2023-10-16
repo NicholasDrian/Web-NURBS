@@ -23,7 +23,8 @@ export class Mesh {
 	constructor(
 		private device: GPUDevice,
 		private vertices: Float32Array,
-		private indices: Int32Array) {
+		private indices: Int32Array,
+        private color: Float32Array) {
 
 		this.vertexBuffer = this.device.createBuffer({
 			label: "vertex buffer",
@@ -61,6 +62,8 @@ export class Mesh {
 		return this.vertices.length / 8;
 	}
 
-
+    getColor(): Float32Array {
+        return this.color;
+    }
 
 }

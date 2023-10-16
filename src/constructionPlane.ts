@@ -18,7 +18,6 @@ export class ConstructionPlane {
         var majorIndex: number = 0;
         var minorIndex: number = 0;
 
-
         const halfSize = size / 2.0;
         const start: number = -halfSize;
 
@@ -49,8 +48,8 @@ export class ConstructionPlane {
             }
         }
 
-        this.majorLines = new Lines(device, new Float32Array(majorVerts), new Int32Array(majorIndices));
-        this.minorLines = new Lines(device, new Float32Array(minorVerts), new Int32Array(minorIndices));
+        this.majorLines = new Lines(device, new Float32Array(majorVerts), new Int32Array(majorIndices), new Float32Array([1.0, 1.0, 1.0, 1.0]));
+        this.minorLines = new Lines(device, new Float32Array(minorVerts), new Int32Array(minorIndices), new Float32Array([0.0, 0.0, 0.0, 1.0]));
 
     }
 

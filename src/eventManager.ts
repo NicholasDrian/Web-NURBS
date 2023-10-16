@@ -1,5 +1,3 @@
-import { Scene } from "./scene"
-import { CLI } from "./cli"
 import { OperatingMode } from "./mode"
 import { INSTANCE } from "./cad"
 
@@ -23,14 +21,11 @@ export class EventManager {
             }
         };
 
-        onfocus = (event: FocusEvent) => {
-            console.log(event);
+        onfocus = () => {
             INSTANCE.getStats().reset();
         }
 
     }
-
-
 
 }
 

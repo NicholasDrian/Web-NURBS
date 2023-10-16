@@ -1,10 +1,10 @@
-
 struct VertexOutput {
 	@builtin(position) position : vec4<f32>,
 	@location(0) @interpolate(linear) normal : vec4<f32>
 }
 
 @group(0) @binding(0) var<uniform> viewProj : mat4x4<f32>;
+@group(0) @binding(1) var<uniform> color : vec4<f32>;
 
 @vertex
 fn vertexMain(

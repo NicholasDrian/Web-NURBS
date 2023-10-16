@@ -20,7 +20,8 @@ export class Lines {
 	constructor(
 		private device: GPUDevice,
 		private vertices: Float32Array,
-		private indices: Int32Array) {
+		private indices: Int32Array,
+        private color: Float32Array) {
 
 		this.vertexBuffer = this.device.createBuffer({
 			label: "vertex buffer",
@@ -46,6 +47,10 @@ export class Lines {
 
     public getIndexCount(): number {
         return this.indices.length;
+    }
+
+    public getColor(): Float32Array {
+        return this.color;
     }
 
     public static getVertexBufferLayout(): GPUVertexBufferLayout {
