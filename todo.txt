@@ -1,0 +1,4 @@
+
+
+
+- give camera better constructor

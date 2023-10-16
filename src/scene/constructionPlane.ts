@@ -5,7 +5,7 @@ export class ConstructionPlane {
     private majorLines: Lines;
     private minorLines: Lines;
 
-    constructor(device: GPUDevice, majorCount: number = 10, minorCount: number = 5, cellSize: number = 1) {
+    constructor(device: GPUDevice,  majorCount: number = 10, minorCount: number = 10, cellSize: number = 1) {
 
         const cellCount = majorCount * minorCount;
         const size = cellCount * cellSize;
@@ -51,6 +51,13 @@ export class ConstructionPlane {
         this.majorLines = new Lines(device, new Float32Array(majorVerts), new Int32Array(majorIndices), new Float32Array([1.0, 0.8, 0.8, 1.0]));
         this.minorLines = new Lines(device, new Float32Array(minorVerts), new Int32Array(minorIndices), new Float32Array([0.6, 0.4, 0.4, 1.0]));
 
+    }
+
+    public setMajorColor(color: [number, number, number, number]) {
+        this.majorLines.setColor(color);
+    }
+    public setMinorColor(color: [number, number, number, number]) {
+        this.minorLines.setColor(color);
     }
 
     public getMajorLines(): Lines {

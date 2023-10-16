@@ -71,6 +71,10 @@ export class Lines {
             pass.drawIndexed(this.indices.length);
     }
 
+    public setColor(color: [number, number, number, number]) {
+        this.device.queue.writeBuffer(this.colorBuffer, 0, new Float32Array(color));
+    }
+
     public update(): void {
         this.updateMVP();
         this.updateBindGroup();

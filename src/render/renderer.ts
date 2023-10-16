@@ -22,7 +22,11 @@ export class Renderer {
     private trianglePipeline!: Pipeline;
     private linePipeline!: Pipeline;
 
-	constructor() {}
+    private clearColor: [number, number, number, number];
+
+	constructor() {
+        this.clearColor = [0.1, 0.1, 0.1, 1.0];
+    }
 
 	public getDevice(): GPUDevice {
 		return this.device;
@@ -30,6 +34,10 @@ export class Renderer {
 
     public getBindGroupLayout(): GPUBindGroupLayout {
         return this.bindGroupLayout;
+    }
+
+    public setClearColor(color: [number, number, number, number]): void {
+        this.clearColor = color;
     }
 
 	async init() {
@@ -138,7 +146,7 @@ export class Renderer {
                 {
                     view: this.context.getCurrentTexture().createView(),
                     loadOp: "clear",
-                    clearValue: [0.1, 0.1, 0.1, 1.0],
+                    clearValue: this.clearColor,
                     storeOp: "store",
                 },
             ],

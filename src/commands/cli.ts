@@ -1,13 +1,14 @@
+import { CommandManager } from "./commandManager";
 
 export class CLI {
 
     private element: HTMLDivElement;
-    private prompt: string;
     private input: string;
+    private commandManager: CommandManager;
 
     constructor() {
         this.element = <HTMLDivElement> document.getElementById("cli");
-        this.prompt = "";
+        this.commandManager = new CommandManager();
         this.input = "";
         this.render();
     }
@@ -21,9 +22,10 @@ export class CLI {
 
     public processKeyDownEvent(event: KeyboardEvent) {
         if (event.key == "Enter") {
-            console.log(this.input);
+            this.commandManager.handleInput(this.input);
             this.clearInput();
         } else if (event.key == "Escape") {
+            this.commandManager.handleInput("Escape");
             this.clearInput();
         } else if (event.key == "Backspace") {
             this.deleteLast();
@@ -42,12 +44,8 @@ export class CLI {
         this.render();
     }
 
-    public setPrompt(prompt: string): void {
-        this.prompt = prompt;
-    }
-
     private render(): void {
-        this.element.innerText = this.prompt + this.input;
+        this.element.innerText = this.commandManager.getInstructions() + this.input;
     }
 
     private deleteLast(): void {

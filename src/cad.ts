@@ -4,7 +4,7 @@ import { Timer } from "./utils/timer"
 import { RenderStats } from "./stats"
 import { EventManager } from "./events/eventManager"
 import { OperatingMode } from "./mode"
-import { CLI } from "./cli"
+import { CLI } from "./commands/cli"
 
 class CAD {
 
@@ -29,7 +29,7 @@ class CAD {
         this.renderer = new Renderer();
         await this.renderer.init();
 
-        this.scene = new Scene(this.renderer.getDevice());
+        this.scene = new Scene();
         await this.scene.init();
 
         this.eventManager = new EventManager();
@@ -56,8 +56,8 @@ class CAD {
                 await this.renderer.render(this.scene);
                 this.renderStats.setRenderTime(renderTimer.getTime());
 
+                //stats
                 this.renderStats.setFrameTime(frameTimer.getTime());
-
                 this.renderStats.render();
 
             } else {
