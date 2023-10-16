@@ -4,6 +4,7 @@ import lineShader from "./lineShader.wgsl";
 import { Mesh } from "./mesh"
 import { Scene } from "./scene"
 import { Pipeline, PipelinePrimitive } from "./Pipeline"
+import { Timer } from "./timer"
 
 const compatibilityCheck : HTMLElement = <HTMLElement> document.getElementById("compatibility-check");
 
@@ -12,6 +13,7 @@ export class Renderer {
 	private device!: GPUDevice;
 	private context!: GPUCanvasContext;
 	private canvas!: HTMLCanvasElement;
+    private canvasContext2D!: CanvasRenderingContext2D | null;
 	private canvasFormat!: GPUTextureFormat;
 	private triangleShaderModule!: GPUShaderModule;
 	private lineShaderModule!: GPUShaderModule;
@@ -61,6 +63,7 @@ export class Renderer {
 		this.device = <GPUDevice> await adapter.requestDevice();
 		this.canvas = <HTMLCanvasElement> document.getElementById("screen");
 		this.context = <GPUCanvasContext> this.canvas.getContext("webgpu");
+
 
 		this.canvasFormat = navigator.gpu.getPreferredCanvasFormat();
 		this.context.configure({
@@ -137,49 +140,57 @@ export class Renderer {
 
 	async render(scene: Scene) {
 
-		this.updateScreenSize();
+        this.updateScreenSize();
 
-		this.device.queue.writeBuffer(this.viewProjBuffer, 0, scene.getCamera().getViewProj());
+        this.device.queue.writeBuffer(this.viewProjBuffer, 0, scene.getCamera().getViewProj());
 
-		const encoder: GPUCommandEncoder = this.device.createCommandEncoder();
-		const pass: GPURenderPassEncoder = encoder.beginRenderPass({
-			colorAttachments: [
-				{
-					view: this.context.getCurrentTexture().createView(),
-					loadOp: "clear",
-					clearValue: [0.7,0.8,1,1],
-					storeOp: "store",
-				},
-			],
-			depthStencilAttachment: {
-				view: this.depthTexture.createView(),
-				depthClearValue: 1.0,
-				depthLoadOp: "clear",
-				depthStoreOp: "store"
-			}
-		});
+        const encoder: GPUCommandEncoder = this.device.createCommandEncoder();
+        const pass: GPURenderPassEncoder = encoder.beginRenderPass({
+            colorAttachments: [
+                {
+                    view: this.context.getCurrentTexture().createView(),
+                    loadOp: "clear",
+                    clearValue: [0.7,0.8,1,1],
+                    storeOp: "store",
+                },
+            ],
+            depthStencilAttachment: {
+                view: this.depthTexture.createView(),
+                depthClearValue: 1.0,
+                depthLoadOp: "clear",
+                depthStoreOp: "store"
+            }
+        });
 
-		pass.setBindGroup(0, this.bindGroup);
+        pass.setBindGroup(0, this.bindGroup);
 
-		pass.setPipeline(this.trianglePipeline.get());
-		for (let mesh of scene.getMeshes()) {
-			pass.setVertexBuffer(0, mesh.getVertexBuffer());
-			pass.setIndexBuffer(mesh.getIndexBuffer(), "uint32");
-			pass.drawIndexed(mesh.getIndexCount());
-		};
+        pass.setPipeline(this.trianglePipeline.get());
+        for (let mesh of scene.getMeshes()) {
+            pass.setVertexBuffer(0, mesh.getVertexBuffer());
+            pass.setIndexBuffer(mesh.getIndexBuffer(), "uint32");
+            pass.drawIndexed(mesh.getIndexCount());
+        };
 
-		pass.setPipeline(this.linePipeline.get());
-		for (let line of scene.getLines()) {
-			pass.setVertexBuffer(0, line.getVertexBuffer());
-			pass.setIndexBuffer(line.getIndexBuffer(), "uint32");
-			pass.drawIndexed(line.getIndexCount());
-		};
+        pass.setPipeline(this.linePipeline.get());
+        for (let line of scene.getLines()) {
+            pass.setVertexBuffer(0, line.getVertexBuffer());
+            pass.setIndexBuffer(line.getIndexBuffer(), "uint32");
+            pass.drawIndexed(line.getIndexCount());
+        };
 
-		pass.end();
-		const commandBuffer = encoder.finish();
-		this.device.queue.submit([commandBuffer]);
+        pass.end();
+        const commandBuffer = encoder.finish();
+        this.device.queue.submit([commandBuffer]);
 
-		await this.device.queue.onSubmittedWorkDone();
+
+        await this.device.queue.onSubmittedWorkDone();
+
+        this.canvasContext2D = this.canvas.getContext("2d");
+        if (this.canvasContext2D) {
+            console.log("here");
+            this.canvasContext2D.font = "30px Arial";
+            this.canvasContext2D.strokeText("Hello World", 10, 50);
+        }
 
 	}
 
