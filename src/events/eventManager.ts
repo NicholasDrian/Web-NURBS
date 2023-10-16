@@ -1,21 +1,21 @@
-import { OperatingMode } from "./mode"
-import { INSTANCE } from "./cad"
+import { OperatingMode } from "../mode"
+import { INSTANCE } from "../cad"
 
 export class EventManager {
 
     constructor() {
 
         onkeydown =  (event: KeyboardEvent) => {
-            if (event.code == "Escape") {
+            if (event.code == "Tab") {
                 if (INSTANCE.getMode() == OperatingMode.Navigation) {
                     INSTANCE.setMode(OperatingMode.Command);
                 } else {
-                    if (INSTANCE.getCli().hasInput()) {
-                        INSTANCE.getCli().clearInput();
-                    } else {
-                        INSTANCE.setMode(OperatingMode.Navigation);
-                    }
+                    INSTANCE.getCli().clearInput();
+                    INSTANCE.setMode(OperatingMode.Navigation);
                 }
+                // prevent tab from chaging focus
+                event.preventDefault();
+                event.stopPropagation();
             } else {
                 if (INSTANCE.getMode() == OperatingMode.Command) INSTANCE.getCli().processKeyDownEvent(event);
             }

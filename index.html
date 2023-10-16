@@ -15,23 +15,24 @@
             margin: 0;
             overflow: hidden;
         }
-        #stats {
+        .floating-window {
             position: absolute;
+            border-style: solid;
+            border-width: thin;
+            border-color: var(--text-color);
             color: var(--text-color);
-            font-size: 15px;
-            height: 200px;
             background-color: rgba(0, 0, 0, 0.3);
+            font-size: 18px;
+        }
+        #stats {
+            height: 160px;
             padding: 10px;
             width: 180px;
             left: 10px;
             top: 10px;
         }
         #cli {
-            position: fixed;
-            color: var(--text-color);
-            font-size: 20px;
             height: 30px;
-            background-color: rgba(0, 0, 0, 0.3);
             padding: 5px;
             width: 500px;
             left: 10px;
@@ -41,9 +42,9 @@
 </head>
 <body>
     <canvas id="screen"></canvas>
-    <div id="stats">Hello World</div>
-    <div id="cli"></div>
-    <h1 id="compatibility-check"></h1>
+    <div class="floating-window" id="stats">Hello World</div>
+    <div class="floating-window" id="cli"></div>
+    <h1  id="compatibility-check"></h1>
     <script src="dist/main.js"></script>
 </body>
 </html>

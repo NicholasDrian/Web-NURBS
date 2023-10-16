@@ -1,4 +1,4 @@
-import { Lines } from "./lines"
+import { Lines } from "../render/renderLines"
 
 export class ConstructionPlane {
 

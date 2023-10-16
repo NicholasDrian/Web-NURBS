@@ -1,8 +1,9 @@
 
-import triangleShader from "./triangleShader.wgsl";
-import lineShader from "./lineShader.wgsl";
-import { Scene } from "./scene"
-import { Pipeline, PipelinePrimitive } from "./Pipeline"
+import triangleShader from "./shaders/triangleShader.wgsl";
+
+import lineShader from "./shaders/lineShader.wgsl";
+import { Scene } from "../scene/scene"
+import { Pipeline, PipelinePrimitive } from "./pipeline"
 
 const compatibilityCheck : HTMLElement = <HTMLElement> document.getElementById("compatibility-check");
 
@@ -14,23 +15,22 @@ export class Renderer {
 	private canvasFormat!: GPUTextureFormat;
 	private triangleShaderModule!: GPUShaderModule;
 	private lineShaderModule!: GPUShaderModule;
-	private viewProjBuffer!: GPUBuffer;
-    private colorBuffer!: GPUBuffer;
-    private colorBufferAlignment!: number;
 
 	private depthTexture!: GPUTexture;
-	private bindGroup!: GPUBindGroup;
 	private bindGroupLayout!: GPUBindGroupLayout;
 
     private trianglePipeline!: Pipeline;
     private linePipeline!: Pipeline;
 
-	constructor() {
-	}
+	constructor() {}
 
-	public getDevice() {
+	public getDevice(): GPUDevice {
 		return this.device;
 	}
+
+    public getBindGroupLayout(): GPUBindGroupLayout {
+        return this.bindGroupLayout;
+    }
 
 	async init() {
 
@@ -60,12 +60,6 @@ export class Renderer {
 			compatibilityCheck.innerText = "No valid gpu adapter. Check here for a list of supported browsers https://caniuse.com/webgpu";
 			return;
 		}
-        if (adapter.limits.maxDynamicUniformBuffersPerPipelineLayout < 1) {
-            alert("Your adapter does not support dynamic uniforms.");
-            return;
-        }
-        this.colorBufferAlignment = adapter.limits.minUniformBufferOffsetAlignment;
-        while (this.colorBufferAlignment < 16) this.colorBufferAlignment += adapter.limits.minUniformBufferOffsetAlignment;
 
 		this.device = <GPUDevice> await adapter.requestDevice();
 		this.canvas = <HTMLCanvasElement> document.getElementById("screen");
@@ -103,18 +97,9 @@ export class Renderer {
 				}, {
                     binding: 1,
                     visibility: GPUShaderStage.FRAGMENT,
-                    buffer: {
-                       // hasDynamicOffset: true,
-                       // minBindingSize: 16,
-                    },
+                    buffer: {},
                 }
 			]
-		});
-
-		this.viewProjBuffer = this.device.createBuffer({
-			label: "view proj buffer",
-			size: 64,
-			usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
 		});
 
 		this.depthTexture = this.device.createTexture({
@@ -125,22 +110,6 @@ export class Renderer {
 
 	}
 
-    private updateBindGroup() {
-
-		this.bindGroup = this.device.createBindGroup({
-			label: "bind group",
-			layout: this.bindGroupLayout,
-			entries: [
-				{
-					binding: 0,
-					resource: { buffer: this.viewProjBuffer },
-				}, {
-                    binding: 1,
-                    resource: { buffer: this.colorBuffer },
-                }
-			]
-		});
-    }
 
 	private createPipelines() {
 
@@ -163,15 +132,6 @@ export class Renderer {
 
         this.updateScreenSize();
 
-        this.device.queue.writeBuffer(this.viewProjBuffer, 0, scene.getCamera().getViewProj());
-
-        this.colorBuffer = this.device.createBuffer({
-            label: "color buffer",
-            size: this.colorBufferAlignment * (scene.getMeshes().length + scene.getLines().length),
-            usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
-        });
-        this.updateBindGroup();
-
         const encoder: GPUCommandEncoder = this.device.createCommandEncoder();
         const pass: GPURenderPassEncoder = encoder.beginRenderPass({
             colorAttachments: [
@@ -190,28 +150,15 @@ export class Renderer {
             }
         });
 
-        pass.setBindGroup(0, this.bindGroup);
-
-        var drawCall = 0;
 
         pass.setPipeline(this.trianglePipeline.get());
         for (let mesh of scene.getMeshes()) {
-          //  this.device.queue.writeBuffer(this.colorBuffer, this.colorBufferAlignment * drawCall, mesh.getColor(), 0, 4);
-          //  pass.setBindGroup(0, this.bindGroup, new Uint32Array([this.colorBufferAlignment * drawCall]), drawCall, 1);
-            pass.setVertexBuffer(0, mesh.getVertexBuffer());
-            pass.setIndexBuffer(mesh.getIndexBuffer(), "uint32");
-            pass.drawIndexed(mesh.getIndexCount());
-            drawCall++;
+            mesh.draw(pass);
         };
 
         pass.setPipeline(this.linePipeline.get());
         for (let lines of scene.getLines()) {
-          //  this.device.queue.writeBuffer(this.colorBuffer, this.colorBufferAlignment * drawCall, lines.getColor(), 0, 4);
-          //  pass.setBindGroup(0, this.bindGroup, new Uint32Array([this.colorBufferAlignment * drawCall]), drawCall, 1);
-            pass.setVertexBuffer(0, lines.getVertexBuffer());
-            pass.setIndexBuffer(lines.getIndexBuffer(), "uint32");
-            pass.drawIndexed(lines.getIndexCount());
-            drawCall++;
+            lines.draw(pass);
         };
 
         pass.end();

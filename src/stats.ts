@@ -1,6 +1,4 @@
 
-
-
 export class RenderStats {
 
     private element: HTMLDivElement;

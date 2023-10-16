@@ -23,14 +23,15 @@ export class CLI {
         if (event.key == "Enter") {
             console.log(this.input);
             this.clearInput();
+        } else if (event.key == "Escape") {
+            this.clearInput();
         } else if (event.key == "Backspace") {
-            this.input = this.input.slice(0, -1);
-            this.render();
+            this.deleteLast();
         } else if (event.key.length == 1) {
-            this.input += event.key;
-            this.render();
+            this.addChar(event.key);
         }
     }
+
 
     public hasInput(): boolean {
         return this.input != "";
@@ -47,6 +48,18 @@ export class CLI {
 
     private render(): void {
         this.element.innerText = this.prompt + this.input;
+    }
+
+    private deleteLast(): void {
+        if (this.input.length) {
+            this.input = this.input.slice(0, -1);
+            this.render();
+        }
+    }
+
+    private addChar(char: string): void {
+        this.input += char;
+        this.render();
     }
 
 }

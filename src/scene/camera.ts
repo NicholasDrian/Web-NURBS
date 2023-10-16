@@ -1,9 +1,10 @@
 import { mat4, vec3, Mat4, Vec3 } from "wgpu-matrix"
-import { INSTANCE } from "./cad"
-import { OperatingMode } from "./mode"
+import { INSTANCE } from "../cad"
+import { OperatingMode } from "../mode"
 
 export class Camera {
 
+    private viewProj: Float32Array;
 	private lastFrameTime: number;
 	private isTurningRight: boolean = false;
 	private isTurningLeft: boolean = false;
@@ -23,20 +24,12 @@ export class Camera {
 	{
 		this.up = vec3.normalize(this.up);
 		this.lastFrameTime = performance.now();
+	    this.viewProj = new Float32Array(16);
 		this.addEvents();
-
 	}
 
 	getViewProj() : Float32Array {
-		const view = new Float32Array(16);
-		const proj = new Float32Array(16);
-	        const viewProj = new Float32Array(16);
-
-		mat4.lookAt(this.position, vec3.add(this.position, this.forward), this.up, view);
-		mat4.perspective(this.fovy, this.screen.width / this.screen.height, 0.1, 1000.0, proj);
-		mat4.multiply(proj, view, viewProj);
-		return viewProj;
-
+		return this.viewProj;
 	}
 
 	getPosition(): Vec3 {
@@ -103,6 +96,7 @@ export class Camera {
             } else if (this.isMovingLeft) {
                 this.goRight((this.lastFrameTime - now) / 100);
             }
+            this.updateViewProj();
         }
 
 		this.lastFrameTime = now;
@@ -128,5 +122,14 @@ export class Camera {
 		const right : Vec3 = vec3.cross(this.forward, this.up);
 		this.position = vec3.add(this.position, vec3.scale(right, amount));
 	}
+
+    private updateViewProj() {
+		const view = new Float32Array(16);
+		const proj = new Float32Array(16);
+		mat4.lookAt(this.position, vec3.add(this.position, this.forward), this.up, view);
+		mat4.perspective(this.fovy, this.screen.width / this.screen.height, 0.1, 1000.0, proj);
+		mat4.multiply(proj, view, this.viewProj);
+    }
+
 
 }

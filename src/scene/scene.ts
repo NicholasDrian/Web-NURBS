@@ -1,13 +1,15 @@
 import { Camera } from "./camera"
 import { vec3 } from "wgpu-matrix"
-import { Mesh } from "./mesh"
-import { Lines } from "./lines"
+import { Mesh } from "../render/renderMesh"
+import { Lines } from "../render/renderLines"
 import { ConstructionPlane } from "./constructionPlane"
 
 export class Scene {
 
 	private camera: Camera;
     private constructionPlane: ConstructionPlane;
+    private lines: Lines[] = [];
+    private meshes: Mesh[] = [];
 
 	constructor(
 		private renderDevice: GPUDevice
@@ -22,6 +24,10 @@ export class Scene {
 		);
 
         this.constructionPlane = new ConstructionPlane(renderDevice);
+        this.lines.push(
+            this.constructionPlane.getMajorLines(),
+            this.constructionPlane.getMinorLines(),
+        );
 
 	}
 
@@ -30,21 +36,18 @@ export class Scene {
 	}
 
     public getMeshes(): Mesh[] {
-        return [];
+        return this.meshes;
     }
 
     public getLines(): Lines[] {
-       return [
-            this.constructionPlane.getMajorLines(),
-            this.constructionPlane.getMinorLines(),
-       ];
+        return this.lines;
     }
-
 
 	public tick(): void {
 
 		this.camera.tick();
-
+        this.lines.map((lines: Lines) => { lines.update(); return lines; });
+        this.meshes.map((mesh: Mesh) => { mesh.update(); return mesh; });
 	}
 
 	public getCamera(): Camera {

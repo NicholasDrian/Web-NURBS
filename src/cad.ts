@@ -1,8 +1,8 @@
-import { Renderer } from "./renderer"
-import { Scene } from "./scene";
-import { Timer } from "./timer"
+import { Renderer } from "./render/renderer"
+import { Scene } from "./scene/scene";
+import { Timer } from "./utils/timer"
 import { RenderStats } from "./stats"
-import { EventManager } from "./eventManager"
+import { EventManager } from "./events/eventManager"
 import { OperatingMode } from "./mode"
 import { CLI } from "./cli"
 
@@ -89,6 +89,14 @@ class CAD {
 
     public getStats(): RenderStats {
         return this.renderStats;
+    }
+
+    public getScene(): Scene {
+        return this.scene;
+    }
+
+    public getRenderer(): Renderer {
+        return this.renderer;
     }
 
 }

@@ -1,5 +1,5 @@
-import { Mesh } from "./mesh"
-import { Lines } from "./lines"
+import { Mesh } from "./renderMesh"
+import { Lines } from "./renderLines"
 
 export enum PipelinePrimitive {
     Triangle,
