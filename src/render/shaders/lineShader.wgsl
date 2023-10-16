@@ -19,7 +19,7 @@ fn vertexMain(
 
 @fragment
 fn fragmentMain() -> @location(0) vec4f {
-    return vec4<f32>(0.8, 0.6, 0.6, 1.0);
+    return color;
 }
 
 

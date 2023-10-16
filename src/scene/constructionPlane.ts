@@ -48,8 +48,8 @@ export class ConstructionPlane {
             }
         }
 
-        this.majorLines = new Lines(device, new Float32Array(majorVerts), new Int32Array(majorIndices), new Float32Array([1.0, 1.0, 1.0, 1.0]));
-        this.minorLines = new Lines(device, new Float32Array(minorVerts), new Int32Array(minorIndices), new Float32Array([0.0, 0.0, 0.0, 1.0]));
+        this.majorLines = new Lines(device, new Float32Array(majorVerts), new Int32Array(majorIndices), new Float32Array([1.0, 0.8, 0.8, 1.0]));
+        this.minorLines = new Lines(device, new Float32Array(minorVerts), new Int32Array(minorIndices), new Float32Array([0.6, 0.4, 0.4, 1.0]));
 
     }
 
