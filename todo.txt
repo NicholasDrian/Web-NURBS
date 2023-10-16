@@ -1,2 +1,0 @@
-- figure out why its hitching
-- get dynamic uniforms working
