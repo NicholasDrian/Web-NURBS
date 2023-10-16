@@ -1,26 +1,30 @@
 
 
 
-class RenderStats {
+export class RenderStats {
 
     private element: HTMLDivElement;
-    private renderTime: number;
-    private frameTime: number;
-    private sceneTime: number;
-    private framesOver100ms: number;
-    private totalFrames: number;
-    private startTime: number;
+    private renderTime!: number;
+    private frameTime!: number;
+    private sceneTime!: number;
+    private framesOver100ms!: number;
+    private totalFrames!: number;
+    private startTime!: number;
 
     constructor() {
 
         this.element = <HTMLDivElement> document.getElementById("stats");
+        this.reset();
+    }
+
+    public reset(): void {
+
         this.renderTime = NaN;
         this.frameTime = NaN;
         this.sceneTime = NaN;
         this.framesOver100ms = 0;
         this.totalFrames = 0;
         this.startTime = Date.now();
-
     }
 
     public setRenderTime(renderTime: number): void {
@@ -52,5 +56,3 @@ class RenderStats {
 
 };
 
-const renderStats: RenderStats = new RenderStats();
-export { renderStats };

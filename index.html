@@ -4,14 +4,14 @@
     <meta charset="UTF-8">
     <meta http-equiv="X-UA-Compatible" content="IE=edge">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Document</title>
+    <title>WEB CAD</title>
     <style>
         html, body {
             width:  100%;
             height: 100%;
             margin: 0;
         }
-        .stats {
+        #stats {
             position: absolute;
             color: white;
             height: 200px;
@@ -21,11 +21,22 @@
             left: 10px;
             top: 10px;
         }
+        #cli {
+            position: fixed;
+            color: white;
+            height: 30px;
+            background-color: rgba(0, 0, 0, 0.3);
+            padding: 10px;
+            width: 500px;
+            left: 10px;
+            bottom: 10px;
+        }
     </style>
 </head>
 <body>
     <canvas id="screen"></canvas>
-    <div class="stats" id="stats">Hello World</div>
+    <div id="stats">Hello World</div>
+    <div id="cli"></div>
     <h1 id="compatibility-check"></h1>
     <script src="dist/main.js"></script>
 </body>

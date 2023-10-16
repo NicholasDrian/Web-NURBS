@@ -1,4 +1,6 @@
 import { mat4, vec3, Mat4, Vec3 } from "wgpu-matrix"
+import { INSTANCE } from "./cad"
+import { OperatingMode } from "./mode"
 
 export class Camera {
 
@@ -13,14 +15,14 @@ export class Camera {
 	private isMovingRight: boolean = false;
 
 	constructor(
-		private position: Vec3, 
-		private up: Vec3, 
-		private forward: Vec3, 
-		private fovy: number, 
+		private position: Vec3,
+		private up: Vec3,
+		private forward: Vec3,
+		private fovy: number,
 		private screen: HTMLCanvasElement)
 	{
 		this.up = vec3.normalize(this.up);
-		this.lastFrameTime = performance.now(); 
+		this.lastFrameTime = performance.now();
 		this.addEvents();
 
 	}
@@ -41,7 +43,7 @@ export class Camera {
 		return this.position;
 	}
 
-	addEvents() {
+    private addEvents() {
 
 		document.addEventListener('keydown', (event) => {
 	  		switch (event.code) {
@@ -76,52 +78,55 @@ export class Camera {
 
 
 		var now : number = performance.now();
-		if (this.isTurningLeft) {
-			this.turnRight((this.lastFrameTime - now) / 500);
-		} else if (this.isTurningRight == true) {
-			this.turnRight((now - this.lastFrameTime) / 500);
-		}
 
-		if (this.isLookingUp) {
-			this.lookUp((now - this.lastFrameTime) / 500);
-		} else if (this.isLookingDown) {
-			this.lookUp((this.lastFrameTime - now) / 500);
-		}
+        if (INSTANCE.getMode() == OperatingMode.Navigation) {
+            if (this.isTurningLeft) {
+                this.turnRight((this.lastFrameTime - now) / 500);
+            } else if (this.isTurningRight == true) {
+                this.turnRight((now - this.lastFrameTime) / 500);
+            }
 
-		if (this.isMovingForward) {
-			this.goForward((now - this.lastFrameTime) / 100);
-		} else if (this.isMovingBackward) {
-			this.goForward((this.lastFrameTime - now) / 100);
-		}
-		
-		if (this.isMovingRight) {
-			this.goRight((now - this.lastFrameTime) / 100);
-		} else if (this.isMovingLeft) {
-			this.goRight((this.lastFrameTime - now) / 100);
-		}
+            if (this.isLookingUp) {
+                this.lookUp((now - this.lastFrameTime) / 500);
+            } else if (this.isLookingDown) {
+                this.lookUp((this.lastFrameTime - now) / 500);
+            }
+
+            if (this.isMovingForward) {
+                this.goForward((now - this.lastFrameTime) / 100);
+            } else if (this.isMovingBackward) {
+                this.goForward((this.lastFrameTime - now) / 100);
+            }
+
+            if (this.isMovingRight) {
+                this.goRight((now - this.lastFrameTime) / 100);
+            } else if (this.isMovingLeft) {
+                this.goRight((this.lastFrameTime - now) / 100);
+            }
+        }
 
 		this.lastFrameTime = now;
 	}
 
-	turnRight(amount: number): void {
+	private turnRight(amount: number): void {
 		const rotation : Mat4 = mat4.rotateY(mat4.identity(), -amount);
 		this.forward = vec3.transformMat4(this.forward, rotation);
 		this.up = vec3.transformMat4(this.up, rotation);
-	}	
-	lookUp(amount: number): void{
+	}
+	private lookUp(amount: number): void{
 		const right : Vec3 = vec3.cross(this.forward, this.up);
 		const rotation : Mat4 = mat4.axisRotate(mat4.identity(), right, amount);
 		this.forward = vec3.transformMat4(this.forward, rotation);
 		this.up = vec3.transformMat4(this.up, rotation);
 	}
 
-	goForward(amount: number): void {
-		this.position = vec3.add(vec3.scale(this.forward, amount), this.position);	
+	private goForward(amount: number): void {
+		this.position = vec3.add(vec3.scale(this.forward, amount), this.position);
 	}
 
-	goRight(amount: number): void {
+	private goRight(amount: number): void {
 		const right : Vec3 = vec3.cross(this.forward, this.up);
 		this.position = vec3.add(this.position, vec3.scale(right, amount));
 	}
-	
+
 }
