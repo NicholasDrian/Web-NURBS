@@ -1,4 +1,5 @@
 import { Command } from "./command";
+import { CameraCommand } from "./commands/cameraCommand";
 import { ConstructionPlaneCommand } from "./commands/constructionPlaneCommand";
 import { toggleDarkMode } from "./oneTimeCommands/toggleDarkModeCommand";
 
@@ -29,6 +30,9 @@ export class CommandManager {
                 case "constructionplane": case "cp":
                     this.currentCommand = new ConstructionPlaneCommand();
                     break;
+                case "camera": case "cam":
+                    this.currentCommand = new CameraCommand();
+                    break;
                 default: console.log("Invalid Command");
             }
         }
@@ -43,7 +47,7 @@ export class CommandManager {
 
     public getInstructions(): string {
         if (this.currentCommand) return this.currentCommand!.getInstructions();
-        return "";
+        return "$";
     }
 
     public tick(): void {
