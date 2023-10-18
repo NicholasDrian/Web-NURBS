@@ -34,7 +34,6 @@ export class CLI {
         }
     }
 
-
     public hasInput(): boolean {
         return this.input != "";
     }

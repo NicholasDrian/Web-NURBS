@@ -133,7 +133,6 @@ export class Camera {
 	}
 
     private updateViewProj() {
-        console.log(this.fovy);
 		const view = new Float32Array(16);
 		const proj = new Float32Array(16);
 		mat4.lookAt(this.position, vec3.add(this.position, this.forward), this.up, view);

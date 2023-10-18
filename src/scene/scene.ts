@@ -25,11 +25,6 @@ export class Scene {
 		);
 
         this.constructionPlane = new ConstructionPlane(INSTANCE.getRenderer().getDevice());
-        this.lines.push(
-            this.constructionPlane.getMajorLines(),
-            this.constructionPlane.getMinorLines(),
-        );
-
 	}
 
     public getConstructionPlane(): ConstructionPlane {
@@ -45,6 +40,7 @@ export class Scene {
     }
 
     public getLines(): Lines[] {
+        this.lines = [this.constructionPlane.getMajorLines(), this.constructionPlane.getMinorLines()];
         return this.lines;
     }
 

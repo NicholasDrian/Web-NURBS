@@ -45,6 +45,7 @@ export class Renderer {
 		await this.createDevice();
 		this.createResources();
 		this.createPipelines();
+        this.updateScreenSize();
 
 	}
 
@@ -126,7 +127,7 @@ export class Renderer {
 
 	}
 
-	private updateScreenSize(): void {
+	public updateScreenSize(): void {
 		this.canvas.width = window.innerWidth;
 		this.canvas.height = window.innerHeight;
 		this.depthTexture = this.device.createTexture({
@@ -138,7 +139,6 @@ export class Renderer {
 
 	async render(scene: Scene) {
 
-        this.updateScreenSize();
 
         const encoder: GPUCommandEncoder = this.device.createCommandEncoder();
         const pass: GPURenderPassEncoder = encoder.beginRenderPass({

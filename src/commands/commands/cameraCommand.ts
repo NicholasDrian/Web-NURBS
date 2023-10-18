@@ -35,9 +35,9 @@ export class CameraCommand {
         const fovyDegrees: string = (180.0 * fovy / Math.PI).toFixed(1);
         switch (this.mode) {
             case CameraCommandMode.Menu:
-                return `0:Exit  1:FOVY(${fovyDegrees})  $`;
+                return `0:Exit,  1:FOVY(${fovyDegrees})  $`;
             case CameraCommandMode.Fovy:
-                return `0:Exit Enter New FOVY(${fovyDegrees}) $`;
+                return `0:Exit,  Enter New FOVY(${fovyDegrees})  $`;
             default:
                 console.error("Unimplemented CameraCommandMode");
                 return "";
@@ -53,7 +53,7 @@ export class CameraCommand {
     }
 
     private handleFovyInput(input: string) {
-        const inputNum: number | undefined  = parseInt(input);
+        const inputNum: number | undefined  = parseFloat(input);
         if (inputNum === 0) {
             this.mode = CameraCommandMode.Menu;
         }

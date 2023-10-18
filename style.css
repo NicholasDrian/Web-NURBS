@@ -39,7 +39,7 @@ html, body {
     font-size: 18px;
     height: 20px;
     padding: 2px;
-    width: 500px;
+    width: calc(100% - 25px);
     left: 10px;
     bottom: 10px;
 }

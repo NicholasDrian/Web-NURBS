@@ -4,6 +4,9 @@ import { INSTANCE } from "../cad"
 export class EventManager {
 
     constructor() {
+        onresize = () => {
+            INSTANCE.getRenderer().updateScreenSize();
+        }
 
         onkeydown =  (event: KeyboardEvent) => {
             if (event.code == "Tab") {
