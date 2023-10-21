@@ -167,12 +167,12 @@ export class Renderer {
 
 
         pass.setPipeline(this.trianglePipeline.get());
-        for (let mesh of scene.getMeshes()) {
+        for (let mesh of scene.getAllMeshes()) {
             mesh.draw(pass);
         };
 
         pass.setPipeline(this.linePipeline.get());
-        for (let lines of scene.getLines()) {
+        for (let lines of scene.getAllLines()) {
             lines.draw(pass);
         };
 

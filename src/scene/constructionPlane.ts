@@ -1,19 +1,25 @@
+import { INSTANCE } from "../cad";
 import { Lines } from "../render/renderLines"
+import { uuid } from "./scene";
 
 export class ConstructionPlane {
 
-    private majorLines!: Lines;
-    private minorLines!: Lines;
+    private majorLines: uuid;
+    private minorLines: uuid;
 
     constructor(private device: GPUDevice,
                 private majorCount: number = 10,
                 private minorCount: number = 10,
                 private cellSize: number = 1) {
-
+        this.majorLines = 0;
+        this.minorLines = 0;
         this.setup();
     }
 
     private setup() {
+
+        if (this.majorLines) INSTANCE.getScene().removeLines(this.majorLines);
+        if (this.minorLines) INSTANCE.getScene().removeLines(this.minorLines);
 
         const cellCount = this.majorCount * this.minorCount;
         const size = cellCount * this.cellSize;
@@ -51,8 +57,8 @@ export class ConstructionPlane {
             }
         }
         // TODO: colors based on dark mode
-        this.majorLines = new Lines(this.device, new Float32Array(majorVerts), new Int32Array(majorIndices), new Float32Array([1.0, 0.9, 0.9, 1.0]));
-        this.minorLines = new Lines(this.device, new Float32Array(minorVerts), new Int32Array(minorIndices), new Float32Array([0.5, 0.4, 0.4, 1.0]));
+        this.majorLines = INSTANCE.getScene().addLines( new Lines(this.device, new Float32Array(majorVerts), new Int32Array(majorIndices), new Float32Array([1.0, 0.9, 0.9, 1.0])));
+        this.minorLines = INSTANCE.getScene().addLines( new Lines(this.device, new Float32Array(minorVerts), new Int32Array(minorIndices), new Float32Array([0.5, 0.4, 0.4, 1.0])));
     }
 
     public getMinorCount(): number {
@@ -67,19 +73,19 @@ export class ConstructionPlane {
         return this.cellSize;
     }
 
-    public getMajorLines(): Lines {
+    public getMajorLines(): uuid {
         return this.majorLines;
     }
 
-    public getMinorLines(): Lines {
+    public getMinorLines(): uuid {
         return this.minorLines;
     }
 
     public setMajorColor(color: [number, number, number, number]) {
-        this.majorLines.setColor(color);
+        INSTANCE.getScene().getLines(this.majorLines).setColor(color);
     }
     public setMinorColor(color: [number, number, number, number]) {
-        this.minorLines.setColor(color);
+        INSTANCE.getScene().getLines(this.minorLines).setColor(color);
     }
 
     public setMinorCount(count: number): void {
