@@ -14,7 +14,6 @@ export class ConstructionPlane {
     }
 
     private setup() {
-        console.log("here bro");
 
         const cellCount = this.majorCount * this.minorCount;
         const size = cellCount * this.cellSize;

@@ -1,6 +1,8 @@
+import { INSTANCE } from "../cad";
 import { Command } from "./command";
 import { CameraCommand } from "./commands/cameraCommand";
 import { ConstructionPlaneCommand } from "./commands/constructionPlaneCommand";
+import { lineCommand } from "./commands/lineCommand";
 import { toggleDarkMode } from "./oneTimeCommands/toggleDarkModeCommand";
 
 
@@ -15,6 +17,8 @@ export class CommandManager {
     }
 
     public handleInput(input: string) {
+
+        INSTANCE.getLog().log(input);
 
         input = input.toLowerCase();
 
@@ -33,7 +37,22 @@ export class CommandManager {
                 case "camera": case "cam":
                     this.currentCommand = new CameraCommand();
                     break;
-                default: console.log("Invalid Command");
+                case "showlog": case "sl":
+                    INSTANCE.getLog().show();
+                    break;
+                case "hidelog": case "hl":
+                    INSTANCE.getLog().hide();
+                    break;
+                case "showstats": case "ss":
+                    INSTANCE.getStats().show();
+                    break;
+                case "hidestats": case "hs":
+                    INSTANCE.getStats().hide();
+                    break;
+                case "line": case "ln":
+                    this.currentCommand = new lineCommand();
+                    break;
+                default: INSTANCE.getLog().log("Invalid Command");
             }
         }
 
@@ -43,6 +62,10 @@ export class CommandManager {
 
         this.previousInput = input;
 
+    }
+
+    handleClickInput(event: MouseEvent) {
+        this.currentCommand?.handleClick(event.clientX, event.clientY);
     }
 
     public getInstructions(): string {

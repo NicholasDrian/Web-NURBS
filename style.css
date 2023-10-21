@@ -43,3 +43,10 @@ html, body {
     left: 10px;
     bottom: 10px;
 }
+#log {
+    height: calc(100% - 80px);
+    width: 200px;
+    right: 10px;
+    top: 10px;
+    padding: 10px;
+}

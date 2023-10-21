@@ -1,14 +1,11 @@
 import { OperatingMode } from "../mode"
 import { INSTANCE } from "../cad"
-import { MouseEventHandler } from "./mouseEventManager";
 
 export class EventManager {
 
-    private mouseEventHandler: MouseEventHandler;
 
     constructor() {
 
-        this.mouseEventHandler = new MouseEventHandler();
 
         onresize = () => {
             INSTANCE.getRenderer().updateScreenSize();
@@ -35,8 +32,9 @@ export class EventManager {
         }
 
         onclick = (event: MouseEvent) => {
-            this.mouseEventHandler.handleMouseEvent(event);
+            INSTANCE.getCommandManager().handleClickInput(event);
         }
+
 
     }
 

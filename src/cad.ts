@@ -5,26 +5,26 @@ import { RenderStats } from "./stats"
 import { EventManager } from "./events/eventManager"
 import { OperatingMode } from "./mode"
 import { CLI } from "./commands/cli"
+import { Log } from "./log";
+import { CommandManager } from "./commands/commandManager";
 
 class CAD {
 
     private renderer!: Renderer;
     private scene!: Scene;
     private eventManager!: EventManager;
+    private commandManager!: CommandManager
     private renderStats!: RenderStats;
     private operatingMode!: OperatingMode;
-    private cli: CLI;
-
-    constructor() {
-
-        this.cli = new CLI();
-
-        this.setMode(OperatingMode.Navigation);
-
-    }
+    private cli!: CLI;
+    private log!: Log
 
     public async init() {
 
+        this.commandManager = new CommandManager();
+        this.cli = new CLI();
+
+        this.setMode(OperatingMode.Command);
 
         this.renderer = new Renderer();
         await this.renderer.init();
@@ -33,6 +33,7 @@ class CAD {
         await this.scene.init();
 
         this.eventManager = new EventManager();
+        this.log = new Log();
 
         this.renderStats = new RenderStats();
 
@@ -77,9 +78,9 @@ class CAD {
         this.operatingMode = operatingMode;
 
         if (this.operatingMode == OperatingMode.Command) {
-            this.cli.hide();
-        } else {
             this.cli.show();
+        } else {
+            this.cli.hide();
         }
     }
 
@@ -97,6 +98,14 @@ class CAD {
 
     public getRenderer(): Renderer {
         return this.renderer;
+    }
+
+    public getLog(): Log {
+        return this.log;
+    }
+
+    public getCommandManager(): CommandManager {
+        return this.commandManager;
     }
 
 }

@@ -86,7 +86,6 @@ export class Lines {
     }
 
     private updateBindGroup(): void {
-
 		this.bindGroup = this.device.createBindGroup({
 			label: "bind group",
 			layout: INSTANCE.getRenderer().getBindGroupLayout(),

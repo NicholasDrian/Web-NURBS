@@ -17,9 +17,9 @@ export class Scene {
 	) {
 
 		this.camera = new Camera(
-			vec3.create(0.0, 10.0, -20.0),	//position
-			vec3.create(0.0, 1.0, 0.0),	//up
-			vec3.create(0.0, 0.0, 1.0),	//forward
+			vec3.create(0.0, -20.0, 10.0),	//position
+			vec3.create(0.0, 0.0, 1.0),	//up
+			vec3.create(0.0, 1.0, 0.0),	//forward
 			2,		//fovy
 			<HTMLCanvasElement>document.getElementById("screen")
 		);

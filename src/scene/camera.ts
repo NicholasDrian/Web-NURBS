@@ -1,5 +1,6 @@
 import { mat4, vec3, Mat4, Vec3 } from "wgpu-matrix"
 import { INSTANCE } from "../cad"
+import { Ray } from "../geometry/ray";
 import { OperatingMode } from "../mode"
 
 export class Camera {
@@ -43,6 +44,24 @@ export class Camera {
     setFovy(newFovy: number) {
         this.fovy = newFovy;
         this.updateViewProj();
+    }
+
+    public getRayAtPixel(x: number, y: number): Ray {
+        const center: Vec3 = vec3.add(this.position, this.forward);
+        const right: Vec3 = vec3.cross(this.forward, this.up);
+        const xRes: number = window.innerWidth;
+        const yRes: number = window.innerHeight;
+        const sizeY: number = 2.0 * Math.tan(this.fovy / 2.0);
+        const sizeX: number = sizeY / yRes * xRes;
+        const screenPoint: Vec3 = vec3.add(
+            center,
+            vec3.sub(
+                vec3.scale(right, sizeX / xRes * (x - xRes / 2.0)),
+                vec3.scale(this.up, sizeY / yRes * (y - yRes / 2.0))
+            )
+        );
+
+        return new Ray(this.position, vec3.sub(screenPoint, this.position));
     }
 
     private addEvents() {
@@ -105,14 +124,14 @@ export class Camera {
             } else if (this.isMovingLeft) {
                 this.goRight((this.lastFrameTime - now) / 50);
             }
-            this.updateViewProj();
         }
 
+        this.updateViewProj();
 		this.lastFrameTime = now;
 	}
 
 	private turnRight(amount: number): void {
-		const rotation : Mat4 = mat4.rotateY(mat4.identity(), -amount);
+		const rotation : Mat4 = mat4.rotateZ(mat4.identity(), amount);
 		this.forward = vec3.transformMat4(this.forward, rotation);
 		this.up = vec3.transformMat4(this.up, rotation);
 	}
@@ -128,14 +147,23 @@ export class Camera {
 	}
 
 	private goRight(amount: number): void {
-		const right : Vec3 = vec3.cross(this.forward, this.up);
+		const right : Vec3 = vec3.cross(this.up, this.forward);
 		this.position = vec3.add(this.position, vec3.scale(right, amount));
 	}
 
-    private updateViewProj() {
+    private updateViewProj(): void {
 		const view = new Float32Array(16);
 		const proj = new Float32Array(16);
-		mat4.lookAt(this.position, vec3.add(this.position, this.forward), this.up, view);
+
+        const swapYZ = (v: Vec3) => {
+            return vec3.create(v[0], v[2], v[1]);
+        }
+
+        const forward: Vec3 = swapYZ(this.forward);
+        const position: Vec3 = swapYZ(this.position);
+        const up: Vec3 = swapYZ(this.up);
+
+		mat4.lookAt(position, vec3.add(position, forward), up, view);
 		mat4.perspective(this.fovy, this.screen.width / this.screen.height, 0.1, 1000.0, proj);
 		mat4.multiply(proj, view, this.viewProj);
     }

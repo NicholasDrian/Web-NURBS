@@ -40,15 +40,25 @@ export class RenderStats {
     }
 
     public render(): void {
-        this.element.innerText =
-            "FPS: " + (1.0 / this.frameTime).toFixed(3) + "\n" +
-            "Average FPS: " + (1000.0 * this.totalFrames / (Date.now() - this.startTime)).toFixed(3) + "\n" +
-            "\n" +
-            "Render Time: " + this.renderTime.toFixed(3) + "\n" +
-            "Frame Time: " + this.frameTime.toFixed(3) + "\n" +
-            "Scene Time: " + this.sceneTime.toFixed(3) + "\n" +
-            "\n" +
+        this.element.innerHTML =
+            "<u>STATS:</u><br>" +
+            "<br>" +
+            "FPS: " + (1.0 / this.frameTime).toFixed(3) + "<br>" +
+            "Average FPS: " + (1000.0 * this.totalFrames / (Date.now() - this.startTime)).toFixed(3) + "<br>" +
+            "<br>" +
+            "Render Time: " + this.renderTime.toFixed(3) + "<br>" +
+            "Frame Time: " + this.frameTime.toFixed(3) + "<br>" +
+            "Scene Time: " + this.sceneTime.toFixed(3) + "<br>" +
+            "<br>" +
             "Frames Over 100ms: " + this.framesOver100ms.toString();
+    }
+
+    public show(): void {
+        this.element.hidden = false;
+    }
+
+    public hide(): void {
+        this.element.hidden = true;
     }
 
 

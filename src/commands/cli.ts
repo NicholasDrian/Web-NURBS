@@ -1,31 +1,29 @@
-import { CommandManager } from "./commandManager";
+import { INSTANCE } from "../cad";
 
 export class CLI {
 
     private element: HTMLDivElement;
     private input: string;
-    private commandManager: CommandManager;
 
     constructor() {
         this.element = <HTMLDivElement> document.getElementById("cli");
-        this.commandManager = new CommandManager();
         this.input = "";
         this.render();
     }
 
     public show(): void {
-        this.element.style.opacity = "0";
+        this.element.hidden = false;
     }
     public hide(): void {
-        this.element.style.opacity = "1";
+        this.element.hidden = true;
     }
 
     public processKeyDownEvent(event: KeyboardEvent) {
         if (event.key == "Enter") {
-            this.commandManager.handleInput(this.input);
+            INSTANCE.getCommandManager().handleInput(this.input);
             this.clearInput();
         } else if (event.key == "Escape") {
-            this.commandManager.handleInput("Escape");
+            INSTANCE.getCommandManager().handleInput("Escape");
             this.clearInput();
         } else if (event.key == "Backspace") {
             this.deleteLast();
@@ -33,6 +31,7 @@ export class CLI {
             this.addChar(event.key);
         }
     }
+
 
     public hasInput(): boolean {
         return this.input != "";
@@ -44,7 +43,7 @@ export class CLI {
     }
 
     private render(): void {
-        this.element.innerText = this.commandManager.getInstructions() + this.input;
+        this.element.innerText = INSTANCE.getCommandManager().getInstructions() + this.input;
     }
 
     private deleteLast(): void {
@@ -58,6 +57,7 @@ export class CLI {
         this.input += char;
         this.render();
     }
+
 
 }
 
