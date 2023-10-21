@@ -17,6 +17,7 @@ export class Renderer {
 	private lineShaderModule!: GPUShaderModule;
 
 	private depthTexture!: GPUTexture;
+	private renderTarget!: GPUTexture;
 	private bindGroupLayout!: GPUBindGroupLayout;
 
     private trianglePipeline!: Pipeline;
@@ -41,6 +42,7 @@ export class Renderer {
     }
 
 	async init() {
+
 
 		await this.createDevice();
 		this.createResources();
@@ -78,7 +80,7 @@ export class Renderer {
 		this.canvasFormat = navigator.gpu.getPreferredCanvasFormat();
 		this.context.configure({
 			device: this.device,
-			format: this.canvasFormat
+			format: this.canvasFormat,
 		});
 
 	}
@@ -111,11 +113,7 @@ export class Renderer {
 			]
 		});
 
-		this.depthTexture = this.device.createTexture({
-			size: [this.canvas.width, this.canvas.height],
-			format: "depth24plus",
-			usage: GPUTextureUsage.RENDER_ATTACHMENT
-		});
+        this.updateScreenSize();
 
 	}
 
@@ -132,7 +130,15 @@ export class Renderer {
 		this.canvas.height = window.innerHeight;
 		this.depthTexture = this.device.createTexture({
 			size: [this.canvas.width, this.canvas.height],
+            sampleCount: 4,
 			format: "depth24plus",
+			usage: GPUTextureUsage.RENDER_ATTACHMENT
+		});
+
+		this.renderTarget = this.device.createTexture({
+			size: [this.canvas.width, this.canvas.height],
+            sampleCount: 4,
+			format: this.canvasFormat,
 			usage: GPUTextureUsage.RENDER_ATTACHMENT
 		});
 	}
@@ -144,7 +150,8 @@ export class Renderer {
         const pass: GPURenderPassEncoder = encoder.beginRenderPass({
             colorAttachments: [
                 {
-                    view: this.context.getCurrentTexture().createView(),
+                    view: this.renderTarget.createView(),
+                    resolveTarget: this.context.getCurrentTexture().createView(),
                     loadOp: "clear",
                     clearValue: this.clearColor,
                     storeOp: "store",

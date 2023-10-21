@@ -42,7 +42,10 @@ export class Pipeline {
 						format: format
 					}
 				]
-			}
+			},
+            multisample: {
+                count: 4
+            }
 		});
     }
 
