@@ -60,7 +60,6 @@ export class Camera {
                 vec3.scale(this.up, sizeY / yRes * (y - yRes / 2.0))
             )
         );
-
         return new Ray(this.position, vec3.sub(screenPoint, this.position));
     }
 
@@ -131,7 +130,7 @@ export class Camera {
 	}
 
 	private turnRight(amount: number): void {
-		const rotation : Mat4 = mat4.rotateZ(mat4.identity(), amount);
+		const rotation : Mat4 = mat4.rotateZ(mat4.identity(), -amount);
 		this.forward = vec3.transformMat4(this.forward, rotation);
 		this.up = vec3.transformMat4(this.up, rotation);
 	}
@@ -148,7 +147,7 @@ export class Camera {
 
 	private goRight(amount: number): void {
 		const right : Vec3 = vec3.cross(this.up, this.forward);
-		this.position = vec3.add(this.position, vec3.scale(right, amount));
+		this.position = vec3.add(this.position, vec3.scale(right, -amount));
 	}
 
     private updateViewProj(): void {

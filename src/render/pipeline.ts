@@ -1,5 +1,5 @@
-import { Mesh } from "./renderMesh"
-import { Lines } from "./renderLines"
+import { RenderMesh } from "./renderMesh"
+import { RenderLines } from "./renderLines"
 
 export enum PipelinePrimitive {
     Triangle,
@@ -66,10 +66,10 @@ function getTopology(primitive: PipelinePrimitive): GPUPrimitiveTopology {
 }
 function getVertexBufferLayout(primitive: PipelinePrimitive): GPUVertexBufferLayout {
     switch (primitive) {
-        case PipelinePrimitive.Triangle: return Mesh.getVertexBufferLayout();
-        case PipelinePrimitive.Line: return Lines.getVertexBufferLayout();
+        case PipelinePrimitive.Triangle: return RenderMesh.getVertexBufferLayout();
+        case PipelinePrimitive.Line: return RenderLines.getVertexBufferLayout();
         default:
             console.error("unimplemented primitive");
-            return Mesh.getVertexBufferLayout();
+            return RenderMesh.getVertexBufferLayout();
     }
 }

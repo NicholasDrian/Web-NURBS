@@ -2,7 +2,7 @@ import { INSTANCE } from "../cad";
 import { Command } from "./command";
 import { CameraCommand } from "./commands/cameraCommand";
 import { ConstructionPlaneCommand } from "./commands/constructionPlaneCommand";
-import { lineCommand } from "./commands/lineCommand";
+import { LineCommand } from "./commands/lineCommand";
 import { toggleDarkMode } from "./oneTimeCommands/toggleDarkModeCommand";
 
 
@@ -25,7 +25,7 @@ export class CommandManager {
         if (this.currentCommand) this.currentCommand.handleInput(input);
         else {
             switch (input) {
-                case ".":
+                case "":
                     this.handleInput(this.previousInput);
                     return;
                 case "darkmode": case "dm":
@@ -50,7 +50,7 @@ export class CommandManager {
                     INSTANCE.getStats().hide();
                     break;
                 case "line": case "ln":
-                    this.currentCommand = new lineCommand();
+                    this.currentCommand = new LineCommand();
                     break;
                 default: INSTANCE.getLog().log("Invalid Command");
             }
@@ -64,18 +64,20 @@ export class CommandManager {
 
     }
 
-    handleClickInput(event: MouseEvent) {
+    public handleClickInput(event: MouseEvent) {
         this.currentCommand?.handleClick(event.clientX, event.clientY);
+        if (this.currentCommand?.isFinished()) {
+            this.currentCommand = null;
+        }
+    }
+
+    public handleMouseMove(event: MouseEvent) {
+        this.currentCommand?.handleMouseMove(event.clientX, event.clientY);
     }
 
     public getInstructions(): string {
         if (this.currentCommand) return this.currentCommand!.getInstructions();
         return "$";
     }
-
-    public tick(): void {
-        this.currentCommand?.tick();
-    }
-
 
 }

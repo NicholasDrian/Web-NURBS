@@ -8,6 +8,7 @@ export class RenderStats {
     private framesOver100ms!: number;
     private totalFrames!: number;
     private startTime!: number;
+    private drawCalls!: number;
 
     constructor() {
 
@@ -39,6 +40,10 @@ export class RenderStats {
         this.sceneTime = sceneTime;
     }
 
+    public setDrawCalls(count: number): void {
+        this.drawCalls = count;
+    }
+
     public render(): void {
         this.element.innerHTML =
             "<u>STATS:</u><br>" +
@@ -50,7 +55,9 @@ export class RenderStats {
             "Frame Time: " + this.frameTime.toFixed(3) + "<br>" +
             "Scene Time: " + this.sceneTime.toFixed(3) + "<br>" +
             "<br>" +
-            "Frames Over 100ms: " + this.framesOver100ms.toString();
+            "Frames Over 100ms: " + this.framesOver100ms.toString() + "<br>" +
+            "<br>" +
+            "Draw Calls: " + this.drawCalls.toString();
     }
 
     public show(): void {

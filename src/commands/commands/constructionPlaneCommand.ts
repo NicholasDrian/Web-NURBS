@@ -65,7 +65,7 @@ export class ConstructionPlaneCommand extends Command {
         return this.finished;
     }
 
-    public tick(): void {
+    public handleMouseMove(x: number, y: number): void {
 
     }
 

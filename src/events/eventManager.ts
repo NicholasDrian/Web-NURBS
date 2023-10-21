@@ -6,6 +6,9 @@ export class EventManager {
 
     constructor() {
 
+        onmousemove = (event: MouseEvent) => {
+            INSTANCE.getCommandManager().handleMouseMove(event);
+        };
 
         onresize = () => {
             INSTANCE.getRenderer().updateScreenSize();
@@ -33,10 +36,12 @@ export class EventManager {
 
         onclick = (event: MouseEvent) => {
             INSTANCE.getCommandManager().handleClickInput(event);
+            INSTANCE.getCli().render();
         }
 
-
     }
+
+
 
 }
 

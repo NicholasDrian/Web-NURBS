@@ -42,7 +42,7 @@ export class CLI {
         this.render();
     }
 
-    private render(): void {
+    public render(): void {
         this.element.innerText = INSTANCE.getCommandManager().getInstructions() + this.input;
     }
 

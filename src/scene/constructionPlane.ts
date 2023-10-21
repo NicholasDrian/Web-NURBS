@@ -1,5 +1,5 @@
 import { INSTANCE } from "../cad";
-import { Lines } from "../render/renderLines"
+import { RenderLines } from "../render/renderLines"
 import { uuid } from "./scene";
 
 export class ConstructionPlane {
@@ -7,8 +7,7 @@ export class ConstructionPlane {
     private majorLines: uuid;
     private minorLines: uuid;
 
-    constructor(private device: GPUDevice,
-                private majorCount: number = 10,
+    constructor(private majorCount: number = 10,
                 private minorCount: number = 10,
                 private cellSize: number = 1) {
         this.majorLines = 0;
@@ -57,8 +56,8 @@ export class ConstructionPlane {
             }
         }
         // TODO: colors based on dark mode
-        this.majorLines = INSTANCE.getScene().addLines( new Lines(this.device, new Float32Array(majorVerts), new Int32Array(majorIndices), new Float32Array([1.0, 0.9, 0.9, 1.0])));
-        this.minorLines = INSTANCE.getScene().addLines( new Lines(this.device, new Float32Array(minorVerts), new Int32Array(minorIndices), new Float32Array([0.5, 0.4, 0.4, 1.0])));
+        this.majorLines = INSTANCE.getScene().addLines( new RenderLines(new Float32Array(majorVerts), new Int32Array(majorIndices), [1.0, 0.9, 0.9, 1.0]));
+        this.minorLines = INSTANCE.getScene().addLines( new RenderLines(new Float32Array(minorVerts), new Int32Array(minorIndices), [0.5, 0.4, 0.4, 1.0]));
     }
 
     public getMinorCount(): number {

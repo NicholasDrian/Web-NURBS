@@ -1,9 +1,8 @@
 import { Camera } from "./camera"
 import { vec3 } from "wgpu-matrix"
-import { Mesh } from "../render/renderMesh"
-import { Lines } from "../render/renderLines"
+import { RenderMesh } from "../render/renderMesh"
+import { RenderLines } from "../render/renderLines"
 import { ConstructionPlane } from "./constructionPlane"
-import { INSTANCE } from "../cad"
 
 export type uuid = number;
 
@@ -11,8 +10,8 @@ export class Scene {
 
 	private camera: Camera;
     private constructionPlane!: ConstructionPlane;
-    private lines: Map<uuid, Lines> = new Map<uuid, Lines>();
-    private meshes: Map<uuid, Mesh> = new Map<uuid, Mesh>();
+    private lines: Map<uuid, RenderLines> = new Map<uuid, RenderLines>();
+    private meshes: Map<uuid, RenderMesh> = new Map<uuid, RenderMesh>();
     private uuidGenerator: number = 1;
 
 	constructor(
@@ -34,31 +33,31 @@ export class Scene {
 
 	public async init(): Promise<void> {
 
-        this.constructionPlane = new ConstructionPlane(INSTANCE.getRenderer().getDevice());
+        this.constructionPlane = new ConstructionPlane();
 	}
 
-    public addMesh(mesh: Mesh): uuid {
+    public addMesh(mesh: RenderMesh): uuid {
         this.meshes.set(this.uuidGenerator, mesh);
         return this.uuidGenerator++;
     }
 
-    public addLines(lines: Lines): uuid {
+    public addLines(lines: RenderLines): uuid {
         this.lines.set(this.uuidGenerator, lines);
         return this.uuidGenerator++;
     }
 
-    public getLines(id: uuid): Lines {
-        return <Lines> this.lines.get(id);
+    public getLines(id: uuid): RenderLines {
+        return <RenderLines> this.lines.get(id);
     }
-    public getMesh(id: uuid): Mesh {
-        return <Mesh> this.meshes.get(id);
+    public getMesh(id: uuid): RenderMesh {
+        return <RenderMesh> this.meshes.get(id);
     }
 
-    public getAllLines(): IterableIterator<Lines> {
+    public getAllLines(): IterableIterator<RenderLines> {
         return this.lines.values();
     }
 
-    public getAllMeshes(): IterableIterator<Mesh> {
+    public getAllMeshes(): IterableIterator<RenderMesh> {
         return this.meshes.values();
     }
 

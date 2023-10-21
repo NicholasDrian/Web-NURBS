@@ -30,6 +30,10 @@ export class CameraCommand {
 
     }
 
+    public handleMouseMove(x: number, y: number): void {
+
+    }
+
     public getInstructions(): string {
         const fovy: number = INSTANCE.getScene().getCamera().getFovy();
         const fovyDegrees: string = (180.0 * fovy / Math.PI).toFixed(1);
@@ -46,10 +50,6 @@ export class CameraCommand {
 
     public isFinished(): boolean {
         return this.finished;
-    }
-
-    public tick(): void {
-
     }
 
     private handleFovyInput(input: string) {

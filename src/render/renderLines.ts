@@ -1,7 +1,7 @@
 import { Mat4, mat4 } from "wgpu-matrix"
 import { INSTANCE } from "../cad"
 
-export class Lines {
+export class RenderLines {
 
 	private static readonly vertexBufferLayout : GPUVertexBufferLayout = {
 			arrayStride: 16,
@@ -23,31 +23,30 @@ export class Lines {
 
 
 	constructor(
-		private device: GPUDevice,
 		private vertices: Float32Array,
 		private indices: Int32Array,
-        private color: Float32Array,
+        private color: [number, number, number, number],
         private model: Mat4 = mat4.identity()
     ) {
 
         // vertex
-		this.vertexBuffer = this.device.createBuffer({
+		this.vertexBuffer = INSTANCE.getRenderer().getDevice().createBuffer({
 			label: "vertex buffer",
 			size: this.vertices.byteLength,
 			usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST,
 		});
-		this.device.queue.writeBuffer(this.vertexBuffer, 0, this.vertices);
+		INSTANCE.getRenderer().getDevice().queue.writeBuffer(this.vertexBuffer, 0, this.vertices);
 
         //index
-		this.indexBuffer = this.device.createBuffer({
+		this.indexBuffer = INSTANCE.getRenderer().getDevice().createBuffer({
 			label: "index buffer",
 			size: this.indices.byteLength,
 			usage: GPUBufferUsage.INDEX | GPUBufferUsage.COPY_DST,
 		});
-		this.device.queue.writeBuffer(this.indexBuffer, 0, this.indices!);
+		INSTANCE.getRenderer().getDevice().queue.writeBuffer(this.indexBuffer, 0, this.indices!);
 
         //mvp
-        this.mvpBuffer = this.device.createBuffer({
+        this.mvpBuffer = INSTANCE.getRenderer().getDevice().createBuffer({
             label: "mvp",
             size: 64,
             usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
@@ -55,13 +54,12 @@ export class Lines {
         this.mvp = new Float32Array(16);
 
         //color
-        this.colorBuffer = device.createBuffer({
+        this.colorBuffer = INSTANCE.getRenderer().getDevice().createBuffer({
             label: "color buffer",
             size: 16,
             usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
         });
-        this.device.queue.writeBuffer(this.colorBuffer, 0, color);
-
+        this.setColor(color);
     }
 
     public draw(pass: GPURenderPassEncoder): void {
@@ -72,7 +70,7 @@ export class Lines {
     }
 
     public setColor(color: [number, number, number, number]) {
-        this.device.queue.writeBuffer(this.colorBuffer, 0, new Float32Array(color));
+        INSTANCE.getRenderer().getDevice().queue.writeBuffer(this.colorBuffer, 0, new Float32Array(color));
     }
 
     public update(): void {
@@ -82,11 +80,11 @@ export class Lines {
 
     private updateMVP(): void {
         mat4.mul(this.model, INSTANCE.getScene().getCamera().getViewProj(), this.mvp);
-        this.device.queue.writeBuffer(this.mvpBuffer, 0, this.mvp);
+        INSTANCE.getRenderer().getDevice().queue.writeBuffer(this.mvpBuffer, 0, this.mvp);
     }
 
     private updateBindGroup(): void {
-		this.bindGroup = this.device.createBindGroup({
+		this.bindGroup = INSTANCE.getRenderer().getDevice().createBindGroup({
 			label: "bind group",
 			layout: INSTANCE.getRenderer().getBindGroupLayout(),
 			entries: [
@@ -102,7 +100,7 @@ export class Lines {
     }
 
     public static getVertexBufferLayout(): GPUVertexBufferLayout {
-        return Lines.vertexBufferLayout;
+        return RenderLines.vertexBufferLayout;
     }
 
 }

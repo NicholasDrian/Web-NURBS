@@ -4,6 +4,7 @@ import triangleShader from "./shaders/triangleShader.wgsl";
 import lineShader from "./shaders/lineShader.wgsl";
 import { Scene } from "../scene/scene"
 import { Pipeline, PipelinePrimitive } from "./pipeline"
+import { INSTANCE } from "../cad";
 
 const compatibilityCheck : HTMLElement = <HTMLElement> document.getElementById("compatibility-check");
 
@@ -165,16 +166,21 @@ export class Renderer {
             }
         });
 
+        var drawCalls: number = 0;
 
         pass.setPipeline(this.trianglePipeline.get());
         for (let mesh of scene.getAllMeshes()) {
             mesh.draw(pass);
+            drawCalls++;
         };
 
         pass.setPipeline(this.linePipeline.get());
         for (let lines of scene.getAllLines()) {
             lines.draw(pass);
+            drawCalls++;
         };
+
+        INSTANCE.getStats().setDrawCalls(drawCalls);
 
         pass.end();
         const commandBuffer = encoder.finish();
