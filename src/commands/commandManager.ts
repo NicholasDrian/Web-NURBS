@@ -3,6 +3,7 @@ import { Command } from "./command";
 import { CameraCommand } from "./commands/cameraCommand";
 import { ConstructionPlaneCommand } from "./commands/constructionPlaneCommand";
 import { LineCommand } from "./commands/lineCommand";
+import { PolyLineCommand } from "./commands/polylineCommand";
 import { toggleDarkMode } from "./oneTimeCommands/toggleDarkModeCommand";
 
 
@@ -51,6 +52,9 @@ export class CommandManager {
                     break;
                 case "line": case "ln":
                     this.currentCommand = new LineCommand();
+                    break;
+                case "polyline": case "pl":
+                    this.currentCommand = new PolyLineCommand();
                     break;
                 default: INSTANCE.getLog().log("Invalid Command");
             }

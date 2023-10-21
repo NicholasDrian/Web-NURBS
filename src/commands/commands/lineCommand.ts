@@ -30,7 +30,6 @@ export class LineCommand extends Command {
             const t: number | null = ray.intersectScene(INSTANCE.getScene());
             if (t && t > 0.0) { // click intersected scene
                 const point: Vec3 = ray.at(t);
-                console.log(...point);
                 this.line.updateEnd(point);
             }
         }
