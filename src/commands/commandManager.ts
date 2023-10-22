@@ -58,13 +58,13 @@ export class CommandManager {
                     break;
                 default: INSTANCE.getLog().log("Invalid Command");
             }
+            this.previousInput = input;
         }
 
         if (this.currentCommand?.isFinished()) {
             this.currentCommand = null;
         }
 
-        this.previousInput = input;
 
     }
 

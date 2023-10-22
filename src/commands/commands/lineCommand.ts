@@ -17,10 +17,13 @@ export class LineCommand extends Command {
     }
 
     public handleInput(input: string): void {
-        if (input == "0") {
-            if (this.line) this.line.delete();
-            this.finished = true;
+        switch(input) {
+            case "0": case "":
+                if (this.line) this.line.delete();
+                this.finished = true;
+                break;
         }
+
         // todo
     }
 
