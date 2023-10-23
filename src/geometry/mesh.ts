@@ -8,12 +8,14 @@ export class Mesh {
   private verts: Vertex[];
   private faces: Face[];
   private edges: Edge[];
-  private renderMesh: RenderMesh;
+  private renderMesh!: RenderMesh;
 
   constructor(verts: Vec3[], indices: number[]) {
     // TODO: implement
+    this.verts = [];
+    this.faces = [];
+    this.edges = [];
   }
-
 }
 
 class Vertex {
@@ -25,6 +27,7 @@ class Vertex {
 class Face {
   private neighbors: Face[] = [];
   private verts: Vertex[] = [];
+  private normal: Vec3 | null = null;
 }
 
 class Edge {
