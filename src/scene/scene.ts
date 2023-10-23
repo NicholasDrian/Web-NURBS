@@ -21,7 +21,7 @@ export class Scene {
 			vec3.create(0.0, -20.0, 10.0),	//position
 			vec3.create(0.0, 0.0, 1.0),	//up
 			vec3.create(0.0, 1.0, 0.0),	//forward
-			2,		//fovy
+			1.5,		//fovy
 			<HTMLCanvasElement>document.getElementById("screen")
 		);
 
@@ -71,10 +71,10 @@ export class Scene {
 	public tick(): void {
 
 		this.camera.tick();
-        for (const [uuid, line] of this.lines.entries()) {
+        for (const line of this.lines.values()) {
             line.update();
         }
-        for (const [uuid, mesh] of this.meshes.entries()) {
+        for (const mesh of this.meshes.values()) {
             mesh.update();
         }
 
