@@ -4,6 +4,7 @@
     --light-red: rgba(220, 200, 200, 1.0);
     --dark-red: rgba(100, 0, 0, 1.0);
     --transparent-black: rgba(0, 0, 0, 0.4);
+    --black: rgba(0, 0, 0, 1);
     --transparent-white: rgba(255, 255, 255, 0.4);
 
     --floating-window-text-color: var(--light-red);
@@ -27,6 +28,7 @@ html, body {
     color: var(--floating-window-text-color);
     background-color: var(--floating-window-background-color);
     font-size: 14px;
+    border-radius: 0.5rem;
 }
 #stats {
     height: auto;
@@ -54,3 +56,19 @@ html, body {
     /* not sure why this is flipped */
     transform:scaleX(-1);
 }
+#selection-rectangle {
+  border-radius: 0px;
+  opacity: 0.5;  
+}
+
+
+
+
+
+
+
+
+
+
+
+
