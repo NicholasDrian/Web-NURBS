@@ -27,3 +27,12 @@ export const basisFuncs = function(knots: number[], u: number, p: number): numbe
   }
   return funcs;
 }
+
+
+export const genericKnotVector = function(pointCount: number, degree: number): number[] {
+  const res: number[] = [];
+  for (let i = 0; i <= degree; i++) res.push(0);
+  for (let i = 1; i < pointCount - degree; i++)  res.push(i);
+  for (let i = 0; i <= degree; i++) res.push(pointCount - degree);
+  return res;
+}
