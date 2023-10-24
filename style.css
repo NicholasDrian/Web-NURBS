@@ -12,6 +12,8 @@
     --floating-window-background-color: var(--transparent-black);
 
     font-family: 'Lucida Console', monospace;
+    user-select: none; /* prevent hilighting of text*/
+
 }
 
 html, body {
