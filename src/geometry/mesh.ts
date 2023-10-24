@@ -1,42 +1,35 @@
-import { vec3, Vec3 } from "wgpu-matrix";
-import { RenderMesh } from "../render/renderMesh";
+import { Vec3 } from "wgpu-matrix";
+import { BoundingBox } from "./boundingBox";
+import { Geometry } from "./geometry";
 
 
 
-export class Mesh {
+export class Mesh extends Geometry {
 
-  private verts: Vertex[];
-  private faces: Face[];
-  private edges: Edge[];
-  private renderMesh!: RenderMesh;
+  // TODO: create render resources
 
-  constructor(verts: Vec3[], indices: number[]) {
-    // TODO: implement
-    this.verts = [];
-    this.faces = [];
-    this.edges = [];
+  constructor(
+    private verts: Vertex[],
+    private indices: number[],
+  ) {
+    super();
   }
+
+  public getBoundingBox(): BoundingBox {
+    const bb: BoundingBox = new BoundingBox();
+    this.verts.forEach((vert: Vertex) => { bb.addVec3(vert.point); });
+    return bb;
+  }
+
 }
 
 class Vertex {
-  private faces: Face[] = [];
-  private edges: Edge[] = [];
-  private normal: Vec3 | null = null;
-}
 
-class Face {
-  private neighbors: Face[] = [];
-  private verts: Vertex[] = [];
-  private normal: Vec3 | null = null;
-}
-
-class Edge {
-  private faces: Face[] = [];
   constructor(
-    private vert1: Vertex,
-    private vert2: Vertex
+    public point: Vec3,
+    public normal: Vec3
   ) {
 
   }
-}
 
+}

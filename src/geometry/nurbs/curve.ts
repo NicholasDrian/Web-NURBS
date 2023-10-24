@@ -1,10 +1,12 @@
 import { vec3, Vec3, vec4, Vec4 } from "wgpu-matrix";
+import { BoundingBox } from "../boundingBox";
+import { Geometry } from "../geometry";
 import { PolyLine } from "../polyLine";
 import { basisFuncs, genericKnotVector, span } from "./utils";
 
 
 
-export class Curve {
+export class Curve extends Geometry {
 
   public static readonly SAMPLES_PER_EDGE = 10;
 
@@ -16,12 +18,17 @@ export class Curve {
     private degree: number,
     private knots: number[] = [],
   ) {
+    super();
     if (this.knots.length == 0) {
       this.knots = genericKnotVector(this.controlPoints.length, this.degree);
     }
     this.controlCage = null;
     this.polyline = null;
     this.updateSamples();
+  }
+
+  public getBoundingBox(): BoundingBox {
+    return this.controlCage!.getBoundingBox();
   }
 
   public getDegree(): number {
