@@ -16,10 +16,21 @@ fn vertexMain(
 	return output;
 }
 
+struct FragOutputs {
+    @builtin(frag_depth) depth: f32,
+    @location(0) color: vec4f,
+  }
+
+  struct FragInputs {
+      @builtin(position) position: vec4<f32>,
+    }
 
 @fragment
-fn fragmentMain() -> @location(0) vec4f {
-    return color;
+fn fragmentMain(input: FragInputs) -> FragOutputs {
+  var output: FragOutputs;
+  output.color = color;
+  output.depth = input.position.z * 0.9999999;
+  return output;
 }
 
 

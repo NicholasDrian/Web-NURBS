@@ -13,15 +13,16 @@ export const addTestScene1 = function() {
       [0, 1, 2, 2, 3, 0]
     )
   );
-
-  const curve: ObjectID = INSTANCE.getScene().addGeometry(
-    new Curve([
-      vec4.create(-50, -50, 0, 1),
-      vec4.create(-50, 50, 0, 1),
-      vec4.create(50, 50, 0, 1),
-      vec4.create(50, -50, 0, 1)
-    ],
-      2
-    )
-  );
+  /*
+    const curve: ObjectID = INSTANCE.getScene().addGeometry(
+      new Curve([
+        vec4.create(-50, -50, 0, 1),
+        vec4.create(-50, 50, 0, 1),
+        vec4.create(50, 50, 0, 1),
+        vec4.create(50, -50, 0, 1)
+      ],
+        2
+      )
+    );
+    */
 }
