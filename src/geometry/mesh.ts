@@ -4,10 +4,12 @@ import { RenderMesh } from "../render/renderMesh";
 import { RenderID } from "../scene/scene";
 import { BoundingBox } from "./boundingBox";
 import { Geometry } from "./geometry";
+import { Ray } from "./ray";
 
 
 
 export class Mesh extends Geometry {
+
 
   private renderMesh: RenderID;
 
@@ -28,6 +30,10 @@ export class Mesh extends Geometry {
       new Float32Array([0, 1, 0, 1]),
       model
     ));
+  }
+
+  public intersect(ray: Ray): number | null {
+    throw new Error("Method not implemented.");
   }
 
   public getModel(): Mat4 {

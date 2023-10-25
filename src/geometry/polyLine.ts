@@ -4,6 +4,7 @@ import { RenderLines } from "../render/renderLines";
 import { RenderID } from "../scene/scene";
 import { BoundingBox } from "./boundingBox";
 import { Geometry } from "./geometry";
+import { Ray } from "./ray";
 
 
 export class PolyLine extends Geometry {
@@ -19,6 +20,10 @@ export class PolyLine extends Geometry {
     super();
     this.renderLines = 0;
     this.update();
+  }
+
+  public intersect(ray: Ray): number | null {
+    throw new Error("Method not implemented.");
   }
 
   public getModel(): Mat4 {

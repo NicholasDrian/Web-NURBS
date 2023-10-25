@@ -4,6 +4,7 @@ import { RenderLines } from "../render/renderLines";
 import { RenderID } from "../scene/scene";
 import { BoundingBox } from "./boundingBox";
 import { Geometry } from "./geometry";
+import { Ray } from "./ray";
 
 
 export class Line extends Geometry {
@@ -21,6 +22,10 @@ export class Line extends Geometry {
     this.renderLines = 0;
     this.updateRenderLines();
     this.updateBoundingBox();
+  }
+
+  public intersect(ray: Ray): number | null {
+    throw new Error("Method not implemented.");
   }
 
   public getBoundingBox(): BoundingBox {

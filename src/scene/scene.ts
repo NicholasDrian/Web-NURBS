@@ -44,6 +44,7 @@ export class Scene {
 
   public addGeometry(geo: Geometry) {
     this.boundingBoxHeirarchy.add(geo);
+    this.boundingBoxHeirarchy.print();
     return this.objectIDGenerator++;
   }
 

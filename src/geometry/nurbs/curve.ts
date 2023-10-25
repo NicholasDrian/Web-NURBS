@@ -2,10 +2,10 @@ import { Mat4, vec3, Vec3, vec4, Vec4 } from "wgpu-matrix";
 import { BoundingBox } from "../boundingBox";
 import { Geometry } from "../geometry";
 import { PolyLine } from "../polyLine";
+import { Ray } from "../ray";
 import { basisFuncs, genericKnotVector, span } from "./utils";
 
 export class Curve extends Geometry {
-
   public static readonly SAMPLES_PER_EDGE = 10;
 
   private controlCage: PolyLine | null;
@@ -28,6 +28,11 @@ export class Curve extends Geometry {
   public getModel(): Mat4 {
     return this.controlCage!.getModel();
   }
+
+  public intersect(ray: Ray): number | null {
+    throw new Error("Method not implemented.");
+  }
+
 
   public getBoundingBox(): BoundingBox {
     return this.controlCage!.getBoundingBox();

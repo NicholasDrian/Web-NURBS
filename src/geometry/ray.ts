@@ -1,5 +1,7 @@
 import { vec3, Vec3 } from "wgpu-matrix";
 import { Scene } from "../scene/scene";
+import { BoundingBox } from "./boundingBox";
+import { Geometry } from "./geometry";
 import { Plane } from "./plane";
 
 export class Ray {
@@ -33,8 +35,13 @@ export class Ray {
     return numerator / denominator;
   }
 
+  public intersectBoundingBox(bb: BoundingBox) {
+    throw new Error("Not Implemented");
+  }
+
   public intersectScene(scene: Scene): number | null {
     return this.intersectPlane(new Plane(vec3.create(0, 0, 0), vec3.create(0, 0, 1)));
   }
+
 
 }
