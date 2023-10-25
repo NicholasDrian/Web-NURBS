@@ -1,7 +1,7 @@
 import { mat4, Mat4, vec3, Vec3 } from "wgpu-matrix";
 import { INSTANCE } from "../cad";
 import { RenderLines } from "../render/renderLines";
-import { RenderID } from "../scene/scene";
+import { ObjectID, RenderID } from "../scene/scene";
 import { BoundingBox } from "./boundingBox";
 import { Geometry } from "./geometry";
 import { Ray } from "./ray";
@@ -51,6 +51,7 @@ export class Line extends Geometry {
 
   public delete(): void {
     INSTANCE.getScene().removeLines(this.renderLines);
+
   }
 
   public getStart(): Vec3 {

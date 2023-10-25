@@ -46,7 +46,7 @@ export class Scene {
     this.constructionPlane = new ConstructionPlane();
   }
 
-  public addGeometry(geo: Geometry) {
+  public addGeometry(geo: Geometry): ObjectID {
     this.boundingBoxHeirarchy.add(geo);
     this.boundingBoxHeirarchy.print();
     return this.objectIDGenerator++;
