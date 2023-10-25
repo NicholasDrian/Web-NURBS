@@ -8,11 +8,11 @@ enum Axis {
   Z = 2,
 }
 
-class BVHNode {
+class BBHNode {
 
   private axis!: Axis;
-  private child1!: BVHNode | null;
-  private child2!: BVHNode | null;
+  private child1!: BBHNode | null;
+  private child2!: BBHNode | null;
   private geometry!: Geometry[] | null;
   private boundingBox!: BoundingBox;
 
@@ -46,8 +46,8 @@ class BVHNode {
           child2Geometry.push(geo);
         }
       });
-      this.child1 = new BVHNode(child1Geometry, depth + 1);
-      this.child2 = new BVHNode(child2Geometry, depth + 1);
+      this.child1 = new BBHNode(child1Geometry, depth + 1);
+      this.child2 = new BBHNode(child2Geometry, depth + 1);
     }
   }
 
@@ -112,11 +112,11 @@ class BVHNode {
     return this.depth;
   }
 
-  public getChild1(): BVHNode | null {
+  public getChild1(): BBHNode | null {
     return this.child1;
   }
 
-  public getChild2(): BVHNode | null {
+  public getChild2(): BBHNode | null {
     return this.child2;
   }
 
@@ -129,17 +129,17 @@ export class SceneBoundingBoxHeirarchy {
 
   public static readonly MAX_GEOMETRY_PER_LEAF = 5;
 
-  private root: BVHNode;
+  private root: BBHNode;
 
   constructor(geometry: Geometry[]) {
-    this.root = new BVHNode(geometry, 0);
+    this.root = new BBHNode(geometry, 0);
   }
 
   public add(geo: Geometry): void {
     this.root.add(geo);
   }
 
-  public getRoot(): BVHNode {
+  public getRoot(): BBHNode {
     return this.root;
   }
 

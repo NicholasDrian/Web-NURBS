@@ -9,6 +9,14 @@ import { Log } from "./log";
 import { CommandManager } from "./commands/commandManager";
 import { addTestScene1 } from "./tests/testScene1";
 
+/*
+  * Browser Based NURBS Modeling Software
+  * Inspired by Rhino, Vim
+  *
+  * By Nick Drian
+  *
+*/
+
 class CAD {
 
   private renderer!: Renderer;

@@ -43,5 +43,10 @@ export class Ray {
     return this.intersectPlane(new Plane(vec3.create(0, 0, 0), vec3.create(0, 0, 1)));
   }
 
+  public intersectTriangle(p1: Vec3, p2: Vec3, p3: Vec3): number | null {
+    // TODO:
+    throw new Error("Not Implemented");
+  }
+
 
 }
