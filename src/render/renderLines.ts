@@ -22,7 +22,6 @@ export class RenderLines {
   private colorBuffer: GPUBuffer;
   private indexCount: number;
 
-
   constructor(
     vertices: Float32Array,
     indices: Int32Array,

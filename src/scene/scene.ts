@@ -4,17 +4,22 @@ import { RenderMesh } from "../render/renderMesh"
 import { RenderLines } from "../render/renderLines"
 import { ConstructionPlane } from "./constructionPlane"
 import { RenderPoints } from "../render/renderPoints"
+import { SceneBoundingBoxHeirarchy } from "../geometry/sceneBoundingBoxHeirarcy"
+import { Geometry } from "../geometry/geometry"
 
-export type uuid = number;
+export type RenderID = number; // for gpu objects
+export type ObjectID = number; // for cpu objects
 
 export class Scene {
 
   private camera: Camera;
   private constructionPlane!: ConstructionPlane;
-  private renderLines: Map<uuid, RenderLines> = new Map<uuid, RenderLines>();
-  private renderMeshes: Map<uuid, RenderMesh> = new Map<uuid, RenderMesh>();
-  private renderPoints: Map<uuid, RenderPoints> = new Map<uuid, RenderPoints>();
-  private uuidGenerator: number = 1;
+  private renderLines: Map<RenderID, RenderLines> = new Map<RenderID, RenderLines>();
+  private renderMeshes: Map<RenderID, RenderMesh> = new Map<RenderID, RenderMesh>();
+  private renderPoints: Map<RenderID, RenderPoints> = new Map<RenderID, RenderPoints>();
+  private renderIDGenerator: RenderID = 1;
+  private objectIDGenerator: ObjectID = 1;
+  private boundingBoxHeirarchy: SceneBoundingBoxHeirarchy = new SceneBoundingBoxHeirarchy([]);
 
   constructor(
   ) {
@@ -34,32 +39,36 @@ export class Scene {
   }
 
   public async init(): Promise<void> {
-
     this.constructionPlane = new ConstructionPlane();
   }
 
-  public addMesh(mesh: RenderMesh): uuid {
-    this.renderMeshes.set(this.uuidGenerator, mesh);
-    return this.uuidGenerator++;
+  public addGeometry(geo: Geometry) {
+    this.boundingBoxHeirarchy.add(geo);
+    return this.objectIDGenerator++;
   }
 
-  public addLines(lines: RenderLines): uuid {
-    this.renderLines.set(this.uuidGenerator, lines);
-    return this.uuidGenerator++;
+  public addRenderMesh(mesh: RenderMesh): RenderID {
+    this.renderMeshes.set(this.renderIDGenerator, mesh);
+    return this.renderIDGenerator++;
   }
 
-  public addPoints(points: RenderPoints): uuid {
-    this.renderPoints.set(this.uuidGenerator, points);
-    return this.uuidGenerator++;
+  public addRenderLines(lines: RenderLines): RenderID {
+    this.renderLines.set(this.renderIDGenerator, lines);
+    return this.renderIDGenerator++;
   }
 
-  public getLines(id: uuid): RenderLines {
+  public addRenderPoints(points: RenderPoints): RenderID {
+    this.renderPoints.set(this.renderIDGenerator, points);
+    return this.renderIDGenerator++;
+  }
+
+  public getLines(id: RenderID): RenderLines {
     return <RenderLines>this.renderLines.get(id);
   }
-  public getMesh(id: uuid): RenderMesh {
+  public getMesh(id: RenderID): RenderMesh {
     return <RenderMesh>this.renderMeshes.get(id);
   }
-  public getPoints(id: uuid): RenderPoints {
+  public getPoints(id: RenderID): RenderPoints {
     return <RenderPoints>this.renderPoints.get(id);
   }
 
@@ -73,10 +82,10 @@ export class Scene {
     return this.renderPoints.values();
   }
 
-  public removeMesh(id: uuid) {
+  public removeMesh(id: RenderID) {
     this.renderMeshes.delete(id);
   }
-  public removeLines(id: uuid) {
+  public removeLines(id: RenderID) {
     this.renderLines.delete(id);
   }
 

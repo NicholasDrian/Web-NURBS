@@ -1,10 +1,8 @@
-import { vec3, Vec3, vec4, Vec4 } from "wgpu-matrix";
+import { Mat4, vec3, Vec3, vec4, Vec4 } from "wgpu-matrix";
 import { BoundingBox } from "../boundingBox";
 import { Geometry } from "../geometry";
 import { PolyLine } from "../polyLine";
 import { basisFuncs, genericKnotVector, span } from "./utils";
-
-
 
 export class Curve extends Geometry {
 
@@ -27,6 +25,10 @@ export class Curve extends Geometry {
     this.updateSamples();
   }
 
+  public getModel(): Mat4 {
+    return this.controlCage!.getModel();
+  }
+
   public getBoundingBox(): BoundingBox {
     return this.controlCage!.getBoundingBox();
   }
@@ -36,8 +38,8 @@ export class Curve extends Geometry {
   }
 
   public destroy(): void {
-    this.controlCage?.delete();
-    this.polyline?.delete();
+    this.controlCage!.delete();
+    this.polyline!.delete();
   }
 
   public addControlPoint(point: Vec3, weight: number) {

@@ -46,6 +46,10 @@ class BVHNode {
     }
   }
 
+  public add(geo: Geometry): void {
+    // TODO:
+  }
+
   public getDepth(): number {
     return this.depth;
   }
@@ -73,5 +77,12 @@ export class SceneBoundingBoxHeirarchy {
     this.root = new BVHNode(geometry, 0);
   }
 
+  public add(geo: Geometry): void {
+    this.root.add(geo);
+  }
+
+  public getRoot(): BVHNode {
+    return this.root;
+  }
 
 }

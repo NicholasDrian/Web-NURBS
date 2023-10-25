@@ -21,7 +21,4 @@ export class Frustum {
     this.down = vec3.normalize(vec3.cross(bottomRight.getDirection(), bottomLeft.getDirection()));
     this.left = vec3.normalize(vec3.cross(bottomLeft.getDirection(), topLeft.getDirection()));
   }
-
-
-
 }

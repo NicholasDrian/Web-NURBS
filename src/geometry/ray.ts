@@ -2,7 +2,6 @@ import { vec3, Vec3 } from "wgpu-matrix";
 import { Scene } from "../scene/scene";
 import { Plane } from "./plane";
 
-
 export class Ray {
 
   constructor(

@@ -1,20 +1,21 @@
-import { vec3, Vec3 } from "wgpu-matrix";
+import { mat4, Mat4, vec3, Vec3 } from "wgpu-matrix";
 import { INSTANCE } from "../cad";
 import { RenderLines } from "../render/renderLines";
-import { uuid } from "../scene/scene";
+import { RenderID } from "../scene/scene";
 import { BoundingBox } from "./boundingBox";
 import { Geometry } from "./geometry";
 
 
 export class Line extends Geometry {
 
-  private renderLines!: uuid;
+  private renderLines!: RenderID;
   private boundingBox!: BoundingBox;
 
   constructor(
-    private a: Vec3,
-    private b: Vec3,
-    private color: [number, number, number, number]
+    private start: Vec3,
+    private end: Vec3,
+    private color: [number, number, number, number],
+    private model: Mat4 = mat4.identity()
   ) {
     super();
     this.renderLines = 0;
@@ -31,44 +32,47 @@ export class Line extends Geometry {
     // remove previous lines
     if (this.renderLines) INSTANCE.getScene().removeLines(this.renderLines);
 
-    // add mew lines
-    this.renderLines = INSTANCE.getScene().addLines(new RenderLines(
-      new Float32Array([...this.a, 1.0, ...this.b, 1.0]),
+    // add new lines
+    this.renderLines = INSTANCE.getScene().addRenderLines(new RenderLines(
+      new Float32Array([...this.start, 1.0, ...this.end, 1.0]),
       new Int32Array([0, 1]),
       this.color
     ));
   }
 
+  public getModel(): Mat4 {
+    return this.model;
+  }
 
   public delete(): void {
     INSTANCE.getScene().removeLines(this.renderLines);
   }
 
   public getStart(): Vec3 {
-    return this.a;
+    return this.start;
   }
 
   public getEnd(): Vec3 {
-    return this.b;
+    return this.end;
   }
 
   public updateEnd(point: Vec3): void {
-    this.b = point;
+    this.end = point;
     this.updateRenderLines();
     this.updateBoundingBox();
   }
 
   public getLength(): number {
-    return vec3.distance(this.a, this.b);
+    return vec3.distance(this.start, this.end);
   }
 
   public flip(): void {
-    [this.a, this.b] = [this.b, this.a];
+    [this.start, this.end] = [this.end, this.start];
   }
   private updateBoundingBox(): void {
     this.boundingBox = new BoundingBox();
-    this.boundingBox.addVec3(this.a);
-    this.boundingBox.addVec3(this.b);
+    this.boundingBox.addVec3(vec3.transformMat4(this.start, this.model));
+    this.boundingBox.addVec3(vec3.transformMat4(this.end, this.model));
   }
 
 }
