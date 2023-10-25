@@ -24,5 +24,4 @@ export const addTestScene1 = function() {
       2
     )
   );
-
 }

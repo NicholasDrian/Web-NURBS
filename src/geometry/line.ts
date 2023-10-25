@@ -51,7 +51,6 @@ export class Line extends Geometry {
 
   public delete(): void {
     INSTANCE.getScene().removeLines(this.renderLines);
-
   }
 
   public getStart(): Vec3 {

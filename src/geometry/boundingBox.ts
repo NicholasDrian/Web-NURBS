@@ -13,12 +13,17 @@ export class BoundingBox {
 
   }
 
-  public getxMin(): number { return this.xMin; }
-  public getyMin(): number { return this.yMin; }
-  public getzMin(): number { return this.zMin; }
-  public getxMax(): number { return this.xMax; }
-  public getyMax(): number { return this.yMax; }
-  public getzMax(): number { return this.zMax; }
+  public getXMin(): number { return this.xMin; }
+  public getYMin(): number { return this.yMin; }
+  public getZMin(): number { return this.zMin; }
+  public getXMax(): number { return this.xMax; }
+  public getYMax(): number { return this.yMax; }
+  public getZMax(): number { return this.zMax; }
+
+  public print(): void {
+    console.log(`BB: x: [${this.xMin}, ${this.xMax}], y: [${this.yMin}, ${this.yMax}], z: [${this.zMin}, ${this.zMax}];
+`);
+  }
 
   public addVec3(v: Vec3): void {
     this.xMin = Math.min(this.xMin, v[0]);

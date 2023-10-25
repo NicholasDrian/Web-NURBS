@@ -65,7 +65,6 @@ class BBHNode {
 
     if (ray.intersectBoundingBox(this.boundingBox) === null) return null;
 
-
     if (this.isLeaf()) {
       var res: number | null = null;
       this.geometry!.forEach((geo: Geometry) => {
@@ -144,6 +143,7 @@ export class SceneBoundingBoxHeirarchy {
   }
 
   public firstIntersection(ray: Ray): number | null {
+    console.log("intersecting scene bbh");
     return this.root.firstPositiveIntersectionTime(ray);
   }
 

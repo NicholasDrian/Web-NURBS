@@ -13,6 +13,12 @@ export class Ray {
     this.direction = vec3.normalize(this.direction);
   }
 
+  public print(): void {
+    console.log(`RAY: origin: ${this.origin.toString()}, direction: ${this.direction.map((n: number) => {
+      return Math.round(n * 100);
+    }).toString()}`);
+  }
+
   public getOrigin(): Vec3 {
     return this.origin;
   }
@@ -40,30 +46,28 @@ export class Ray {
 
   public intersectBoundingBox(bb: BoundingBox) {
 
-    const min: Vec3 = vec3.create(bb.getxMin(), bb.getyMin(), bb.getzMin());
-    const max: Vec3 = vec3.create(bb.getxMax(), bb.getyMax(), bb.getzMax());
+    console.log("intersecting bounding box");
+    this.print();
+    bb.print();
+    const min: Vec3 = vec3.create(bb.getXMin(), bb.getYMin(), bb.getZMin());
+    const max: Vec3 = vec3.create(bb.getXMax(), bb.getYMax(), bb.getZMax());
 
     if (this.direction[0] < 0) [min[0], max[0]] = [max[0], min[0]];
-    if (this.direction[1] < 1) [min[1], max[1]] = [max[1], min[1]];
-    if (this.direction[2] < 2) [min[2], max[2]] = [max[2], min[2]];
+    if (this.direction[1] < 0) [min[1], max[1]] = [max[1], min[1]];
+    if (this.direction[2] < 0) [min[2], max[2]] = [max[2], min[2]];
 
-    var xMin: number | null = this.intersectPlane(new Plane(min, vec3.create(1, 0, 0)), true);
-    var yMin: number | null = this.intersectPlane(new Plane(min, vec3.create(0, 1, 0)), true);
-    var zMin: number | null = this.intersectPlane(new Plane(min, vec3.create(0, 0, 1)), true);
-    var xMax: number | null = this.intersectPlane(new Plane(max, vec3.create(1, 0, 0)), true);
-    var yMax: number | null = this.intersectPlane(new Plane(max, vec3.create(0, 1, 0)), true);
-    var zMax: number | null = this.intersectPlane(new Plane(max, vec3.create(0, 0, 1)), true);
-
-    if (xMin === null) xMin = -Infinity;
-    if (yMin === null) yMin = -Infinity;
-    if (zMin === null) zMin = -Infinity;
-    if (xMax === null) xMax = -Infinity;
-    if (yMax === null) yMax = -Infinity;
-    if (zMax === null) zMax = -Infinity;
+    var xMin: number = this.intersectPlane(new Plane(min, vec3.create(1, 0, 0)), true) ?? -Infinity;
+    var yMin: number = this.intersectPlane(new Plane(min, vec3.create(0, 1, 0)), true) ?? -Infinity;
+    var zMin: number = this.intersectPlane(new Plane(min, vec3.create(0, 0, 1)), true) ?? -Infinity;
+    var xMax: number = this.intersectPlane(new Plane(max, vec3.create(1, 0, 0)), true) ?? Infinity;
+    var yMax: number = this.intersectPlane(new Plane(max, vec3.create(0, 1, 0)), true) ?? Infinity;
+    var zMax: number = this.intersectPlane(new Plane(max, vec3.create(0, 0, 1)), true) ?? Infinity;
+    console.log(xMin, xMax, yMin, yMax, zMin, zMax);
 
     const end = Math.min(xMax, Math.min(yMax, zMax));
     const start = Math.max(xMin, Math.max(yMin, zMin));
 
+    console.log(`start ${start} end ${end}`);
     if (end < 0 || start > end) return null;
     return Math.max(start, 0);
 
@@ -76,6 +80,7 @@ export class Ray {
   }
 
   public intersectTriangle(p1: Vec3, p2: Vec3, p3: Vec3): number | null {
+    console.log("intersecting triangle");
     const v12 = vec3.sub(p2, p1);
     const v13 = vec3.sub(p3, p1);
     const normal = vec3.normalize(vec3.cross(v12, v13));

@@ -23,6 +23,7 @@ export class ClickHandler {
   public onMouseDown(event: MouseEvent): void {
     if (event.button == 0) { // left click
 
+      console.log("mose down");
       this.drag = new Drag(event.clientX, event.clientY);
       this.mouseDown = true;
       this.shiftDown = event.shiftKey;
@@ -34,6 +35,7 @@ export class ClickHandler {
   public onMouseUp(event: MouseEvent): void {
     if (event.button == 0) { // left click
 
+      console.log("mouse up");
       if (!this.drag!.isDrag()) {
         INSTANCE.getCommandManager().handleClickInput(event);
         INSTANCE.getCli().render();

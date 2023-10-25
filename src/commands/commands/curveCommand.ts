@@ -68,7 +68,6 @@ export class CurveCommand extends Command {
     if (t && t > 0.0) { // click intersected scene
       const point: Vec3 = ray.at(t);
       if (this.curve) {
-        console.log("here");
         this.curve.updateLastControlPoint(point, 1);
         this.curve.addControlPoint(point, 1);
         if (this.curve.getDegree() < this.degree) this.curve.elevateDegree(1);
