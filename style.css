@@ -12,7 +12,7 @@
     --floating-window-background-color: var(--transparent-black);
 
     font-family: 'Lucida Console', monospace;
-    user-select: none; /* prevent hilighting of text*/
+    user-select: none;
 
 }
 
@@ -42,13 +42,13 @@ html, body {
 #cli {
     font-size: 18px;
     height: 20px;
-    padding: 2px;
-    width: calc(100% - 25px);
+    padding: 10px;
+    width: calc(100% - 40px);
     left: 10px;
     bottom: 10px;
 }
 #log {
-    height: calc(100% - 80px);
+    height: calc(100% - 90px);
     width: 200px;
     right: 10px;
     top: 10px;
