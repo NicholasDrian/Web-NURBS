@@ -44,7 +44,15 @@ export class Ray {
     return t;
   }
 
-  public intersectBoundingBox(bb: BoundingBox) {
+  public almostIntersectLine(a: Vec3, b: Vec3, pixels: number): number | null {
+    throw new Error("Not implemented");
+  }
+
+  public almostIntersectBoundingBox(bb: BoundingBox): number | null {
+    throw new Error("Not implemented");
+  }
+
+  public intersectBoundingBox(bb: BoundingBox): number | null {
 
     console.log("intersecting bounding box");
     this.print();
