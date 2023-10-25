@@ -4,6 +4,7 @@ import { RenderMesh } from "../render/renderMesh";
 import { RenderID } from "../scene/scene";
 import { BoundingBox } from "./boundingBox";
 import { Geometry } from "./geometry";
+import { MeshBoundingBoxHeirarchy } from "./meshBoundingBoxHeirarchy";
 import { Ray } from "./ray";
 
 
@@ -12,6 +13,7 @@ export class Mesh extends Geometry {
 
 
   private renderMesh: RenderID;
+  private boundingBoxHeirarchy: MeshBoundingBoxHeirarchy;
 
   constructor(
     private verts: Vec3[],
@@ -30,10 +32,12 @@ export class Mesh extends Geometry {
       new Float32Array([0, 1, 0, 1]),
       model
     ));
+    this.boundingBoxHeirarchy = new MeshBoundingBoxHeirarchy(this.verts, this.indices);
   }
 
   public intersect(ray: Ray): number | null {
-    throw new Error("Method not implemented.");
+    const objectSpaceRay: Ray = Ray.transform(ray, mat4.inverse(this.model));
+    return this.boundingBoxHeirarchy.intersect(objectSpaceRay, this.verts);
   }
 
   public getModel(): Mat4 {

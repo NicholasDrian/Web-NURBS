@@ -13,6 +13,13 @@ export class BoundingBox {
 
   }
 
+  public getxMin(): number { return this.xMin; }
+  public getyMin(): number { return this.yMin; }
+  public getzMin(): number { return this.zMin; }
+  public getxMax(): number { return this.xMax; }
+  public getyMax(): number { return this.yMax; }
+  public getzMax(): number { return this.zMax; }
+
   public addVec3(v: Vec3): void {
     this.xMin = Math.min(this.xMin, v[0]);
     this.yMin = Math.min(this.yMin, v[1]);

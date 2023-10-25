@@ -38,6 +38,10 @@ export class Scene {
     return this.constructionPlane;
   }
 
+  public getBoundingBoxHeirarchy(): SceneBoundingBoxHeirarchy {
+    return this.boundingBoxHeirarchy;
+  }
+
   public async init(): Promise<void> {
     this.constructionPlane = new ConstructionPlane();
   }

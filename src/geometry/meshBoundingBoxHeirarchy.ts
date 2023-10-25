@@ -88,7 +88,6 @@ class MeshBoundingBoxHeirarchyNode {
 
     if (ray.intersectBoundingBox(this.boundingBox) === null) return null;
 
-
     if (this.isLeaf()) {
       var res: number | null = null;
       for (let i = 0; i < this.indices!.length; i += 3) {
