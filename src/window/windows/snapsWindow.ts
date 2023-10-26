@@ -1,14 +1,16 @@
+import { INSTANCE } from "../../cad";
 import { CADWindow } from "../window";
 
 export class SnapsWindow extends CADWindow {
 
 
   public populate(): void {
-    this.element.innerText = "Snaps Window";
+    this.element.innerHTML = INSTANCE.getSettingsManager().getSnapSettingsManager().getHTML();
   }
 
   public tick(): void {
-
+    this.populate();
+    console.log("snap window tick");
   }
 
 }

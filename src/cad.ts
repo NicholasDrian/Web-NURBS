@@ -9,6 +9,7 @@ import { Log } from "./log";
 import { CommandManager } from "./commands/commandManager";
 import { addTestScene1 } from "./tests/testScene1";
 import { WindowManager } from "./window/windowManager";
+import { SettingsManager } from "./settings/settingsManager";
 
 /*
   * Browser Based NURBS Modeling Software
@@ -25,6 +26,7 @@ class CAD {
   private eventManager!: EventManager;
   private commandManager!: CommandManager;
   private windowManager!: WindowManager;
+  private settingsManager!: SettingsManager;
   private renderStats!: RenderStats;
   private operatingMode!: OperatingMode;
   private cli!: CLI;
@@ -33,7 +35,7 @@ class CAD {
   public async init() {
 
     this.windowManager = new WindowManager();
-
+    this.settingsManager = new SettingsManager();
     this.commandManager = new CommandManager();
     this.cli = new CLI();
 
@@ -127,6 +129,10 @@ class CAD {
 
   public getWindowManager(): WindowManager {
     return this.windowManager;
+  }
+
+  public getSettingsManager(): SettingsManager {
+    return this.settingsManager;
   }
 
 }

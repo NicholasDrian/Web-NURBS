@@ -5,6 +5,7 @@ import { ConstructionPlaneCommand } from "./commands/constructionPlaneCommand";
 import { CurveCommand } from "./commands/curveCommand";
 import { LineCommand } from "./commands/lineCommand";
 import { PolyLineCommand } from "./commands/polylineCommand";
+import { SnapsCommand } from "./commands/snapsCommand";
 import { WindowCommand } from "./commands/windowCommand";
 import { toggleDarkMode } from "./oneTimeCommands/toggleDarkModeCommand";
 
@@ -51,6 +52,9 @@ export class CommandManager {
           break;
         case "window": case "w":
           this.currentCommand = new WindowCommand();
+          break;
+        case "snaps": case "s":
+          this.currentCommand = new SnapsCommand();
           break;
         default: INSTANCE.getLog().log("Invalid Command");
       }

@@ -12,6 +12,7 @@ export abstract class CADWindow {
     this.end = start;
     this.updateSize();
     document.body.appendChild(this.element);
+    this.populate();
   }
 
   public updateEnd(end: [number, number]): void {
@@ -24,7 +25,6 @@ export abstract class CADWindow {
     const top: number = Math.min(this.start[1], this.end[1]);
     const width: number = Math.abs(this.start[0] - this.end[0]);
     const height: number = Math.abs(this.start[1] - this.end[1]);
-    console.log(left, top, width, height);
     this.element.setAttribute("style", `
       left:${left}px;
       top:${top}px;
