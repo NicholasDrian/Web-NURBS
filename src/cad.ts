@@ -8,6 +8,7 @@ import { CLI } from "./commands/cli"
 import { Log } from "./log";
 import { CommandManager } from "./commands/commandManager";
 import { addTestScene1 } from "./tests/testScene1";
+import { WindowManager } from "./window/windowManager";
 
 /*
   * Browser Based NURBS Modeling Software
@@ -22,13 +23,16 @@ class CAD {
   private renderer!: Renderer;
   private scene!: Scene;
   private eventManager!: EventManager;
-  private commandManager!: CommandManager
+  private commandManager!: CommandManager;
+  private windowManager!: WindowManager;
   private renderStats!: RenderStats;
   private operatingMode!: OperatingMode;
   private cli!: CLI;
   private log!: Log
 
   public async init() {
+
+    this.windowManager = new WindowManager();
 
     this.commandManager = new CommandManager();
     this.cli = new CLI();
@@ -70,7 +74,9 @@ class CAD {
 
         //stats
         this.renderStats.setFrameTime(frameTimer.getTime());
-        this.renderStats.render();
+
+        // windows
+        this.windowManager.tick();
 
       } else {
 
@@ -117,6 +123,10 @@ class CAD {
 
   public getCommandManager(): CommandManager {
     return this.commandManager;
+  }
+
+  public getWindowManager(): WindowManager {
+    return this.windowManager;
   }
 
 }

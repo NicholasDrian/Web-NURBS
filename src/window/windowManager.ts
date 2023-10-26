@@ -5,13 +5,12 @@ import { SceneWindow } from "./windows/sceneWindow";
 import { SnapsWindow } from "./windows/snapsWindow";
 import { StatsWindow } from "./windows/statsWindow";
 
-export const WINDOW_NAMES: string[] = [
-  "stats",
-  "log",
-  "materials",
-  "scene",
-  "snaps",
-];
+export const WINDOW_NAMES: Map<number, string> = new Map<number, string>();
+WINDOW_NAMES.set(1, "stats");
+WINDOW_NAMES.set(2, "log");
+WINDOW_NAMES.set(3, "materials");
+WINDOW_NAMES.set(4, "scene");
+WINDOW_NAMES.set(5, "snaps");
 
 export class WindowManager {
 
@@ -25,30 +24,38 @@ export class WindowManager {
     return this.windows;
   }
 
-  public addWindow(windowName: string) {
+  public addWindow(windowName: string, start: [number, number]) {
+    this.removeWindow(windowName);
     switch (windowName) {
       case "stats":
-        this.windows.set("stats", new StatsWindow());
+        this.windows.set("stats", new StatsWindow(windowName, start));
         break;
       case "log":
-        this.windows.set("log", new LogWindow());
+        this.windows.set("log", new LogWindow(windowName, start));
         break;
       case "materials":
-        this.windows.set("materials", new MaterialsWindow());
+        this.windows.set("materials", new MaterialsWindow(windowName, start));
         break;
       case "scene":
-        this.windows.set("scene", new SceneWindow());
+        this.windows.set("scene", new SceneWindow(windowName, start));
         break;
       case "snaps":
-        this.windows.set("snaps", new SnapsWindow());
+        this.windows.set("snaps", new SnapsWindow(windowName, start));
         break;
       default:
         throw new Error("not implemented");
     }
   }
 
-  public tick(): void {
+  public removeWindow(windowName: string): void {
+    this.windows.get(windowName)?.destroy();
+    this.windows.delete(windowName);
+  }
 
+  public tick(): void {
+    for (let window of this.windows.values()) {
+      window.tick();
+    }
   }
 
 }

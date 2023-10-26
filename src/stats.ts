@@ -1,7 +1,7 @@
 
 export class RenderStats {
 
-  private element: HTMLDivElement;
+  //private element: HTMLDivElement;
   private renderTime!: number;
   private frameTime!: number;
   private sceneTime!: number;
@@ -12,7 +12,7 @@ export class RenderStats {
 
   constructor() {
 
-    this.element = <HTMLDivElement>document.getElementById("stats");
+    // this.element = <HTMLDivElement>document.getElementById("stats");
     this.reset();
   }
 
@@ -44,9 +44,8 @@ export class RenderStats {
     this.drawCalls = count;
   }
 
-  public render(): void {
-    this.element.innerHTML =
-      "<u>STATS:</u><br>" +
+  public getInnerHTML(): string {
+    return "<u>STATS:</u><br>" +
       "<br>" +
       "FPS: " + (1.0 / this.frameTime).toFixed(3) + "<br>" +
       "Average FPS: " + (1000.0 * this.totalFrames / (Date.now() - this.startTime)).toFixed(3) + "<br>" +
@@ -58,14 +57,6 @@ export class RenderStats {
       "Frames Over 100ms: " + this.framesOver100ms.toString() + "<br>" +
       "<br>" +
       "Draw Calls: " + this.drawCalls.toString();
-  }
-
-  public show(): void {
-    this.element.hidden = false;
-  }
-
-  public hide(): void {
-    this.element.hidden = true;
   }
 
 

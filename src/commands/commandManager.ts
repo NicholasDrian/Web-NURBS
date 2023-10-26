@@ -40,18 +40,6 @@ export class CommandManager {
         case "camera": case "cam":
           this.currentCommand = new CameraCommand();
           break;
-        case "showlog": case "sl":
-          INSTANCE.getLog().show();
-          break;
-        case "hidelog": case "hl":
-          INSTANCE.getLog().hide();
-          break;
-        case "showstats": case "ss":
-          INSTANCE.getStats().show();
-          break;
-        case "hidestats": case "hs":
-          INSTANCE.getStats().hide();
-          break;
         case "line": case "ln":
           this.currentCommand = new LineCommand();
           break;
