@@ -10,6 +10,8 @@ import { CommandManager } from "./commands/commandManager";
 import { addTestScene1 } from "./tests/testScene1";
 import { WindowManager } from "./window/windowManager";
 import { SettingsManager } from "./settings/settingsManager";
+import { MaterialManager } from "./materials/materialManager";
+import { warn } from "console";
 
 /*
   * Browser Based NURBS Modeling Software
@@ -27,6 +29,8 @@ class CAD {
   private commandManager!: CommandManager;
   private windowManager!: WindowManager;
   private settingsManager!: SettingsManager;
+  private materialManager!: MaterialManager;
+
   private renderStats!: RenderStats;
   private operatingMode!: OperatingMode;
   private cli!: CLI;
@@ -36,6 +40,7 @@ class CAD {
 
     this.settingsManager = new SettingsManager();
     this.commandManager = new CommandManager();
+    this.materialManager = new MaterialManager();
     this.cli = new CLI();
 
     this.setMode(OperatingMode.Command);
@@ -133,6 +138,10 @@ class CAD {
 
   public getSettingsManager(): SettingsManager {
     return this.settingsManager;
+  }
+
+  public getMaterialManager(): MaterialManager {
+    return this.materialManager;
   }
 
 }
