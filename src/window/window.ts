@@ -1,4 +1,4 @@
-export abstract class Window {
+export abstract class CADWindow {
 
 
 

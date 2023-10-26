@@ -1,3 +1,5 @@
-export class LogWindow extends Window {
+import { CADWindow } from "../window";
+
+export class LogWindow extends CADWindow {
 
 }

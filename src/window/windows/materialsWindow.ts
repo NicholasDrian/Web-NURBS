@@ -1,7 +1,7 @@
-import { Window } from "../window"
+import { CADWindow } from "../window"
 
 
-export class MaterialsWindow extends Window {
+export class MaterialsWindow extends CADWindow {
 
 
 }

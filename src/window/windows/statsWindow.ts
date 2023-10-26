@@ -1,4 +1,5 @@
+import { CADWindow } from "../window";
 
-export class StatsWindow extends Window {
+export class StatsWindow extends CADWindow {
 
 }

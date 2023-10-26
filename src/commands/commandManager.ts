@@ -5,6 +5,7 @@ import { ConstructionPlaneCommand } from "./commands/constructionPlaneCommand";
 import { CurveCommand } from "./commands/curveCommand";
 import { LineCommand } from "./commands/lineCommand";
 import { PolyLineCommand } from "./commands/polylineCommand";
+import { WindowCommand } from "./commands/windowCommand";
 import { toggleDarkMode } from "./oneTimeCommands/toggleDarkModeCommand";
 
 
@@ -59,6 +60,9 @@ export class CommandManager {
           break;
         case "curve": case "cv":
           this.currentCommand = new CurveCommand();
+          break;
+        case "window": case "w":
+          this.currentCommand = new WindowCommand();
           break;
         default: INSTANCE.getLog().log("Invalid Command");
       }

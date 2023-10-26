@@ -1,3 +1,4 @@
+import { WINDOW_NAMES } from "../../window/windowManager";
 import { Command } from "../command";
 
 enum WindowCommandMode {
@@ -20,6 +21,7 @@ export class WindowCommand extends Command {
   public handleInput(input: string): void {
     switch (this.mode) {
       case WindowCommandMode.SelectWindow:
+        if (input == "0") this.finished = true;
         break;
       case WindowCommandMode.PlaceWindowStart:
         break;
@@ -60,14 +62,15 @@ export class WindowCommand extends Command {
   public getInstructions(): string {
     switch (this.mode) {
       case WindowCommandMode.SelectWindow:
-        return "";
-        break;
+        var res: string = "Exit:0  ";
+        for (let i = 0; i < WINDOW_NAMES.length; i++) {
+          res += WINDOW_NAMES[i] + "(" + (i + 1).toString() + ")  ";
+        }
+        return res + "$";
       case WindowCommandMode.PlaceWindowStart:
         return "";
-        break;
       case WindowCommandMode.PlaceWindowEnd:
         return "";
-        break;
       default:
         throw new Error("Not implemented");
     }
