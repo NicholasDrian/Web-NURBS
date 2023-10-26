@@ -1,4 +1,5 @@
-export class Window {
+export abstract class Window {
+
 
 
 }
