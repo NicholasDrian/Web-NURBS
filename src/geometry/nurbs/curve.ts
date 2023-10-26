@@ -30,9 +30,8 @@ export class Curve extends Geometry {
   }
 
   public intersect(ray: Ray): number | null {
-    throw new Error("Method not implemented.");
+    return this.polyline!.intersect(ray);
   }
-
 
   public getBoundingBox(): BoundingBox {
     return this.controlCage!.getBoundingBox();

@@ -21,8 +21,7 @@ export class BoundingBox {
   public getZMax(): number { return this.zMax; }
 
   public print(): void {
-    console.log(`BB: x: [${this.xMin}, ${this.xMax}], y: [${this.yMin}, ${this.yMax}], z: [${this.zMin}, ${this.zMax}];
-`);
+    console.log(`BB: x: [${this.xMin}, ${this.xMax}], y: [${this.yMin}, ${this.yMax}], z: [${this.zMin}, ${this.zMax}];`);
   }
 
   public addVec3(v: Vec3): void {

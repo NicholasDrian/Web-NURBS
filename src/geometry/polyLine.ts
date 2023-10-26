@@ -4,6 +4,7 @@ import { RenderLines } from "../render/renderLines";
 import { RenderID } from "../scene/scene";
 import { BoundingBox } from "./boundingBox";
 import { Geometry } from "./geometry";
+import { LineBoundingBoxHeirarchy } from "./lineBoundingBoxHeirarchy";
 import { Ray } from "./ray";
 
 
@@ -11,6 +12,7 @@ export class PolyLine extends Geometry {
 
   private renderLines!: RenderID;
   private boundingBox!: BoundingBox;
+  private boundingBoxHeirarchy!: LineBoundingBoxHeirarchy;
 
   constructor(
     private points: Vec3[],
@@ -23,7 +25,7 @@ export class PolyLine extends Geometry {
   }
 
   public intersect(ray: Ray): number | null {
-    throw new Error("Method not implemented.");
+    return this.boundingBoxHeirarchy.almostIntersect(ray, this.points, 3);
   }
 
   public getModel(): Mat4 {
@@ -71,6 +73,8 @@ export class PolyLine extends Geometry {
       new Int32Array(indices),
       this.color));
     this.updateBoundingBox();
+
+    this.boundingBoxHeirarchy = new LineBoundingBoxHeirarchy(this.points, indices);
   }
 
   private updateBoundingBox(): void {

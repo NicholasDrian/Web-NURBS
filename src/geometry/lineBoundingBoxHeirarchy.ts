@@ -31,7 +31,7 @@ class LineBoundingBoxHeirarchyNode {
       this.boundingBox.addVec3(verts[index]);
     }
 
-    if (indices.length / 2 <= LineBoundingBoxHeirarchy.MAX_TRIS_PER_LEAF) {
+    if (indices.length / 2 <= LineBoundingBoxHeirarchy.MAX_LINES_PER_LEAF) {
       // leaf
       this.indices = indices;
       this.child1 = null;
@@ -41,19 +41,20 @@ class LineBoundingBoxHeirarchyNode {
       this.indices = null;
       const child1Indices: number[] = [];
       const child2Indices: number[] = [];
+      const bbCenter = this.boundingBox.getCenter();
       for (let i = 0; i < indices.length; i += 2) {
-        const triCenter = vec3.scale(
+        const lineCenter = vec3.scale(
           vec3.add(
-            verts[indices[i + 1]],
+            verts[indices[i]],
             verts[indices[i + 1]]
           ), 0.5);
-        const bbCenter = this.boundingBox.getCenter();
-        if (triCenter[this.axis] < bbCenter[this.axis]) {
-          child1Indices.push(indices[i], indices[i + 1], indices[i + 2]);
+        if (lineCenter[this.axis] < bbCenter[this.axis]) {
+          child1Indices.push(indices[i], indices[i + 1]);
         } else {
-          child2Indices.push(indices[i], indices[i + 1], indices[i + 2]);
+          child2Indices.push(indices[i], indices[i + 1]);
         }
       }
+
       this.child1 = new LineBoundingBoxHeirarchyNode(verts, child1Indices, this.depth + 1);
       this.child2 = new LineBoundingBoxHeirarchyNode(verts, child2Indices, this.depth + 1);
     }
@@ -62,7 +63,7 @@ class LineBoundingBoxHeirarchyNode {
   public add(indices: [number, number, number], verts: Vec3[]): void {
     if (this.isLeaf()) {
       this.indices!.push(...indices);
-      if (this.indices!.length / 2 < LineBoundingBoxHeirarchy.MAX_TRIS_PER_LEAF) {
+      if (this.indices!.length / 2 < LineBoundingBoxHeirarchy.MAX_LINES_PER_LEAF) {
         this.setup(verts, this.indices!);
       }
     } else {
@@ -84,11 +85,11 @@ class LineBoundingBoxHeirarchyNode {
 
   public almostIntersect(ray: Ray, verts: Vec3[], pixels: number): number | null {
 
-    if (ray.almostIntersectBoundingBox(this.boundingBox) === null) return null;
+    if (ray.almostIntersectBoundingBox(this.boundingBox, pixels) === null) return null;
 
     if (this.isLeaf()) {
       var res: number | null = null;
-      for (let i = 0; i < this.indices!.length; i += 3) {
+      for (let i = 0; i < this.indices!.length; i += 2) {
         var t: number | null = ray.almostIntersectLine(verts[this.indices![i]], verts[this.indices![i + 1]], pixels);
         if (t !== null) {
           if (res === null) res = t;
@@ -123,12 +124,20 @@ class LineBoundingBoxHeirarchyNode {
 
 export class LineBoundingBoxHeirarchy {
 
-  public static readonly MAX_TRIS_PER_LEAF = 5;
+  public static readonly MAX_LINES_PER_LEAF = 5;
 
   private root: LineBoundingBoxHeirarchyNode;
 
   constructor(verts: Vec3[], indices: number[]) {
-    this.root = new LineBoundingBoxHeirarchyNode(verts, indices);
+    let reducedIndices: number[] = [];
+    for (let i = 0; i < indices.length; i += 2) {
+      const a: Vec3 = verts[indices[i]];
+      const b: Vec3 = verts[indices[i + 1]];
+      if (a[0] !== b[0] || a[1] !== b[1] || a[2] !== b[2]) {
+        reducedIndices.push(indices[i], indices[i + 1]);
+      }
+    }
+    this.root = new LineBoundingBoxHeirarchyNode(verts, reducedIndices);
   }
 
   public print(): void {

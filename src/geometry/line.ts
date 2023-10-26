@@ -25,7 +25,7 @@ export class Line extends Geometry {
   }
 
   public intersect(ray: Ray): number | null {
-    throw new Error("Method not implemented.");
+    return ray.almostIntersectLine(this.start, this.end, 3);
   }
 
   public getBoundingBox(): BoundingBox {
