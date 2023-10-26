@@ -51,6 +51,7 @@ html, body {
     width: 200px;
     right: 10px;
     top: 10px;
+    overflow: scroll;
 }
 #screen {
     /* not sure why this is flipped */

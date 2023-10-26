@@ -1,15 +1,13 @@
 export abstract class CADWindow {
 
   protected element: HTMLDivElement;
-  private start: [number, number];
-  private end: [number, number];
 
-  constructor(name: string, start: [number, number]) {
+  constructor(name: string,
+    private start: [number, number],
+    private end: [number, number]) {
     this.element = document.createElement("div");
     this.element.id = name;
     this.element.className = "floating-window";
-    this.start = start;
-    this.end = start;
     this.updateSize();
     document.body.appendChild(this.element);
     this.populate();

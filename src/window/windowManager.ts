@@ -18,29 +18,34 @@ export class WindowManager {
 
   constructor() {
     this.windows = new Map<string, CADWindow>();
+    this.setupDefaultWindows();
   }
 
+  private setupDefaultWindows(): void {
+    this.addWindow("stats", [10, 10], [200, 200]);
+    this.addWindow("log", [210, 10], [400, 200]);
+  }
   public getWindows(): Map<string, CADWindow> {
     return this.windows;
   }
 
-  public addWindow(windowName: string, start: [number, number]) {
+  public addWindow(windowName: string, start: [number, number], end?: [number, number]) {
     this.removeWindow(windowName);
     switch (windowName) {
       case "stats":
-        this.windows.set("stats", new StatsWindow(windowName, start));
+        this.windows.set("stats", new StatsWindow(windowName, start, end ?? start));
         break;
       case "log":
-        this.windows.set("log", new LogWindow(windowName, start));
+        this.windows.set("log", new LogWindow(windowName, start, end ?? start));
         break;
       case "materials":
-        this.windows.set("materials", new MaterialsWindow(windowName, start));
+        this.windows.set("materials", new MaterialsWindow(windowName, start, end ?? start));
         break;
       case "scene":
-        this.windows.set("scene", new SceneWindow(windowName, start));
+        this.windows.set("scene", new SceneWindow(windowName, start, end ?? start));
         break;
       case "snaps":
-        this.windows.set("snaps", new SnapsWindow(windowName, start));
+        this.windows.set("snaps", new SnapsWindow(windowName, start, end ?? start));
         break;
       default:
         throw new Error("not implemented");

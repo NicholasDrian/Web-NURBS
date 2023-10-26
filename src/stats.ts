@@ -11,8 +11,6 @@ export class RenderStats {
   private drawCalls!: number;
 
   constructor() {
-
-    // this.element = <HTMLDivElement>document.getElementById("stats");
     this.reset();
   }
 
@@ -45,18 +43,22 @@ export class RenderStats {
   }
 
   public getInnerHTML(): string {
-    return "<u>STATS:</u><br>" +
+    const fps: string = (1.0 / this.frameTime).toFixed(3);
+    const averageFps: string = (1000.0 * this.totalFrames / (Date.now() - this.startTime)).toFixed(3);
+    const html: string = "<u>STATS:</u><br>" +
       "<br>" +
-      "FPS: " + (1.0 / this.frameTime).toFixed(3) + "<br>" +
-      "Average FPS: " + (1000.0 * this.totalFrames / (Date.now() - this.startTime)).toFixed(3) + "<br>" +
+      "FPS: " + fps + "<br>" +
+      "Average FPS: " + averageFps + "<br>" +
       "<br>" +
-      "Render Time: " + this.renderTime.toFixed(3) + "<br>" +
-      "Frame Time: " + this.frameTime.toFixed(3) + "<br>" +
-      "Scene Time: " + this.sceneTime.toFixed(3) + "<br>" +
+      "Render Time: " + this.renderTime?.toFixed(3) + "<br>" +
+      "Frame Time: " + this.frameTime?.toFixed(3) + "<br>" +
+      "Scene Time: " + this.sceneTime?.toFixed(3) + "<br>" +
       "<br>" +
       "Frames Over 100ms: " + this.framesOver100ms.toString() + "<br>" +
       "<br>" +
-      "Draw Calls: " + this.drawCalls.toString();
+      "Draw Calls: " + this.drawCalls?.toString();
+    console.log(html);
+    return html;
   }
 
 

@@ -34,7 +34,6 @@ class CAD {
 
   public async init() {
 
-    this.windowManager = new WindowManager();
     this.settingsManager = new SettingsManager();
     this.commandManager = new CommandManager();
     this.cli = new CLI();
@@ -51,6 +50,7 @@ class CAD {
     this.log = new Log();
 
     this.renderStats = new RenderStats();
+    this.windowManager = new WindowManager();
 
     addTestScene1();
 
