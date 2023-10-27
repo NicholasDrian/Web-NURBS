@@ -13,11 +13,16 @@ export const printMat4 = function(m: Mat4): void {
 }
 
 export const printVec3 = function(v: Vec3, decimals: number = 2): void {
+  console.log(vec3ToString(v, decimals));
+}
+
+export const vec3ToString = function(v: Vec3, decimals: number = 2): string {
   var str: string = "";
   for (var i: number = 0; i < 3; i++) {
     str += v[i].toFixed(decimals) + ",  ";
   }
-  console.log(str);
+  str = str.slice(0, -1);
+  return str;
 }
 
 export const vec4ToString = function(v: Vec4, decimals: number = 2): string {

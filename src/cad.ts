@@ -12,6 +12,7 @@ import { WindowManager } from "./window/windowManager";
 import { SettingsManager } from "./settings/settingsManager";
 import { MaterialManager } from "./materials/materialManager";
 import { warn } from "console";
+import { vec3 } from "wgpu-matrix";
 
 /*
   * Browser Based NURBS Modeling Software
@@ -57,7 +58,7 @@ class CAD {
     this.renderStats = new RenderStats();
     this.windowManager = new WindowManager();
 
-    addTestScene1();
+    //   addTestScene1();
 
   }
 

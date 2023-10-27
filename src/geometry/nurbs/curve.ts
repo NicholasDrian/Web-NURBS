@@ -6,7 +6,7 @@ import { Ray } from "../ray";
 import { basisFuncs, genericKnotVector, span } from "./utils";
 
 export class Curve extends Geometry {
-  public static readonly SAMPLES_PER_EDGE = 10;
+  public static readonly SAMPLES_PER_EDGE = 20;
 
   private controlCage: PolyLine | null;
   private polyline: PolyLine | null;
@@ -75,7 +75,7 @@ export class Curve extends Geometry {
     return this.controlPoints.length;
   }
 
-  protected updateSamples(): void {
+  private updateSamples(): void {
     if (this.controlCage) this.controlCage.delete();
     if (this.polyline) this.polyline.delete();
 
@@ -85,11 +85,11 @@ export class Curve extends Geometry {
       samples.push(this.sample(i / sampleCount));
     }
 
-    this.polyline = new PolyLine(samples.map((point: Vec4) => { return vec3.create(point[0] / point[3], point[1] / point[3], point[2] / point[3]); }), [0, 1, 0, 1]);
+    this.polyline = new PolyLine(samples.map((point: Vec4) => { return vec3.create(point[0], point[1], point[2]); }), [0, 1, 0, 1]);
     this.controlCage = new PolyLine(this.controlPoints.map((point: Vec4) => { return vec3.create(point[0], point[1], point[2]); }), [0, 0, 1, 1]);
   }
 
-  protected sample(t: number): Vec4 {
+  private sample(t: number): Vec4 {
     const u: number = t * (this.knots.at(-1)! - this.knots.at(0)!);
     const knotSpan: number = span(this.knots, u, this.degree)
     const funcs: number[] = basisFuncs(this.knots, u, this.degree);
