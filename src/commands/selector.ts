@@ -1,5 +1,7 @@
-import { Vec3 } from "wgpu-matrix";
+import { vec3, Vec3 } from "wgpu-matrix";
 import { INSTANCE } from "../cad";
+import { Plane } from "../geometry/plane";
+import { Ray } from "../geometry/ray";
 
 
 
@@ -16,9 +18,22 @@ export class Selector {
     this.onMouseMove();
   }
 
+  // TODO: finish
   public onMouseMove(): void {
     const mousePos: [number, number] = INSTANCE.getEventManager().getMouseHandler().getMousePos();
-    this.intersectionScreenPos = mousePos; // TODO: intersect scene
+    const ray: Ray = INSTANCE.getScene().getCamera().getRayAtPixel(mousePos[0], mousePos[1]);
+    const tGroundPlane: number | null = ray.intersectPlane(new Plane(vec3.create(0, 0, 0), vec3.create(0, 0, 1)));
+
+    var pGroundPlane: Vec3 | null = tGroundPlane ? ray.at(tGroundPlane!) : null;
+    this.point = pGroundPlane;
+
+    if (pGroundPlane && INSTANCE.getSettingsManager().getSnapSettingsManager().getSnapSettings().snapGrid) {
+      pGroundPlane = INSTANCE.getScene().getConstructionPlane().snapToGrid(pGroundPlane!);
+      this.point = pGroundPlane;
+    }
+    if (pGroundPlane) {
+      this.intersectionScreenPos = INSTANCE.getScene().getCamera().getPixelAtPoint(pGroundPlane);
+    }
     this.draw();
   }
 

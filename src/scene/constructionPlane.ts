@@ -1,3 +1,4 @@
+import { Vec3 } from "wgpu-matrix";
 import { INSTANCE } from "../cad";
 import { RenderLines } from "../render/renderLines"
 import { RenderID } from "./scene";
@@ -58,6 +59,28 @@ export class ConstructionPlane {
     // TODO: colors based on dark mode
     this.majorLines = INSTANCE.getScene().addRenderLines(new RenderLines(new Float32Array(majorVerts), new Int32Array(majorIndices), [1.0, 0.9, 0.9, 1.0]));
     this.minorLines = INSTANCE.getScene().addRenderLines(new RenderLines(new Float32Array(minorVerts), new Int32Array(minorIndices), [0.5, 0.4, 0.4, 1.0]));
+  }
+
+  public snapToGrid(point: Vec3): Vec3 {
+    const alignedWithOrigin: boolean = ((this.minorCount * this.majorCount) & 1) === 0;
+    var dx: number = point[0] % this.cellSize;
+    var dy: number = point[1] % this.cellSize;
+    if (dx < 0) dx += this.cellSize;
+    if (dy < 0) dy += this.cellSize;
+    if (!alignedWithOrigin) {
+      point[0] += this.cellSize / 2;
+      point[1] += this.cellSize / 2;
+    }
+    if (dx < this.cellSize / 2) point[0] -= dx;
+    else point[0] += this.cellSize - dx;
+    if (dy < this.cellSize / 2) point[1] -= dy;
+    else point[1] += this.cellSize - dy;
+
+    if (!alignedWithOrigin) {
+      point[0] -= this.cellSize / 2;
+      point[1] -= this.cellSize / 2;
+    }
+    return point;
   }
 
   public getMinorCount(): number {

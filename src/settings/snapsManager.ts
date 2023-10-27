@@ -2,9 +2,9 @@
 
 export class SnapSettings {
 
-  snapGrid: boolean = false;
-  snapLine: boolean = false;
-  snapPoint: boolean = false;
+  snapGrid: boolean = true;
+  snapLine: boolean = true;
+  snapPoint: boolean = true;
   snapScreenPercent: boolean = false;
 
 }
@@ -32,14 +32,6 @@ export class SnapSettingsManager {
 
   public getHTML(): string {
     const settings: SnapSettings = this.stack.at(-1)!;
-    console.log("here");
-    console.log(`
-      <u>SNAPS:</u><br>
-      <br>
-      grid(${settings.snapGrid ? "on" : "off"})<br>
-      line(${settings.snapLine ? "on" : "off"})<br>
-      point(${settings.snapPoint ? "on" : "off"})<br>
-    `);
     return `
       <u>SNAPS:</u><br>
       <br>

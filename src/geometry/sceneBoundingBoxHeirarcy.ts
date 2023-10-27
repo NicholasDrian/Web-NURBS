@@ -143,7 +143,6 @@ export class SceneBoundingBoxHeirarchy {
   }
 
   public firstIntersection(ray: Ray): number | null {
-    console.log("intersecting scene bbh");
     return this.root.firstPositiveIntersectionTime(ray);
   }
 

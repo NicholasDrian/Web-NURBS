@@ -10,7 +10,6 @@ export class SnapsWindow extends CADWindow {
 
   public tick(): void {
     this.populate();
-    console.log("snap window tick");
   }
 
 }

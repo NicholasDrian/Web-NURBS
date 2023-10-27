@@ -1,5 +1,6 @@
 import { mat4, vec3, Mat4, Vec3 } from "wgpu-matrix"
 import { INSTANCE } from "../cad"
+import { Plane } from "../geometry/plane";
 import { Ray } from "../geometry/ray";
 import { OperatingMode } from "../mode"
 
@@ -43,6 +44,38 @@ export class Camera {
   setFovy(newFovy: number) {
     this.fovy = newFovy;
     this.updateViewProj();
+  }
+
+  public getPixelAtPoint(point: Vec3): [number, number] {
+
+    const dir: Vec3 = vec3.normalize(vec3.sub(point, this.position));
+    const center: Vec3 = vec3.add(this.position, this.forward);
+    const right: Vec3 = vec3.cross(this.forward, this.up);
+    const xRes: number = window.innerWidth;
+    const yRes: number = window.innerHeight;
+    const sizeY: number = 2.0 * Math.tan(this.fovy / 2.0);
+    const sizeX: number = sizeY / yRes * xRes;
+
+    const ray: Ray = new Ray(this.position, dir);
+    const tScreen: number = ray.intersectPlane(new Plane(center, this.forward), true)!;
+    const pScreen: Vec3 = ray.at(tScreen);
+
+    const topLeft: Vec3 = vec3.add(
+      center,
+      vec3.add(
+        vec3.scale(this.up, sizeY / 2),
+        vec3.scale(right, sizeX / -2)
+      )
+    );
+
+    const topLeftToPoint = vec3.sub(pScreen, topLeft);
+    const x: number = vec3.dot(topLeftToPoint, right);
+    const y: number = -vec3.dot(topLeftToPoint, this.up);
+
+    return [
+      Math.floor(x / sizeX * xRes),
+      Math.floor(y / sizeY * yRes)
+    ];
   }
 
   public getRayAtPixel(x: number, y: number): Ray {

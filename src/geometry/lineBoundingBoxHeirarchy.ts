@@ -146,7 +146,6 @@ export class LineBoundingBoxHeirarchy {
   }
 
   public almostIntersect(ray: Ray, verts: Vec3[], pixels: number): number | null {
-    console.log("intersecting line bbh");
     return this.root.almostIntersect(ray, verts, pixels);
   }
 

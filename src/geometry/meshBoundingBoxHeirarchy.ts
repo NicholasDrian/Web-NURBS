@@ -139,7 +139,6 @@ export class MeshBoundingBoxHeirarchy {
   }
 
   public intersect(ray: Ray, verts: Vec3[]): number | null {
-    console.log("intersecting mesh bbh");
     return this.root.intersect(ray, verts);
   }
 

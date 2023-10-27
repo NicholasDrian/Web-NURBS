@@ -1,5 +1,6 @@
 import { mat4, Mat4, vec3, Vec3 } from "wgpu-matrix";
 import { INSTANCE } from "../cad";
+import { ConstructionPlane } from "../scene/constructionPlane";
 import { Scene } from "../scene/scene";
 import { BoundingBox } from "./boundingBox";
 import { Geometry } from "./geometry";

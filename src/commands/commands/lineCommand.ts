@@ -52,6 +52,7 @@ export class LineCommand extends Command {
       if (this.line) {
         this.line.updateEnd(point);
         INSTANCE.getScene().addGeometry(this.line);
+        this.selector.destroy();
         this.finished = true;
       } else {
         this.line = new Line(point, point, [1, 0, 0, 1]);
