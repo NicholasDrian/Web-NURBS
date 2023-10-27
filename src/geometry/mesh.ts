@@ -16,12 +16,16 @@ export class Mesh extends Geometry {
   private boundingBoxHeirarchy: MeshBoundingBoxHeirarchy;
 
   constructor(
+    parent: Geometry | null,
     private verts: Vec3[],
     private normals: Vec3[],
     private indices: number[],
-    private model: Mat4 = mat4.identity()
+    model?: Mat4
   ) {
-    super();
+    super(parent);
+
+    if (model) this.setModel(model);
+
     const vertexBuffer: number[] = [];
     for (let i = 0; i < verts.length; i++) {
       vertexBuffer.push(...verts[i], 1, ...normals[i], 0);
@@ -30,18 +34,14 @@ export class Mesh extends Geometry {
       new Float32Array(vertexBuffer),
       new Int32Array(this.indices),
       new Float32Array([0, 1, 0, 1]),
-      model
+      this.getModel()
     ));
     this.boundingBoxHeirarchy = new MeshBoundingBoxHeirarchy(this.verts, this.indices);
   }
 
   public intersect(ray: Ray): number | null {
-    const objectSpaceRay: Ray = Ray.transform(ray, mat4.inverse(this.model));
+    const objectSpaceRay: Ray = Ray.transform(ray, mat4.inverse(this.getModel()));
     return this.boundingBoxHeirarchy.intersect(objectSpaceRay, this.verts);
-  }
-
-  public getModel(): Mat4 {
-    return this.model;
   }
 
   public destroy(): void {
@@ -50,8 +50,9 @@ export class Mesh extends Geometry {
 
   public getBoundingBox(): BoundingBox {
     const bb: BoundingBox = new BoundingBox();
+    const model: Mat4 = this.getModel();
     this.verts.forEach((vert: Vec3) => {
-      bb.addVec3(vec3.transformMat4(vert, this.model));
+      bb.addVec3(vec3.transformMat4(vert, model));
     });
     return bb;
   }

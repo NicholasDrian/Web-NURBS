@@ -44,7 +44,7 @@ export class PolyLineCommand extends Command {
         this.polyline.updateLastPoint(point);
         this.polyline.addPoint(point);
       } else {
-        this.polyline = new PolyLine([point, point], [1, 0, 0, 1]);
+        this.polyline = new PolyLine(null, [point, point], [1, 0, 0, 1]);
       }
     }
   }

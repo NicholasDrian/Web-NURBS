@@ -10,24 +10,42 @@ export class Curve extends Geometry {
 
   private controlCage: PolyLine | null;
   private polyline: PolyLine | null;
+  private controlPoints: Vec4[];
 
   constructor(
-    private controlPoints: Vec4[],
+    parent: Geometry | null,
+    controlPoints: Vec3[],
     private degree: number,
     private knots: number[] = [],
-    private model: Mat4 = mat4.identity()
+    weights: number[] = [],
+    model?: Mat4
   ) {
-    super();
+    super(parent);
+
+    if (model) this.setModel(model);
+
     if (this.knots.length == 0) {
-      this.knots = genericKnotVector(this.controlPoints.length, this.degree);
+      this.knots = genericKnotVector(controlPoints.length, this.degree);
+    }
+    this.controlPoints = [];
+    if (weights.length == 0) {
+      for (let point of controlPoints) {
+        this.controlPoints.push(vec4.create(...point, 1));
+      }
+    } else {
+      for (let i = 0; i < weights.length; i++) {
+        const point: Vec3 = controlPoints[i];
+        this.controlPoints.push(vec4.create(
+          point[0] * weights[i],
+          point[1] * weights[i],
+          point[2] * weights[i],
+          weights[i]
+        ));
+      }
     }
     this.controlCage = null;
     this.polyline = null;
     this.updateSamples();
-  }
-
-  public getModel(): Mat4 {
-    return this.model;
   }
 
   public intersect(ray: Ray): number | null {
@@ -79,17 +97,26 @@ export class Curve extends Geometry {
     if (this.controlCage) this.controlCage.delete();
     if (this.polyline) this.polyline.delete();
 
-    const samples: Vec4[] = [];
+    const samples: Vec3[] = [];
     const sampleCount: number = Curve.SAMPLES_PER_EDGE * (this.controlPoints.length - 1);
     for (let i = 0; i <= sampleCount; i++) {
       samples.push(this.sample(i / sampleCount));
     }
 
-    this.polyline = new PolyLine(samples.map((point: Vec4) => { return vec3.create(point[0], point[1], point[2]); }), [0, 1, 0, 1]);
-    this.controlCage = new PolyLine(this.controlPoints.map((point: Vec4) => { return vec3.create(point[0], point[1], point[2]); }), [0, 0, 1, 1]);
+    this.polyline = new PolyLine(
+      this,
+      samples,
+      [0, 1, 0, 1]);
+    this.controlCage = new PolyLine(
+      this,
+      this.controlPoints.map((point: Vec4) => {
+        return vec3.create(point[0] / point[3], point[1] / point[3], point[2] / point[3]);
+      }),
+      [0, 0, 1, 1]);
+
   }
 
-  private sample(t: number): Vec4 {
+  private sample(t: number): Vec3 {
     const u: number = t * (this.knots.at(-1)! - this.knots.at(0)!);
     const knotSpan: number = span(this.knots, u, this.degree)
     const funcs: number[] = basisFuncs(this.knots, u, this.degree);
@@ -97,6 +124,6 @@ export class Curve extends Geometry {
     for (let i = 0; i <= this.degree; i++) {
       res = vec4.add(res, vec4.scale(this.controlPoints[knotSpan - this.degree + i], funcs[i]));
     }
-    return res;
+    return vec3.create(res[0] / res[3], res[1] / res[3], res[2] / res[3]);
   }
 }

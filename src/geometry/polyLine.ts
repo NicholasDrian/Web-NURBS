@@ -2,6 +2,7 @@ import { mat4, Mat4, vec3, Vec3 } from "wgpu-matrix";
 import { INSTANCE } from "../cad";
 import { RenderLines } from "../render/renderLines";
 import { RenderID } from "../scene/scene";
+import { printMat4 } from "../utils/print";
 import { BoundingBox } from "./boundingBox";
 import { Geometry } from "./geometry";
 import { LineBoundingBoxHeirarchy } from "./lineBoundingBoxHeirarchy";
@@ -15,21 +16,19 @@ export class PolyLine extends Geometry {
   private boundingBoxHeirarchy!: LineBoundingBoxHeirarchy;
 
   constructor(
+    parent: Geometry | null,
     private points: Vec3[],
     private color: [number, number, number, number],
-    private model: Mat4 = mat4.identity()
+    model?: Mat4
   ) {
-    super();
+    super(parent);
+    if (model) this.setModel(model);
     this.renderLines = 0;
     this.update();
   }
 
   public intersect(ray: Ray): number | null {
     return this.boundingBoxHeirarchy.almostIntersect(ray, this.points, 3);
-  }
-
-  public getModel(): Mat4 {
-    return this.model;
   }
 
   public getBoundingBox(): BoundingBox {
@@ -68,19 +67,22 @@ export class PolyLine extends Geometry {
       indices.push(i, i + 1);
     }
     indices.pop(); indices.pop();
+    printMat4(this.getModel());
     this.renderLines = INSTANCE.getScene().addRenderLines(new RenderLines(
       new Float32Array(verts),
       new Int32Array(indices),
-      this.color));
-    this.updateBoundingBox();
+      this.color,
+      this.getModel()));
 
+    this.updateBoundingBox();
     this.boundingBoxHeirarchy = new LineBoundingBoxHeirarchy(this.points, indices);
   }
 
   private updateBoundingBox(): void {
     this.boundingBox = new BoundingBox();
+    const model: Mat4 = this.getModel();
     this.points.forEach((point: Vec3) => {
-      this.boundingBox.addVec3(vec3.transformMat4(point, this.model));
+      this.boundingBox.addVec3(vec3.transformMat4(point, model));
     });
   }
 

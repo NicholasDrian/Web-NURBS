@@ -46,7 +46,7 @@ export class LineCommand extends Command {
         this.clicker.destroy();
         this.finished = true;
       } else {
-        this.line = new Line(point, point, [1, 0, 0, 1]);
+        this.line = new Line(null, point, point, [1, 0, 0, 1]);
       }
     }
   }

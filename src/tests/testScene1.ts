@@ -8,13 +8,14 @@ export const addTestScene1 = function() {
 
   const mesh: ObjectID = INSTANCE.getScene().addGeometry(
     new Mesh(
+      null,
       [vec3.create(-5, -5, 1), vec3.create(5, -5, 1), vec3.create(5, 5, 1), vec3.create(-5, 5, 1)],
       [vec3.create(0, 0, 1), vec3.create(0, 0, 1), vec3.create(0, 0, 1), vec3.create(0, 0, 1)],
       [0, 1, 2, 2, 3, 0]
     )
   );
   const curve: ObjectID = INSTANCE.getScene().addGeometry(
-    new Curve([
+    new Curve(null, [
       vec4.create(-50, -50, 0, 1),
       vec4.create(-50, 50, 0, 1),
       vec4.create(50, 50, 0, 1),

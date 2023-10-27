@@ -8,13 +8,15 @@ const UNIT_CIRCLE_DEGREE: number = 2;
 const UNIT_CIRCLE_KNOTS: number[] = [
   0, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 4
 ];
-const UNIT_CIRCLE_POINTS: Vec4[] =
-  [
-    vec4.create(1, 0, 0, 1), vec4.create(1, 1, 0, Math.SQRT2 / 2), vec4.create(0, 1, 0, 1),
-    vec4.create(- 1, 1, 0, Math.SQRT2 / 2), vec4.create(-1, 0, 0, 1), vec4.create(-1, -1, 0, Math.SQRT2 / 2),
-    vec4.create(0, -1, 0, 1), vec4.create(1, -1, 0, Math.SQRT2 / 2), vec4.create(1, 0, 0, 1)
-  ];
-
+const UNIT_CIRCLE_POINTS: Vec3[] = [
+  vec3.create(1, 0, 0), vec3.create(1, 1, 0), vec3.create(0, 1, 0),
+  vec3.create(-1, 1, 0), vec3.create(-1, 0, 0), vec3.create(-1, -1, 0),
+  vec3.create(0, -1, 0), vec3.create(1, -1, 0), vec3.create(1, 0, 0)
+];
+const UNIT_CIRCLE_WEIGHTS: number[] = [
+  1, Math.SQRT2 / 2, 1, Math.SQRT2 / 2,
+  1, Math.SQRT2 / 2, 1, Math.SQRT2 / 2, 1
+];
 
 export const createCircleThreePoints = function(a: Vec3, b: Vec3, c: Vec3): Curve {
   console.log("creating circle from three points", a, b, c);
@@ -40,7 +42,7 @@ export const createCircleThreePoints = function(a: Vec3, b: Vec3, c: Vec3): Curv
 
 export const createCircleCenterNormalRadius = function(center: Vec3, normal: Vec3, radius: number) {
   console.log("creating circle from center normal radius", vec3ToString(center), vec3ToString(normal), radius);
-  if (normal[2] < 0) vec3.scale(normal, -1);
+  if (normal[2] < 0) normal = vec3.scale(normal, -1);
   const unitZ: Vec3 = vec3.create(0, 0, 1);
   var x: Vec3;
   var y: Vec3;
@@ -51,14 +53,17 @@ export const createCircleCenterNormalRadius = function(center: Vec3, normal: Vec
     x = vec3.scale(vec3.normalize(vec3.cross(normal, unitZ)), radius);
     y = vec3.scale(vec3.normalize(vec3.cross(normal, x)), radius);
   }
-  vec3.scale(normal, radius);
+  normal = vec3.scale(normal, radius);
+
+  // swizzle y and z in the matrix
+  // why did they choose this rediculous clipspace
   const model: Mat4 = mat4.create(
-    x[0], x[1], x[2], 0,
-    y[0], y[1], y[1], 0,
-    normal[0], normal[1], normal[2], 0,
-    center[0], center[1], center[2], 1
+    x[0], x[2], x[1], 0,
+    normal[0], normal[2], normal[1], 0,
+    y[0], y[2], y[1], 0,
+    center[0], center[2], center[1], 1
   );
   printMat4(model);
-  return new Curve(UNIT_CIRCLE_POINTS, UNIT_CIRCLE_DEGREE, UNIT_CIRCLE_KNOTS, model);
+  return new Curve(null, UNIT_CIRCLE_POINTS, UNIT_CIRCLE_DEGREE, UNIT_CIRCLE_KNOTS, UNIT_CIRCLE_WEIGHTS, model);
 }
 

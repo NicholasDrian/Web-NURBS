@@ -76,6 +76,7 @@ export class CurveCommand extends Command {
         if (this.curve.getDegree() < this.degree) this.curve.elevateDegree(1);
       } else {
         this.curve = new Curve(
+          null,
           [vec4.create(...point, 1), vec4.create(...point, 1)],
           1
         )

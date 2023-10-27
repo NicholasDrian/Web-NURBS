@@ -13,12 +13,14 @@ export class Line extends Geometry {
   private boundingBox!: BoundingBox;
 
   constructor(
+    parent: Geometry | null,
     private start: Vec3,
     private end: Vec3,
     private color: [number, number, number, number],
-    private model: Mat4 = mat4.identity()
+    model?: Mat4
   ) {
-    super();
+    super(parent);
+    if (model) this.setModel(model);
     this.renderLines = 0;
     this.updateRenderLines();
     this.updateBoundingBox();
@@ -43,10 +45,6 @@ export class Line extends Geometry {
       new Int32Array([0, 1]),
       this.color
     ));
-  }
-
-  public getModel(): Mat4 {
-    return this.model;
   }
 
   public delete(): void {
@@ -76,8 +74,8 @@ export class Line extends Geometry {
   }
   private updateBoundingBox(): void {
     this.boundingBox = new BoundingBox();
-    this.boundingBox.addVec3(vec3.transformMat4(this.start, this.model));
-    this.boundingBox.addVec3(vec3.transformMat4(this.end, this.model));
+    this.boundingBox.addVec3(vec3.transformMat4(this.start, this.getModel()));
+    this.boundingBox.addVec3(vec3.transformMat4(this.end, this.getModel()));
   }
 
 }

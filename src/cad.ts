@@ -11,12 +11,10 @@ import { addTestScene1 } from "./tests/testScene1";
 import { WindowManager } from "./window/windowManager";
 import { SettingsManager } from "./settings/settingsManager";
 import { MaterialManager } from "./materials/materialManager";
-import { warn } from "console";
-import { vec3 } from "wgpu-matrix";
 
 /*
   * Browser Based NURBS Modeling Software
-  * Inspired by Rhino, Vim
+  * Inspired by Rhino, Vim, CSS
   *
   * By Nick Drian
   *
@@ -58,7 +56,7 @@ class CAD {
     this.renderStats = new RenderStats();
     this.windowManager = new WindowManager();
 
-    //   addTestScene1();
+    addTestScene1();
 
   }
 

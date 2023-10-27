@@ -69,7 +69,7 @@ export class RenderPoints {
   }
 
   private updateMVP(): void {
-    mat4.mul(this.model, INSTANCE.getScene().getCamera().getViewProj(), this.mvp);
+    mat4.mul(INSTANCE.getScene().getCamera().getViewProj(), this.model, this.mvp);
     INSTANCE.getRenderer().getDevice().queue.writeBuffer(this.mvpBuffer, 0, this.mvp);
   }
 
