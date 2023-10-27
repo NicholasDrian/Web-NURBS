@@ -2,14 +2,16 @@ import { INSTANCE } from "../cad";
 
 
 
-export class ClickHandler {
+export class MouseHandler {
 
+  private mousePos: [number, number];
   private mouseDown: boolean;
   private shiftDown: boolean;
   private controlDown: boolean;
   private drag: Drag | null;
 
   constructor() {
+    this.mousePos = [-1, -1];
     this.mouseDown = false;
     this.shiftDown = false;
     this.controlDown = false;
@@ -17,6 +19,7 @@ export class ClickHandler {
   }
 
   public onMouseMove(event: MouseEvent): void {
+    this.mousePos = [event.clientX, event.clientY];
     this.drag?.update(event.clientX, event.clientY);
   }
 
@@ -44,6 +47,10 @@ export class ClickHandler {
       this.mouseDown = false;
 
     }
+  }
+
+  public getMousePos(): [number, number] {
+    return this.mousePos;
   }
 
 }
@@ -86,6 +93,7 @@ class Drag {
   public destroy(): void {
     this.element.hidden = true;
   }
+
 
 
 

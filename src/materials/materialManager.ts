@@ -24,11 +24,11 @@ export class MaterialManager {
 
   public removeMaterial(name: string): void {
     this.materials.delete(name);
+    if (this.materials.size === 0) this.createDefaultMaterial();
   }
 
   public getMaterial(name: string): Material | undefined {
     return this.materials.get(name);
   }
-
 
 }

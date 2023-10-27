@@ -1,18 +1,18 @@
 import { OperatingMode } from "../mode"
 import { INSTANCE } from "../cad"
-import { ClickHandler } from "./clickHandler";
+import { MouseHandler } from "./mouseHandler";
 
 export class EventManager {
 
-  private clickHandler: ClickHandler;
+  private mouseHandler: MouseHandler;
 
   constructor() {
 
-    this.clickHandler = new ClickHandler();
+    this.mouseHandler = new MouseHandler();
 
     onmousemove = (event: MouseEvent) => {
       INSTANCE.getCommandManager().handleMouseMove(event);
-      this.clickHandler.onMouseMove(event);
+      this.mouseHandler.onMouseMove(event);
     };
 
     onresize = () => {
@@ -40,12 +40,16 @@ export class EventManager {
     }
 
     onmousedown = (event: MouseEvent) => {
-      this.clickHandler.onMouseDown(event);
+      this.mouseHandler.onMouseDown(event);
     }
 
     onmouseup = (event: MouseEvent) => {
-      this.clickHandler.onMouseUp(event);
+      this.mouseHandler.onMouseUp(event);
     }
+  }
+
+  public getMouseHandler(): MouseHandler {
+    return this.mouseHandler;
   }
 
 }

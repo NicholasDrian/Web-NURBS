@@ -3,7 +3,7 @@ import { CADWindow } from "../window";
 export class SceneWindow extends CADWindow {
 
   public populate(): void {
-    this.element.innerText = "Scene Window";
+    this.element.innerHTML = "<u>SCENE:</u><br>todo";
   }
 
   public tick(): void {

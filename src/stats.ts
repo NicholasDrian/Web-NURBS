@@ -57,7 +57,6 @@ export class RenderStats {
       "Frames Over 100ms: " + this.framesOver100ms.toString() + "<br>" +
       "<br>" +
       "Draw Calls: " + this.drawCalls?.toString();
-    console.log(html);
     return html;
   }
 

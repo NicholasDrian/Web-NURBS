@@ -144,6 +144,10 @@ class CAD {
     return this.materialManager;
   }
 
+  public getEventManager(): EventManager {
+    return this.eventManager;
+  }
+
 }
 
 export const INSTANCE = new CAD();

@@ -3,23 +3,27 @@ import { INSTANCE } from "../../cad";
 import { Line } from "../../geometry/line";
 import { Ray } from "../../geometry/ray";
 import { Command } from "../command";
+import { Selector } from "../selector";
 
 
 export class LineCommand extends Command {
 
   private finished: boolean;
   private line: Line | null;
+  private selector: Selector;
 
   constructor() {
     super();
     this.finished = false;
     this.line = null;
+    this.selector = new Selector();
   }
 
   public handleInput(input: string): void {
     switch (input) {
       case "0": case "":
         if (this.line) this.line.delete();
+        this.selector.destroy();
         this.finished = true;
         break;
     }
@@ -36,6 +40,7 @@ export class LineCommand extends Command {
         this.line.updateEnd(point);
       }
     }
+    this.selector.onMouseMove();
   }
 
   public handleClick(x: number, y: number): void {
