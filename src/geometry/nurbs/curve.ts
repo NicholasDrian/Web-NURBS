@@ -1,4 +1,4 @@
-import { Mat4, vec3, Vec3, vec4, Vec4 } from "wgpu-matrix";
+import { mat4, Mat4, vec3, Vec3, vec4, Vec4 } from "wgpu-matrix";
 import { BoundingBox } from "../boundingBox";
 import { Geometry } from "../geometry";
 import { PolyLine } from "../polyLine";
@@ -15,6 +15,7 @@ export class Curve extends Geometry {
     private controlPoints: Vec4[],
     private degree: number,
     private knots: number[] = [],
+    private model: Mat4 = mat4.identity()
   ) {
     super();
     if (this.knots.length == 0) {
@@ -26,7 +27,7 @@ export class Curve extends Geometry {
   }
 
   public getModel(): Mat4 {
-    return this.controlCage!.getModel();
+    return this.model;
   }
 
   public intersect(ray: Ray): number | null {

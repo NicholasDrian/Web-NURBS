@@ -1,6 +1,7 @@
 import { INSTANCE } from "../cad";
 import { Command } from "./command";
 import { CameraCommand } from "./commands/cameraCommand";
+import { CircleCommand } from "./commands/circleCommand";
 import { ConstructionPlaneCommand } from "./commands/constructionPlaneCommand";
 import { CurveCommand } from "./commands/curveCommand";
 import { LineCommand } from "./commands/lineCommand";
@@ -55,6 +56,9 @@ export class CommandManager {
           break;
         case "snaps": case "s":
           this.currentCommand = new SnapsCommand();
+          break;
+        case "circle": case "c":
+          this.currentCommand = new CircleCommand();
           break;
         default: INSTANCE.getLog().log("Invalid Command");
       }
