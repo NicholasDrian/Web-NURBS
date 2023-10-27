@@ -11,7 +11,7 @@ export class SnapsCommand extends Command {
     this.finished = false;
   }
 
-  override handleInput(input: string): void {
+  public override handleInput(input: string): void {
     switch (input) {
       case "0":
         this.finished = true;
@@ -36,15 +36,15 @@ export class SnapsCommand extends Command {
     }
   }
 
-  override handleClick(x: number, y: number): void {
+  public override handleClick(): void {
 
   }
 
-  override  handleMouseMove(x: number, y: number): void {
+  public override handleMouseMove(): void {
 
   }
 
-  override getInstructions(): string {
+  public override getInstructions(): string {
     const snapSettings: SnapSettings = INSTANCE.getSettingsManager().getSnapSettingsManager().getSnapSettings();
     const grid: string = snapSettings.snapGrid ? "on" : "off";
     const point: string = snapSettings.snapPoint ? "on" : "off";
@@ -52,7 +52,7 @@ export class SnapsCommand extends Command {
     return `Exit:0  Grid(${grid}):1  Line(${line}):2  Point(${point}):3  $`;
   }
 
-  override isFinished(): boolean {
+  public override isFinished(): boolean {
     return this.finished;
   }
 

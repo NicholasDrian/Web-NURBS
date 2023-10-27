@@ -3,6 +3,7 @@ import { INSTANCE } from "../cad";
 import { RenderLines } from "../render/renderLines"
 import { RenderID } from "./scene";
 
+// TODO: draw this first, disable depth buffer while drawing
 export class ConstructionPlane {
 
   private majorLines: RenderID;
@@ -34,23 +35,24 @@ export class ConstructionPlane {
 
     const halfSize = size / 2.0;
     const start: number = -halfSize;
+    const z: number = -0.001;
 
     for (var i = 0; i <= cellCount; i++) {
       if (i % this.minorCount === 0) { // major line
         majorVerts.push(
-          start + i * this.cellSize, -halfSize, 0, 1,
-          start + i * this.cellSize, halfSize, 0, 1,
-          -halfSize, start + i * this.cellSize, 0, 1,
-          halfSize, start + i * this.cellSize, 0, 1,
+          start + i * this.cellSize, -halfSize, z, 1,
+          start + i * this.cellSize, halfSize, z, 1,
+          -halfSize, start + i * this.cellSize, z, 1,
+          halfSize, start + i * this.cellSize, z, 1,
         );
         majorIndices.push(majorIndex, majorIndex + 1, majorIndex + 2, majorIndex + 3);
         majorIndex += 4;
       } else { // minor line
         minorVerts.push(
-          start + i * this.cellSize, -halfSize, 0, 1,
-          start + i * this.cellSize, halfSize, 0, 1,
-          -halfSize, start + i * this.cellSize, 0, 1,
-          halfSize, start + i * this.cellSize, 0, 1,
+          start + i * this.cellSize, -halfSize, z, 1,
+          start + i * this.cellSize, halfSize, z, 1,
+          -halfSize, start + i * this.cellSize, z, 1,
+          halfSize, start + i * this.cellSize, z, 1,
         );
         minorIndices.push(minorIndex, minorIndex + 1, minorIndex + 2, minorIndex + 3);
         minorIndex += 4;
@@ -60,6 +62,7 @@ export class ConstructionPlane {
     this.majorLines = INSTANCE.getScene().addRenderLines(new RenderLines(new Float32Array(majorVerts), new Int32Array(majorIndices), [1.0, 0.9, 0.9, 1.0]));
     this.minorLines = INSTANCE.getScene().addRenderLines(new RenderLines(new Float32Array(minorVerts), new Int32Array(minorIndices), [0.5, 0.4, 0.4, 1.0]));
   }
+
 
   public snapToGrid(point: Vec3): Vec3 {
     const alignedWithOrigin: boolean = ((this.minorCount * this.majorCount) & 1) === 0;

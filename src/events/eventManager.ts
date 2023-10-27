@@ -11,7 +11,6 @@ export class EventManager {
     this.mouseHandler = new MouseHandler();
 
     onmousemove = (event: MouseEvent) => {
-      INSTANCE.getCommandManager().handleMouseMove(event);
       this.mouseHandler.onMouseMove(event);
     };
 

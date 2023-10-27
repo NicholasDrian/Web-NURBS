@@ -3,6 +3,7 @@ import { INSTANCE } from "../../cad";
 import { Curve } from "../../geometry/nurbs/curve";
 import { Ray } from "../../geometry/ray";
 import { Command } from "../command";
+import { Clicker } from "../clicker";
 
 
 enum CurveCommandMode {
@@ -16,6 +17,7 @@ export class CurveCommand extends Command {
   private degree: number;
   private curve: Curve | null;
   private mode: CurveCommandMode;
+  private clicker: Clicker;
 
   constructor() {
     super();
@@ -23,14 +25,16 @@ export class CurveCommand extends Command {
     this.curve = null;
     this.degree = 2;
     this.mode = CurveCommandMode.AddPoints;
+    this.clicker = new Clicker();
   }
 
-  public handleInput(input: string): void {
+  public override handleInput(input: string): void {
     if (this.mode === CurveCommandMode.AddPoints) {
       switch (input) {
         case "0":
           this.curve?.destroy();
           this.finished = true;
+          this.clicker.destroy();
           break;
         case "1":
           this.mode = CurveCommandMode.ChangeDegree;
@@ -44,6 +48,7 @@ export class CurveCommand extends Command {
             }
           }
           this.finished = true;
+          this.clicker.destroy();
           break;
       }
     } else if (this.mode === CurveCommandMode.ChangeDegree) {
@@ -62,11 +67,9 @@ export class CurveCommand extends Command {
     }
   }
 
-  public handleClick(x: number, y: number): void {
-    const ray: Ray = INSTANCE.getScene().getCamera().getRayAtPixel(x, y);
-    const t: number | null = ray.intersectScene(INSTANCE.getScene());
-    if (t && t > 0.0) { // click intersected scene
-      const point: Vec3 = ray.at(t);
+  public override handleClick(): void {
+    if (this.clicker.getPoint()) {
+      const point: Vec3 = this.clicker.getPoint()!;
       if (this.curve) {
         this.curve.updateLastControlPoint(point, 1);
         this.curve.addControlPoint(point, 1);
@@ -80,17 +83,14 @@ export class CurveCommand extends Command {
     }
   }
 
-  public handleMouseMove(x: number, y: number): void {
-    if (this.curve) {
-      const ray: Ray = INSTANCE.getScene().getCamera().getRayAtPixel(x, y);
-      const t: number | null = ray.intersectScene(INSTANCE.getScene());
-      if (t && t > 0.0) { // click intersected scene
-        this.curve.updateLastControlPoint(ray.at(t), 1)
-      }
+  public override handleMouseMove(): void {
+    this.clicker.onMouseMove();
+    if (this.curve && this.clicker.getPoint()) {
+      this.curve.updateLastControlPoint(this.clicker.getPoint()!, 1);
     }
   }
 
-  public getInstructions(): string {
+  public override getInstructions(): string {
     switch (this.mode) {
       case CurveCommandMode.AddPoints:
         if (this.curve == null)
@@ -103,7 +103,7 @@ export class CurveCommand extends Command {
     }
   }
 
-  public isFinished(): boolean {
+  public override isFinished(): boolean {
     return this.finished;
   }
 

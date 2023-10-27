@@ -1,21 +1,23 @@
 import { INSTANCE } from "../../cad";
+import { Command } from "../command";
 
 enum CameraCommandMode {
   Menu,
   Fovy,
 }
 
-export class CameraCommand {
+export class CameraCommand extends Command {
 
   private mode: CameraCommandMode;
   private finished: boolean;
 
   constructor() {
+    super();
     this.mode = CameraCommandMode.Menu;
     this.finished = false;
   }
 
-  public handleInput(input: string): void {
+  public override handleInput(input: string): void {
     switch (this.mode) {
       case CameraCommandMode.Menu:
         this.handleMenuInput(input);
@@ -26,15 +28,15 @@ export class CameraCommand {
     }
   }
 
-  public handleClick(x: number, y: number): void {
+  public override handleClick(): void {
 
   }
 
-  public handleMouseMove(x: number, y: number): void {
+  public override handleMouseMove(): void {
 
   }
 
-  public getInstructions(): string {
+  public override getInstructions(): string {
     const fovy: number = INSTANCE.getScene().getCamera().getFovy();
     const fovyDegrees: string = (180.0 * fovy / Math.PI).toFixed(1);
     switch (this.mode) {
@@ -48,7 +50,7 @@ export class CameraCommand {
     }
   }
 
-  public isFinished(): boolean {
+  public override isFinished(): boolean {
     return this.finished;
   }
 

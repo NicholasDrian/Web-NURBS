@@ -21,16 +21,15 @@ export class MouseHandler {
   public onMouseMove(event: MouseEvent): void {
     this.mousePos = [event.clientX, event.clientY];
     this.drag?.update(event.clientX, event.clientY);
+    INSTANCE.getCommandManager().handleMouseMove();
   }
 
   public onMouseDown(event: MouseEvent): void {
     if (event.button == 0) { // left click
-
       this.drag = new Drag(event.clientX, event.clientY);
       this.mouseDown = true;
       this.shiftDown = event.shiftKey;
       this.controlDown = event.ctrlKey;
-
     }
   }
 
@@ -38,7 +37,7 @@ export class MouseHandler {
     if (event.button == 0) { // left click
 
       if (!this.drag!.isDrag()) {
-        INSTANCE.getCommandManager().handleClickInput(event);
+        INSTANCE.getCommandManager().handleClickInput();
         INSTANCE.getCli().render();
       }
 

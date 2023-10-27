@@ -1,58 +1,49 @@
 import { Vec3 } from "wgpu-matrix";
 import { INSTANCE } from "../../cad";
 import { Line } from "../../geometry/line";
-import { Ray } from "../../geometry/ray";
 import { Command } from "../command";
-import { Selector } from "../selector";
+import { Clicker } from "../clicker";
 
 
 export class LineCommand extends Command {
 
   private finished: boolean;
   private line: Line | null;
-  private selector: Selector;
+  private clicker: Clicker;
 
   constructor() {
     super();
     this.finished = false;
     this.line = null;
-    this.selector = new Selector();
+    this.clicker = new Clicker();
   }
 
-  public handleInput(input: string): void {
+  public override handleInput(input: string): void {
     switch (input) {
       case "0": case "":
         if (this.line) this.line.delete();
-        this.selector.destroy();
+        this.clicker.destroy();
         this.finished = true;
         break;
     }
 
-    // todo
+    // TODO: 
   }
 
-  public handleMouseMove(x: number, y: number): void {
-    if (this.line) {
-      const ray: Ray = INSTANCE.getScene().getCamera().getRayAtPixel(x, y);
-      const t: number | null = ray.intersectScene(INSTANCE.getScene());
-      if (t && t > 0.0) { // click intersected scene
-        const point: Vec3 = ray.at(t);
-        this.line.updateEnd(point);
-      }
+  public override handleMouseMove(): void {
+    this.clicker.onMouseMove();
+    if (this.line && this.clicker.getPoint()) {
+      this.line.updateEnd(this.clicker.getPoint()!);
     }
-    this.selector.onMouseMove();
   }
 
-  public handleClick(x: number, y: number): void {
-
-    const ray: Ray = INSTANCE.getScene().getCamera().getRayAtPixel(x, y);
-    const t: number | null = ray.intersectScene(INSTANCE.getScene());
-    if (t && t > 0.0) { // click intersected scene
-      const point: Vec3 = ray.at(t);
+  public override handleClick(): void {
+    const point: Vec3 | null = this.clicker.getPoint();
+    if (point) {
       if (this.line) {
         this.line.updateEnd(point);
         INSTANCE.getScene().addGeometry(this.line);
-        this.selector.destroy();
+        this.clicker.destroy();
         this.finished = true;
       } else {
         this.line = new Line(point, point, [1, 0, 0, 1]);
@@ -60,7 +51,7 @@ export class LineCommand extends Command {
     }
   }
 
-  public getInstructions(): string {
+  public override getInstructions(): string {
     if (this.line) {
       return "Exit:0  Click or type end point.  $";
     } else {
@@ -68,7 +59,7 @@ export class LineCommand extends Command {
     }
   }
 
-  public isFinished(): boolean {
+  public override isFinished(): boolean {
     return this.finished;
   }
 

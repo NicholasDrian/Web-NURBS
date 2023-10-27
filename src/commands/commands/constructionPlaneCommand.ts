@@ -20,7 +20,7 @@ export class ConstructionPlaneCommand extends Command {
     this.finished = false;
   }
 
-  public handleInput(input: string): void {
+  public override handleInput(input: string): void {
     switch (this.mode) {
       case ConstructionPlaneCommandMode.Menu:
         this.handleMenuInput(input);
@@ -38,11 +38,11 @@ export class ConstructionPlaneCommand extends Command {
     }
   }
 
-  public handleClick(x: number, y: number): void {
+  public override handleClick(): void {
 
   }
 
-  public getInstructions(): string {
+  public override getInstructions(): string {
     const constructionPlane = INSTANCE.getScene().getConstructionPlane();
     const minorCount: string = constructionPlane.getMinorCount().toString();
     const majorCount: string = constructionPlane.getMajorCount().toString();
@@ -61,11 +61,11 @@ export class ConstructionPlaneCommand extends Command {
     return "";
   }
 
-  public isFinished(): boolean {
+  public override isFinished(): boolean {
     return this.finished;
   }
 
-  public handleMouseMove(x: number, y: number): void {
+  public override handleMouseMove(): void {
 
   }
 

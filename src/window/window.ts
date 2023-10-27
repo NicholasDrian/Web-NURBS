@@ -21,8 +21,8 @@ export abstract class CADWindow {
   private updateSize(): void {
     const left: number = Math.min(this.start[0], this.end[0]);
     const top: number = Math.min(this.start[1], this.end[1]);
-    const width: number = Math.abs(this.start[0] - this.end[0]);
-    const height: number = Math.abs(this.start[1] - this.end[1]);
+    const width: number = Math.abs(this.start[0] - this.end[0]) - 10;
+    const height: number = Math.abs(this.start[1] - this.end[1]) - 10;
     this.element.setAttribute("style", `
       left:${left}px;
       top:${top}px;

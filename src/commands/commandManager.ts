@@ -68,15 +68,15 @@ export class CommandManager {
 
   }
 
-  public handleClickInput(event: MouseEvent) {
-    this.currentCommand?.handleClick(event.clientX, event.clientY);
+  public handleClickInput() {
+    this.currentCommand?.handleClick();
     if (this.currentCommand?.isFinished()) {
       this.currentCommand = null;
     }
   }
 
-  public handleMouseMove(event: MouseEvent) {
-    this.currentCommand?.handleMouseMove(event.clientX, event.clientY);
+  public handleMouseMove() {
+    this.currentCommand?.handleMouseMove();
   }
 
   public getInstructions(): string {

@@ -1,4 +1,5 @@
 import { INSTANCE } from "../../cad";
+import { Cursor } from "../../widgets/cursor";
 import { WINDOW_NAMES } from "../../window/windowManager";
 import { Command } from "../command";
 
@@ -13,14 +14,16 @@ export class WindowCommand extends Command {
   private finished: boolean;
   private mode: WindowCommandMode;
   private windowName: string = "none";
+  private cursor: Cursor;
 
   constructor() {
     super();
     this.finished = false;
     this.mode = WindowCommandMode.SelectWindow;
+    this.cursor = new Cursor();
   }
 
-  public handleInput(input: string): void {
+  public override handleInput(input: string): void {
     switch (this.mode) {
       case WindowCommandMode.SelectWindow:
         if (input == "0") {
@@ -44,7 +47,20 @@ export class WindowCommand extends Command {
     }
   }
 
-  public handleClick(x: number, y: number): void {
+  // rounds n to nearest multiple of m
+  private nearestMultiple(n: number, m: number): number {
+    const delta = n % m;
+    if (delta < m / 2) n -= delta;
+    else n += m - delta;
+    return n;
+  }
+
+  private roundScreenPoint(p: [number, number]): [number, number] {
+    return [this.nearestMultiple(p[0], 10), this.nearestMultiple(p[1], 10)];
+  }
+
+  public override handleClick(): void {
+    const [x, y] = this.roundScreenPoint(INSTANCE.getEventManager().getMouseHandler().getMousePos());
     switch (this.mode) {
       case WindowCommandMode.SelectWindow:
         break;
@@ -62,7 +78,9 @@ export class WindowCommand extends Command {
     }
   }
 
-  public handleMouseMove(x: number, y: number): void {
+  public override handleMouseMove(): void {
+    const [x, y] = this.roundScreenPoint(INSTANCE.getEventManager().getMouseHandler().getMousePos());
+    this.cursor.setPosition([x, y]);
     switch (this.mode) {
       case WindowCommandMode.SelectWindow:
         break;
@@ -76,7 +94,7 @@ export class WindowCommand extends Command {
     }
   }
 
-  public getInstructions(): string {
+  public override getInstructions(): string {
     switch (this.mode) {
       case WindowCommandMode.SelectWindow:
         var res: string = "Exit:0  ";
@@ -93,7 +111,7 @@ export class WindowCommand extends Command {
     }
   }
 
-  public isFinished(): boolean {
+  public override isFinished(): boolean {
     return this.finished;
   }
 
