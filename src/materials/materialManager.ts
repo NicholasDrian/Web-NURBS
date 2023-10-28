@@ -4,17 +4,19 @@ import { Material, MaterialName } from "./material";
 export class MaterialManager {
 
   private materials: Map<MaterialName, Material>;
-  private internalMaterials: Map<MaterialName, Material>;
 
   constructor() {
     this.materials = new Map<MaterialName, Material>();
-    this.internalMaterials = new Map<MaterialName, Material>();
     this.createDefaultMaterial();
-    this.createInternalMaterials();
   }
 
   private createDefaultMaterial(): void {
     this.materials.set("default", new Material("default", vec4.create(0.4, 0.4, 0.4, 1.0)));
+    this.materials.set("darker grey", new Material("darker grey", vec4.create(0.1, 0.1, 0.1, 1.0)));
+    this.materials.set("dark grey", new Material("dark grey", vec4.create(0.3, 0.3, 0.3, 1.0)));
+    this.materials.set("lighter grey", new Material("lighter grey", vec4.create(0.9, 0.9, 0.9, 1.0)));
+    this.materials.set("light grey", new Material("light grey", vec4.create(0.7, 0.7, 0.7, 1.0)));
+    this.materials.set("mid grey", new Material("mid grey", vec4.create(0.5, 0.5, 0.5)));
   }
 
   public getDefaultMaterial(): Material {
@@ -37,21 +39,6 @@ export class MaterialManager {
 
   public getMaterial(name: MaterialName): Material | undefined {
     return this.materials.get(name);
-  }
-
-  public getInternalMaterial(name: MaterialName): Material | undefined {
-    return this.internalMaterials.get(name);
-  }
-
-  public setInternalMaterial(name: MaterialName, mat: Material): void {
-    this.internalMaterials.set(name, mat);
-  }
-
-  private createInternalMaterials(): void {
-    this.internalMaterials.set("darker grey", new Material("darker grey", vec4.create(0.1, 0.1, 0.1, 1.0)));
-    this.internalMaterials.set("dark grey", new Material("dark grey", vec4.create(0.3, 0.3, 0.3, 1.0)));
-    this.internalMaterials.set("lighter grey", new Material("lighter grey", vec4.create(0.9, 0.9, 0.9, 1.0)));
-    this.internalMaterials.set("light grey", new Material("light grey", vec4.create(0.7, 0.7, 0.7, 1.0)));
   }
 
 }

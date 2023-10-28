@@ -49,6 +49,7 @@ export class Lines extends Geometry {
       verts.push(...this.points[i], 1.0);
     }
     this.renderLines = INSTANCE.getScene().addRenderLines(new RenderLines(
+      this,
       new Float32Array(verts),
       new Int32Array(this.indices),
       this.getModel()));

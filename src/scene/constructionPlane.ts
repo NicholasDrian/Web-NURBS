@@ -61,7 +61,7 @@ export class ConstructionPlane {
     if (this.majorLines) this.majorLines.delete();
     if (this.minorLines) this.minorLines.delete();
     this.majorLines = new Lines(majorVerts, majorIndices, null, mat4.identity(), "lighter grey");
-    this.minorLines = new Lines(minorVerts, minorIndices, null, mat4.identity(), "light grey");
+    this.minorLines = new Lines(minorVerts, minorIndices, null, mat4.identity(), "mid grey");
   }
 
 

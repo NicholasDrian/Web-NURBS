@@ -1,5 +1,7 @@
 import { Mat4, mat4, vec4, Vec4 } from "wgpu-matrix"
 import { INSTANCE } from "../cad"
+import { Geometry } from "../geometry/geometry";
+import { Material, MaterialName } from "../materials/material";
 import { swizzleYZ } from "../utils/math";
 
 export class RenderLines {
@@ -15,18 +17,20 @@ export class RenderLines {
     ]
   };
 
+
   private vertexBuffer: GPUBuffer;
   private indexBuffer: GPUBuffer;
   private bindGroup!: GPUBindGroup;
   private mvp: Float32Array;
   private mvpBuffer: GPUBuffer;
-  private colorBuffer: GPUBuffer;
   private indexCount: number;
 
   constructor(
+    private parent: Geometry,
     vertices: Float32Array,
     indices: Int32Array,
-    private model: Mat4 = mat4.identity()
+    private model: Mat4 = mat4.identity(),
+    private material: MaterialName = "default"
   ) {
 
     // vertex
@@ -54,15 +58,6 @@ export class RenderLines {
     });
     this.mvp = new Float32Array(16);
 
-    //color
-    this.colorBuffer = INSTANCE.getRenderer().getDevice().createBuffer({
-      label: "color buffer",
-      size: 16,
-      usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
-    });
-
-    INSTANCE.getRenderer().getDevice().queue.writeBuffer(this.colorBuffer, 0, <Float32Array>vec4.create(.5, .5, .5, 1));
-    //TODO: color....
   }
 
   public draw(pass: GPURenderPassEncoder): void {
@@ -83,6 +78,7 @@ export class RenderLines {
   }
 
   private updateBindGroup(): void {
+    const mat: Material = INSTANCE.getMaterialManager().getMaterial(this.material)!;
     this.bindGroup = INSTANCE.getRenderer().getDevice().createBindGroup({
       label: "bind group",
       layout: INSTANCE.getRenderer().getBindGroupLayout(),
@@ -92,7 +88,7 @@ export class RenderLines {
           resource: { buffer: this.mvpBuffer },
         }, {
           binding: 1,
-          resource: { buffer: this.colorBuffer },
+          resource: { buffer: this.parent.getColorBuffer() },
         }
       ]
     });

@@ -34,6 +34,21 @@ export abstract class Geometry {
     this.material = mat;
   }
 
+  public getColorBuffer(): GPUBuffer {
+
+    if (this.material) {
+      const mat: Material | undefined = INSTANCE.getMaterialManager().getMaterial(this.material);
+      if (mat && mat.color) {
+        return mat.getColorBuffer()!;
+      }
+      if (this.parent) {
+        return this.parent.getColorBuffer();
+      }
+    }
+    return INSTANCE.getMaterialManager().getDefaultMaterial().getColorBuffer()!;
+  }
+
+
   public getColor(): Vec4 {
     if (this.material) {
       const mat: Material | undefined = INSTANCE.getMaterialManager().getMaterial(this.material);

@@ -39,13 +39,14 @@ class CAD {
 
     this.settingsManager = new SettingsManager();
     this.commandManager = new CommandManager();
-    this.materialManager = new MaterialManager();
     this.cli = new CLI();
 
     this.setMode(OperatingMode.Command);
 
     this.renderer = new Renderer();
     await this.renderer.init();
+
+    this.materialManager = new MaterialManager();
 
     this.scene = new Scene();
     await this.scene.init();
