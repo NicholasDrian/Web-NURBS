@@ -1,4 +1,5 @@
 import { mat4, Mat4, vec3, Vec3, vec4, Vec4 } from "wgpu-matrix";
+import { MaterialName } from "../../materials/material";
 import { BoundingBox } from "../boundingBox";
 import { Geometry } from "../geometry";
 import { PolyLine } from "../polyLine";
@@ -18,11 +19,11 @@ export class Curve extends Geometry {
     private degree: number,
     private knots: number[] = [],
     weights: number[] = [],
-    model?: Mat4
+    model?: Mat4,
+    material: MaterialName | null = null
   ) {
-    super(parent);
+    super(parent, model, material);
 
-    if (model) this.setModel(model);
 
     if (this.knots.length == 0) {
       this.knots = genericKnotVector(controlPoints.length, this.degree);
@@ -106,13 +107,13 @@ export class Curve extends Geometry {
     this.polyline = new PolyLine(
       this,
       samples,
-      [0, 1, 0, 1]);
+    );
     this.controlCage = new PolyLine(
       this,
       this.controlPoints.map((point: Vec4) => {
         return vec3.create(point[0] / point[3], point[1] / point[3], point[2] / point[3]);
-      }),
-      [0, 0, 1, 1]);
+      })
+    );
 
   }
 

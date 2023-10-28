@@ -27,9 +27,12 @@ class LineBoundingBoxHeirarchyNode {
   private setup(verts: Vec3[], indices: number[]): void {
     this.axis = this.depth % 3;
     this.boundingBox = new BoundingBox();
+    var average: Vec3 = vec3.create(0, 0, 0);
     for (let index of indices) {
       this.boundingBox.addVec3(verts[index]);
+      average = vec3.add(average, verts[index]);
     }
+    average = vec3.scale(average, 1 / indices.length);
 
     if (indices.length / 2 <= LineBoundingBoxHeirarchy.MAX_LINES_PER_LEAF) {
       // leaf
@@ -39,16 +42,18 @@ class LineBoundingBoxHeirarchyNode {
     } else {
       // non leaf
       this.indices = null;
-      const child1Indices: number[] = [];
-      const child2Indices: number[] = [];
-      const bbCenter = this.boundingBox.getCenter();
+
+      var child1Indices: number[] = [];
+      var child2Indices: number[] = [];
+
+
       for (let i = 0; i < indices.length; i += 2) {
         const lineCenter = vec3.scale(
           vec3.add(
             verts[indices[i]],
             verts[indices[i + 1]]
           ), 0.5);
-        if (lineCenter[this.axis] < bbCenter[this.axis]) {
+        if (lineCenter[this.axis] < average[this.axis]) {
           child1Indices.push(indices[i], indices[i + 1]);
         } else {
           child2Indices.push(indices[i], indices[i + 1]);
@@ -57,29 +62,6 @@ class LineBoundingBoxHeirarchyNode {
 
       this.child1 = new LineBoundingBoxHeirarchyNode(verts, child1Indices, this.depth + 1);
       this.child2 = new LineBoundingBoxHeirarchyNode(verts, child2Indices, this.depth + 1);
-    }
-  }
-
-  public add(indices: [number, number, number], verts: Vec3[]): void {
-    if (this.isLeaf()) {
-      this.indices!.push(...indices);
-      if (this.indices!.length / 2 < LineBoundingBoxHeirarchy.MAX_LINES_PER_LEAF) {
-        this.setup(verts, this.indices!);
-      }
-    } else {
-      const triCenterPoint = vec3.scale(vec3.add(
-        verts[indices[0]],
-        vec3.add(
-          verts[indices[1]],
-          verts[indices[2]]
-        )
-      ), 1 / 3);
-      const bbCenterPoint = this.boundingBox.getCenter();
-      if (triCenterPoint[this.axis] < bbCenterPoint[this.axis]) {
-        this.child1!.add(indices, verts);
-      } else {
-        this.child2!.add(indices, verts);
-      }
     }
   }
 
@@ -129,6 +111,7 @@ export class LineBoundingBoxHeirarchy {
   private root: LineBoundingBoxHeirarchyNode;
 
   constructor(verts: Vec3[], indices: number[]) {
+    // remove degenerate edges, they can cause infinite loop.
     let reducedIndices: number[] = [];
     for (let i = 0; i < indices.length; i += 2) {
       const a: Vec3 = verts[indices[i]];

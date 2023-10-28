@@ -1,5 +1,6 @@
 import { mat4, Mat4, vec3, Vec3 } from "wgpu-matrix";
 import { INSTANCE } from "../cad";
+import { MaterialName } from "../materials/material";
 import { RenderMesh } from "../render/renderMesh";
 import { RenderID } from "../scene/scene";
 import { BoundingBox } from "./boundingBox";
@@ -20,11 +21,10 @@ export class Mesh extends Geometry {
     private verts: Vec3[],
     private normals: Vec3[],
     private indices: number[],
-    model?: Mat4
+    model?: Mat4,
+    material: MaterialName | null = null
   ) {
-    super(parent);
-
-    if (model) this.setModel(model);
+    super(parent, model, material);
 
     const vertexBuffer: number[] = [];
     for (let i = 0; i < verts.length; i++) {

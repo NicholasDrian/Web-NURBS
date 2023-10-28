@@ -1,5 +1,6 @@
 import { mat4, Mat4, vec3, Vec3 } from "wgpu-matrix";
 import { INSTANCE } from "../cad";
+import { MaterialName } from "../materials/material";
 import { RenderLines } from "../render/renderLines";
 import { ObjectID, RenderID } from "../scene/scene";
 import { BoundingBox } from "./boundingBox";
@@ -16,11 +17,10 @@ export class Line extends Geometry {
     parent: Geometry | null,
     private start: Vec3,
     private end: Vec3,
-    private color: [number, number, number, number],
-    model?: Mat4
+    model?: Mat4,
+    material: MaterialName | null = null
   ) {
-    super(parent);
-    if (model) this.setModel(model);
+    super(parent, model, material);
     this.renderLines = 0;
     this.updateRenderLines();
     this.updateBoundingBox();
@@ -43,7 +43,6 @@ export class Line extends Geometry {
     this.renderLines = INSTANCE.getScene().addRenderLines(new RenderLines(
       new Float32Array([...this.start, 1.0, ...this.end, 1.0]),
       new Int32Array([0, 1]),
-      this.color
     ));
   }
 

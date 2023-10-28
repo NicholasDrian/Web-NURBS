@@ -43,11 +43,15 @@ export class BoundingBox {
   }
 
   public getCenter(): Vec3 {
-    return vec3.create(
+    const res: Vec3 = vec3.create(
       (this.xMin + this.xMax) / 2,
       (this.yMin + this.yMax) / 2,
       (this.zMin + this.zMax) / 2,
     );
+    if (isNaN(res[0])) res[0] = 0;
+    if (isNaN(res[1])) res[1] = 0;
+    if (isNaN(res[2])) res[2] = 0;
+    return res;
   }
 
 }

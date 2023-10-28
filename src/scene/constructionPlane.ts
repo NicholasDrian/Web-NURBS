@@ -1,32 +1,32 @@
-import { Vec3 } from "wgpu-matrix";
+import { mat4, vec3, Vec3 } from "wgpu-matrix";
 import { INSTANCE } from "../cad";
+import { Lines } from "../geometry/lines";
+import { MaterialName } from "../materials/material";
 import { RenderLines } from "../render/renderLines"
 import { RenderID } from "./scene";
 
 // TODO: draw this first, disable depth buffer while drawing
 export class ConstructionPlane {
 
-  private majorLines: RenderID;
-  private minorLines: RenderID;
+  private majorLines: Lines | null;
+  private minorLines: Lines | null;
 
   constructor(private majorCount: number = 10,
     private minorCount: number = 10,
     private cellSize: number = 1) {
-    this.majorLines = 0;
-    this.minorLines = 0;
+    this.majorLines = null;
+    this.minorLines = null;
     this.setup();
   }
 
   private setup() {
 
-    if (this.majorLines) INSTANCE.getScene().removeLines(this.majorLines);
-    if (this.minorLines) INSTANCE.getScene().removeLines(this.minorLines);
 
     const cellCount = this.majorCount * this.minorCount;
     const size = cellCount * this.cellSize;
 
-    const majorVerts: number[] = [];
-    const minorVerts: number[] = [];
+    const majorVerts: Vec3[] = [];
+    const minorVerts: Vec3[] = [];
     const majorIndices: number[] = [];
     const minorIndices: number[] = [];
 
@@ -40,27 +40,28 @@ export class ConstructionPlane {
     for (var i = 0; i <= cellCount; i++) {
       if (i % this.minorCount === 0) { // major line
         majorVerts.push(
-          start + i * this.cellSize, -halfSize, z, 1,
-          start + i * this.cellSize, halfSize, z, 1,
-          -halfSize, start + i * this.cellSize, z, 1,
-          halfSize, start + i * this.cellSize, z, 1,
+          vec3.create(start + i * this.cellSize, -halfSize, z),
+          vec3.create(start + i * this.cellSize, halfSize, z),
+          vec3.create(-halfSize, start + i * this.cellSize, z),
+          vec3.create(halfSize, start + i * this.cellSize,),
         );
         majorIndices.push(majorIndex, majorIndex + 1, majorIndex + 2, majorIndex + 3);
         majorIndex += 4;
       } else { // minor line
         minorVerts.push(
-          start + i * this.cellSize, -halfSize, z, 1,
-          start + i * this.cellSize, halfSize, z, 1,
-          -halfSize, start + i * this.cellSize, z, 1,
-          halfSize, start + i * this.cellSize, z, 1,
+          vec3.create(start + i * this.cellSize, -halfSize, z),
+          vec3.create(start + i * this.cellSize, halfSize, z),
+          vec3.create(-halfSize, start + i * this.cellSize, z),
+          vec3.create(halfSize, start + i * this.cellSize, z),
         );
         minorIndices.push(minorIndex, minorIndex + 1, minorIndex + 2, minorIndex + 3);
         minorIndex += 4;
       }
     }
-    // TODO: colors based on dark mode
-    this.majorLines = INSTANCE.getScene().addRenderLines(new RenderLines(new Float32Array(majorVerts), new Int32Array(majorIndices), [1.0, 0.9, 0.9, 1.0]));
-    this.minorLines = INSTANCE.getScene().addRenderLines(new RenderLines(new Float32Array(minorVerts), new Int32Array(minorIndices), [0.5, 0.4, 0.4, 1.0]));
+    if (this.majorLines) this.majorLines.delete();
+    if (this.minorLines) this.minorLines.delete();
+    this.majorLines = new Lines(majorVerts, majorIndices, null, mat4.identity(), "lighter grey");
+    this.minorLines = new Lines(minorVerts, minorIndices, null, mat4.identity(), "light grey");
   }
 
 
@@ -98,19 +99,11 @@ export class ConstructionPlane {
     return this.cellSize;
   }
 
-  public getMajorLines(): RenderID {
-    return this.majorLines;
+  public setMajorMaterial(mat: MaterialName) {
+    this.majorLines!.setMaterial(mat);
   }
-
-  public getMinorLines(): RenderID {
-    return this.minorLines;
-  }
-
-  public setMajorColor(color: [number, number, number, number]) {
-    INSTANCE.getScene().getLines(this.majorLines).setColor(color);
-  }
-  public setMinorColor(color: [number, number, number, number]) {
-    INSTANCE.getScene().getLines(this.minorLines).setColor(color);
+  public setMinorMaterial(mat: MaterialName) {
+    this.minorLines!.setMaterial(mat);
   }
 
   public setMinorCount(count: number): void {

@@ -1,4 +1,4 @@
-import { Mat4, mat4 } from "wgpu-matrix"
+import { Mat4, mat4, vec4, Vec4 } from "wgpu-matrix"
 import { INSTANCE } from "../cad"
 import { swizzleYZ } from "../utils/math";
 
@@ -26,7 +26,6 @@ export class RenderLines {
   constructor(
     vertices: Float32Array,
     indices: Int32Array,
-    color: [number, number, number, number],
     private model: Mat4 = mat4.identity()
   ) {
 
@@ -61,7 +60,9 @@ export class RenderLines {
       size: 16,
       usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
     });
-    this.setColor(color);
+
+    INSTANCE.getRenderer().getDevice().queue.writeBuffer(this.colorBuffer, 0, <Float32Array>vec4.create(.5, .5, .5, 1));
+    //TODO: color....
   }
 
   public draw(pass: GPURenderPassEncoder): void {
@@ -69,10 +70,6 @@ export class RenderLines {
     pass.setVertexBuffer(0, this.vertexBuffer);
     pass.setIndexBuffer(this.indexBuffer, "uint32");
     pass.drawIndexed(this.indexCount);
-  }
-
-  public setColor(color: [number, number, number, number]) {
-    INSTANCE.getRenderer().getDevice().queue.writeBuffer(this.colorBuffer, 0, new Float32Array(color));
   }
 
   public update(): void {

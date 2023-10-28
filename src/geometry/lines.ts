@@ -8,16 +8,16 @@ import { Geometry } from "./geometry";
 import { LineBoundingBoxHeirarchy } from "./lineBoundingBoxHeirarchy";
 import { Ray } from "./ray";
 
-
-export class PolyLine extends Geometry {
+export class Lines extends Geometry {
 
   private renderLines!: RenderID;
   private boundingBox!: BoundingBox;
   private boundingBoxHeirarchy!: LineBoundingBoxHeirarchy;
 
   constructor(
-    parent: Geometry | null,
     private points: Vec3[],
+    private indices: number[],
+    parent: Geometry | null = null,
     model: Mat4 = mat4.identity(),
     material: MaterialName | null = null
   ) {
@@ -35,22 +35,7 @@ export class PolyLine extends Geometry {
   }
 
   public getSegmentCount(): number {
-    return this.points.length - 1;
-  }
-
-  public updateLastPoint(point: Vec3): void {
-    this.points[this.points.length - 1] = point;
-    this.update();
-  }
-
-  public removeLastPoint(): void {
-    this.points.pop();
-    this.update();
-  }
-
-  public addPoint(point: Vec3): void {
-    this.points.push(point);
-    this.update();
+    return this.indices.length / 2;
   }
 
   public delete(): void {
@@ -58,24 +43,18 @@ export class PolyLine extends Geometry {
   }
 
   private update(): void {
-
+    if (this.renderLines) INSTANCE.getScene().removeLines(this.renderLines);
     const verts: number[] = [];
-    const indices: number[] = [];
     for (let i = 0; i < this.points.length; i++) {
       verts.push(...this.points[i], 1.0);
-      indices.push(i, i + 1);
     }
-    indices.pop(); indices.pop();
-
-    if (this.renderLines) INSTANCE.getScene().removeLines(this.renderLines);
     this.renderLines = INSTANCE.getScene().addRenderLines(new RenderLines(
       new Float32Array(verts),
-      new Int32Array(indices),
-      this.getModel()
-    ));
+      new Int32Array(this.indices),
+      this.getModel()));
 
     this.updateBoundingBox();
-    this.boundingBoxHeirarchy = new LineBoundingBoxHeirarchy(this.points, indices);
+    this.boundingBoxHeirarchy = new LineBoundingBoxHeirarchy(this.points, this.indices);
   }
 
   private updateBoundingBox(): void {
@@ -85,5 +64,4 @@ export class PolyLine extends Geometry {
       this.boundingBox.addVec3(vec3.transformMat4(point, model));
     });
   }
-
 }
