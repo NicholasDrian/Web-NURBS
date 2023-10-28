@@ -1,4 +1,5 @@
 import { mat4, Mat4, vec3, Vec3, Vec4, vec4 } from "wgpu-matrix";
+import { swizzleYZ } from "../../utils/math";
 import { printMat4, vec3ToString } from "../../utils/print";
 import { Plane } from "../plane";
 import { Ray } from "../ray";
@@ -57,13 +58,12 @@ export const createCircleCenterNormalRadius = function(center: Vec3, normal: Vec
 
   // swizzle y and z in the matrix
   // why did they choose this rediculous clipspace
-  const model: Mat4 = mat4.create(
-    x[0], x[2], x[1], 0,
-    normal[0], normal[2], normal[1], 0,
-    y[0], y[2], y[1], 0,
-    center[0], center[2], center[1], 1
-  );
-  printMat4(model);
+  const model: Mat4 = swizzleYZ(mat4.create(
+    x[0], x[1], x[2], 0,
+    y[0], y[1], y[2], 0,
+    normal[0], normal[1], normal[2], 0,
+    center[0], center[1], center[2], 1
+  ));
   return new Curve(null, UNIT_CIRCLE_POINTS, UNIT_CIRCLE_DEGREE, UNIT_CIRCLE_KNOTS, UNIT_CIRCLE_WEIGHTS, model);
 }
 

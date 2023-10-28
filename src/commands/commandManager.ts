@@ -48,7 +48,7 @@ export class CommandManager {
         case "polyline": case "pl":
           this.currentCommand = new PolyLineCommand();
           break;
-        case "curve": case "cv":
+        case "curve": case "c":
           this.currentCommand = new CurveCommand();
           break;
         case "window": case "w":
@@ -57,7 +57,7 @@ export class CommandManager {
         case "snaps": case "s":
           this.currentCommand = new SnapsCommand();
           break;
-        case "circle": case "c":
+        case "circle": case "ci":
           this.currentCommand = new CircleCommand();
           break;
         default: INSTANCE.getLog().log("Invalid Command");

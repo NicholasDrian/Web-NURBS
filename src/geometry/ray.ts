@@ -115,7 +115,7 @@ export class Ray {
   public intersectScene(scene: Scene): number | null {
     const intersection: number | null = scene.getBoundingBoxHeirarchy().firstIntersection(this);
     if (intersection !== null) return intersection;
-    return this.intersectPlane(new Plane(vec3.create(0, 0, 0), vec3.create(0, 0, 1)));
+    return null;
   }
 
   public intersectTriangle(p1: Vec3, p2: Vec3, p3: Vec3): number | null {

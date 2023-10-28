@@ -203,7 +203,6 @@ export class Camera {
     mat4.lookAt(position, vec3.add(position, forward), up, view);
     mat4.perspective(this.fovy, this.screen.width / this.screen.height, 0.1, 1000.0, proj);
     mat4.multiply(proj, view, this.viewProj);
+
   }
-
-
 }

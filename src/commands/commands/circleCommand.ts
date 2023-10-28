@@ -1,7 +1,7 @@
 import { warn } from "console";
 import { vec3, Vec3 } from "wgpu-matrix";
 import { INSTANCE } from "../../cad";
-import { createCircleThreePoints } from "../../geometry/nurbs/circle";
+import { createCircleCenterNormalRadius, createCircleThreePoints } from "../../geometry/nurbs/circle";
 import { Curve } from "../../geometry/nurbs/curve";
 import { Clicker } from "../clicker";
 import { Command } from "../command";
@@ -37,7 +37,7 @@ export class CircleCommand extends Command {
 
   public override handleInput(input: string): void {
     if (input === "0") {
-      this.finished = true;
+      this.done();
       return;
     }
     switch (this.mode) {
@@ -45,6 +45,17 @@ export class CircleCommand extends Command {
         if (input === "1") this.mode = CircleCommandMode.ThreePoints;
         if (input === "2") this.mode = CircleCommandMode.CenterNormalRadius;
         if (input === "3") this.mode = CircleCommandMode.CenterPointPoint;
+        break;
+      case CircleCommandMode.CenterNormalRadius:
+        if (this.v3) {
+          const radius: number = parseFloat(input);
+          if (!isNaN(radius)) {
+            const normal: Vec3 = vec3.normalize(vec3.sub(this.v2!, this.v3));
+            if (this.curve) this.curve.destroy();
+            this.curve = createCircleCenterNormalRadius(this.v1!, normal, radius);
+            this.done();
+          }
+        }
         break;
     }
   }
@@ -103,20 +114,48 @@ export class CircleCommand extends Command {
 
   private handleClickCenterPointPoint(point: Vec3): void {
     if (!this.v1) {
-
+      this.v1 = point;
     } else if (!this.v2) {
-
+      if (!vec3.equals(this.v1, point)) this.v2 = point;
     } else if (!this.v3) {
-
+      if (!vec3.equals(this.v1, point) && !vec3.equals(this.v2, point)) {
+        const normal: Vec3 = vec3.normalize(
+          vec3.cross(
+            vec3.sub(this.v1, this.v2),
+            vec3.sub(this.v1, point)
+          )
+        );
+        const radius: number = vec3.distance(this.v1, this.v2);
+        this.curve = createCircleCenterNormalRadius(this.v1, normal, radius);
+        this.done();
+      }
     }
   }
 
   private handleMouseMoveCenterPointPoint(point: Vec3): void {
-
+    if (this.v2) {
+      if (!vec3.equals(this.v1!, point) && !vec3.equals(this.v2, point)) {
+        const normal: Vec3 = vec3.normalize(
+          vec3.cross(
+            vec3.sub(this.v1!, this.v2),
+            vec3.sub(this.v1!, point)
+          )
+        );
+        const radius: number = vec3.distance(this.v1!, this.v2);
+        if (this.curve) this.curve.destroy();
+        this.curve = createCircleCenterNormalRadius(this.v1!, normal, radius);
+      }
+    }
   }
 
   private getInstructionsCenterPointPoint(): string {
-    return "";
+    if (!this.v1) {
+      return "0:Exit  Click center point.";
+    } else if (!this.v2) {
+      return "0:Exit  Click point on circle perimeter.";
+    } else {
+      return "0:Exit  Click point to establish plane.";
+    }
   }
 
   private handleClickThreePoints(point: Vec3): void {
@@ -126,8 +165,7 @@ export class CircleCommand extends Command {
       if (!vec3.equals(this.v1, point)) this.v2 = point;
     } else if (!this.v3) {
       if (!vec3.equals(this.v1, point) && !vec3.equals(this.v2, point)) {
-        this.v3 = point;
-        this.curve = createCircleThreePoints(this.v1, this.v2, this.v3);
+        this.curve = createCircleThreePoints(this.v1, this.v2, point);
         this.done();
       }
     }
@@ -146,25 +184,49 @@ export class CircleCommand extends Command {
   }
 
   private handleClickCenterNormalRadius(point: Vec3): void {
-
     if (!this.v1) {
-
+      this.v1 = point;
     } else if (!this.v2) {
-
+      this.v2 = point;
     } else if (!this.v3) {
-
+      if (!vec3.equals(this.v2, point)) {
+        this.v3 = point;
+      }
+    } else {
+      if (!vec3.equals(this.v1, point)) {
+        const radius: number = vec3.distance(this.v1, point);
+        const normal: Vec3 = vec3.normalize(vec3.sub(this.v2, this.v3));
+        if (this.curve) this.curve.destroy();
+        this.curve = createCircleCenterNormalRadius(this.v1, normal, radius);
+        this.done();
+      }
     }
   }
   private handleMouseMoveCenterNormalRadius(point: Vec3): void {
-
+    if (this.v3) {
+      if (!vec3.equals(this.v1!, point)) {
+        const radius: number = vec3.distance(this.v1!, point);
+        const normal: Vec3 = vec3.normalize(vec3.sub(this.v2!, this.v3));
+        if (this.curve) this.curve.destroy();
+        this.curve = createCircleCenterNormalRadius(this.v1!, normal, radius);
+      }
+    }
   }
 
   private getInstructionsCenterNormalRadius(): string {
-    return "";
+    if (!this.v1) {
+      return "0:Exit  Click center point.";
+    } else if (!this.v2) {
+      return "0:Exit  Click start of normal vector.";
+    } else if (!this.v3) {
+      return "0:Exit  Click end of normal vector.";
+    } else {
+      return "0:Exit  Enter radius or click to determine radius.  $";
+    }
   }
 
   private done(): void {
-    INSTANCE.getScene().addGeometry(this.curve!);
+    if (this.curve) INSTANCE.getScene().addGeometry(this.curve);
     this.finished = true;
     this.clicker.destroy();
   }

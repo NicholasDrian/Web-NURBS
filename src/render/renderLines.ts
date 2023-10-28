@@ -1,5 +1,6 @@
 import { Mat4, mat4 } from "wgpu-matrix"
 import { INSTANCE } from "../cad"
+import { swizzleYZ } from "../utils/math";
 
 export class RenderLines {
 

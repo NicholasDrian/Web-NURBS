@@ -24,8 +24,16 @@ export class Clicker {
 
     const mousePos: [number, number] = INSTANCE.getEventManager().getMouseHandler().getMousePos();
     const ray: Ray = INSTANCE.getScene().getCamera().getRayAtPixel(mousePos[0], mousePos[1]);
-    const tGroundPlane: number | null = ray.intersectPlane(new Plane(vec3.create(0, 0, 0), vec3.create(0, 0, 1)));
 
+    const tScene: number | null = ray.intersectScene(INSTANCE.getScene());
+    if (tScene) {
+      this.point = ray.at(tScene);
+      this.intersectionScreenPos = INSTANCE.getScene().getCamera().getPixelAtPoint(this.point);
+      this.draw();
+      return;
+    }
+
+    const tGroundPlane: number | null = ray.intersectPlane(new Plane(vec3.create(0, 0, 0), vec3.create(0, 0, 1)));
     var pGroundPlane: Vec3 | null = tGroundPlane ? ray.at(tGroundPlane!) : null;
     this.point = pGroundPlane;
 
@@ -35,8 +43,8 @@ export class Clicker {
     }
     if (pGroundPlane) {
       this.intersectionScreenPos = INSTANCE.getScene().getCamera().getPixelAtPoint(pGroundPlane);
+      this.draw();
     }
-    this.draw();
   }
 
   public getPoint(): Vec3 | null {
