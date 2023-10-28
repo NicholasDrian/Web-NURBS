@@ -48,7 +48,6 @@ export abstract class Geometry {
     return INSTANCE.getMaterialManager().getDefaultMaterial().getColorBuffer()!;
   }
 
-
   public getColor(): Vec4 {
     if (this.material) {
       const mat: Material | undefined = INSTANCE.getMaterialManager().getMaterial(this.material);

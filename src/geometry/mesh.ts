@@ -31,9 +31,9 @@ export class Mesh extends Geometry {
       vertexBuffer.push(...verts[i], 1, ...normals[i], 0);
     }
     this.renderMesh = INSTANCE.getScene().addRenderMesh(new RenderMesh(
+      this,
       new Float32Array(vertexBuffer),
       new Int32Array(this.indices),
-      new Float32Array([0, 1, 0, 1]),
       this.getModel()
     ));
     this.boundingBoxHeirarchy = new MeshBoundingBoxHeirarchy(this.verts, this.indices);

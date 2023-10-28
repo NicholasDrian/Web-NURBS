@@ -1,5 +1,6 @@
 import { INSTANCE } from "../cad"
 import { mat4, Mat4 } from "wgpu-matrix"
+import { Geometry } from "../geometry/geometry";
 
 export class RenderMesh {
 
@@ -23,13 +24,12 @@ export class RenderMesh {
   private bindGroup!: GPUBindGroup;
   private mvp: Float32Array;
   private mvpBuffer: GPUBuffer;
-  private colorBuffer: GPUBuffer;
   private indexCount: number;
 
   constructor(
+    private parent: Geometry,
     vertices: Float32Array,
     indices: Int32Array,
-    color: Float32Array,
     private model: Mat4) {
 
     //vertex
@@ -56,14 +56,6 @@ export class RenderMesh {
       usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
     });
     this.mvp = new Float32Array(16);
-
-    //color
-    this.colorBuffer = INSTANCE.getRenderer().getDevice().createBuffer({
-      label: "color buffer",
-      size: 16,
-      usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
-    });
-    INSTANCE.getRenderer().getDevice().queue.writeBuffer(this.colorBuffer, 0, color);
 
   }
 
@@ -95,7 +87,7 @@ export class RenderMesh {
           resource: { buffer: this.mvpBuffer },
         }, {
           binding: 1,
-          resource: { buffer: this.colorBuffer },
+          resource: { buffer: this.parent.getColorBuffer() },
         }
       ]
     });
