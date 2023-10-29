@@ -93,6 +93,9 @@ export class Scene {
   public removeLines(id: RenderID) {
     this.renderLines.delete(id);
   }
+  public removePoints(id: RenderID) {
+    this.renderPoints.delete(id);
+  }
 
   public tick(): void {
 
@@ -102,6 +105,9 @@ export class Scene {
     }
     for (const mesh of this.renderMeshes.values()) {
       mesh.update();
+    }
+    for (const point of this.renderPoints.values()) {
+      point.update();
     }
 
   }

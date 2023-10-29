@@ -1,6 +1,6 @@
 
 struct VertexOutput {
-	@builtin(position) position : vec4<f32>,
+  @builtin(position) position : vec4<f32>,
 }
 
 @group(0) @binding(0) var<uniform> viewProj : mat4x4<f32>;
@@ -8,22 +8,22 @@ struct VertexOutput {
 
 @vertex
 fn vertexMain(
-	@location(0) position : vec4<f32>,
-	) -> VertexOutput
+    @location(0) position : vec4<f32>,
+    ) -> VertexOutput
 {
-	var output: VertexOutput;
-	output.position = viewProj * position.xzyw;
-	return output;
+  var output: VertexOutput;
+  output.position = viewProj * position.xzyw;
+  return output;
 }
 
 struct FragOutputs {
-    @builtin(frag_depth) depth: f32,
-    @location(0) color: vec4f,
-  }
+  @builtin(frag_depth) depth: f32,
+  @location(0) color: vec4f,
+}
 
-  struct FragInputs {
-      @builtin(position) position: vec4<f32>,
-    }
+struct FragInputs {
+  @builtin(position) position: vec4<f32>,
+}
 
 @fragment
 fn fragmentMain(input: FragInputs) -> FragOutputs {

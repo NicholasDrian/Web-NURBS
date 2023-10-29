@@ -1,13 +1,14 @@
-import { Mat4, mat4 } from "wgpu-matrix"
+import { Mat4, mat4, Vec3 } from "wgpu-matrix"
 import { INSTANCE } from "../cad"
+import { Geometry } from "../geometry/geometry";
 
 export class RenderPoints {
 
   private static readonly vertexBufferLayout: GPUVertexBufferLayout = {
-    arrayStride: 4,
+    arrayStride: 16,
     attributes: [
       { // location
-        format: "float32",
+        format: "float32x4",
         offset: 0,
         shaderLocation: 0,
       }
@@ -18,23 +19,25 @@ export class RenderPoints {
   private bindGroup!: GPUBindGroup;
   private mvp: Float32Array;
   private mvpBuffer: GPUBuffer;
-  private colorBuffer: GPUBuffer;
   private vertexCount: number;
 
   constructor(
-    vertices: Float32Array,
-    color: [number, number, number, number],
+    private parent: Geometry,
+    points: Vec3[],
     private model: Mat4 = mat4.identity()
   ) {
 
     // vertex
+    const verts: number[] = [];
+    for (let i = 0; i < points.length; i++) verts.push(...points[i], 1);
+    const vertexArray: Float32Array = new Float32Array(verts);
     this.vertexBuffer = INSTANCE.getRenderer().getDevice().createBuffer({
       label: "vertex buffer",
-      size: vertices.byteLength,
+      size: vertexArray.byteLength,
       usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST,
     });
-    INSTANCE.getRenderer().getDevice().queue.writeBuffer(this.vertexBuffer, 0, vertices);
-    this.vertexCount = vertices.length;
+    INSTANCE.getRenderer().getDevice().queue.writeBuffer(this.vertexBuffer, 0, vertexArray);
+    this.vertexCount = vertexArray.length / 4;
 
     //mvp
     this.mvpBuffer = INSTANCE.getRenderer().getDevice().createBuffer({
@@ -43,24 +46,14 @@ export class RenderPoints {
       usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
     });
     this.mvp = new Float32Array(16);
+    this.update();
 
-    //color
-    this.colorBuffer = INSTANCE.getRenderer().getDevice().createBuffer({
-      label: "color buffer",
-      size: 16,
-      usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
-    });
-    this.setColor(color);
   }
 
   public draw(pass: GPURenderPassEncoder): void {
     pass.setBindGroup(0, this.bindGroup);
     pass.setVertexBuffer(0, this.vertexBuffer);
     pass.draw(this.vertexCount);
-  }
-
-  public setColor(color: [number, number, number, number]) {
-    INSTANCE.getRenderer().getDevice().queue.writeBuffer(this.colorBuffer, 0, new Float32Array(color));
   }
 
   public update(): void {
@@ -83,7 +76,7 @@ export class RenderPoints {
           resource: { buffer: this.mvpBuffer },
         }, {
           binding: 1,
-          resource: { buffer: this.colorBuffer },
+          resource: { buffer: this.parent.getColorBuffer() },
         }
       ]
     });

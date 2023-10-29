@@ -27,6 +27,7 @@ export class WindowCommand extends Command {
     switch (this.mode) {
       case WindowCommandMode.SelectWindow:
         if (input == "0") {
+          this.cursor.destroy();
           this.finished = true;
           break;
         }

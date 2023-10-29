@@ -13,7 +13,8 @@ export class MaterialsWindow extends CADWindow {
     materials.forEach((mat: Material) => {
       html +=
         "name:" + mat.name +
-        ", color:" + (mat.color !== null ? vec4ToString(mat.color!) : "none");
+        ", color:" + (mat.color !== null ? vec4ToString(mat.color!) : "none") +
+        "<br>";
     });
     this.element.innerHTML = html;
   }
