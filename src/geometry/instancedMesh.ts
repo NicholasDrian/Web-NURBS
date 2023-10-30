@@ -32,13 +32,16 @@ export class InstancedMesh extends Geometry {
     for (let i = 0; i < verts.length; i++) {
       vertexBuffer.push(...verts[i], 1, ...normals[i], 0);
     }
-    this.renderMesh = INSTANCE.getScene().addRenderMeshInstanced(new RenderMeshInstanced(
+    const renderMeshObj: RenderMeshInstanced = new RenderMeshInstanced(
       this,
       new Float32Array(vertexBuffer),
       new Int32Array(this.indices),
       this.getModel(),
       transforms
-    ));
+    );
+    renderMeshObj.setConstantScreenSize(true);
+    this.renderMesh = INSTANCE.getScene().addRenderMeshInstanced(renderMeshObj);
+
     this.boundingBoxHeirarchy = new InstancedMeshBoundingBoxHeirarchy(this);
   }
 

@@ -23,8 +23,7 @@ export class RenderMesh {
   protected indexBuffer: GPUBuffer;
   protected bindGroup!: GPUBindGroup;
 
-  protected mvp: Float32Array;
-  protected mvpBuffer: GPUBuffer;
+  protected modelBuffer: GPUBuffer;
 
   protected flags: Int32Array;
   protected flagsBuffer: GPUBuffer;
@@ -55,14 +54,13 @@ export class RenderMesh {
     this.indexCount = indices.length;
 
     //mvp
-    this.mvpBuffer = INSTANCE.getRenderer().getDevice().createBuffer({
+    this.modelBuffer = INSTANCE.getRenderer().getDevice().createBuffer({
       label: "mvp",
       size: 64,
       usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
     });
-    this.mvp = new Float32Array(16);
 
-
+    //flags 
     this.flagsBuffer = INSTANCE.getRenderer().getDevice().createBuffer({
       label: "render mesh flags buffer",
       size: 4,
@@ -82,13 +80,12 @@ export class RenderMesh {
 
   public update(): void {
     this.updateFlags();
-    this.updateMVP();
+    this.updateModel();
     this.updateBindGroup();
   }
 
-  private updateMVP(): void {
-    mat4.mul(INSTANCE.getScene().getCamera().getViewProj(), this.model, this.mvp);
-    INSTANCE.getRenderer().getDevice().queue.writeBuffer(this.mvpBuffer, 0, this.mvp.buffer);
+  private updateModel(): void {
+    INSTANCE.getRenderer().getDevice().queue.writeBuffer(this.modelBuffer, 0, <Float32Array>this.model);
   }
   private updateFlags(): void {
     INSTANCE.getRenderer().getDevice().queue.writeBuffer(this.flagsBuffer, 0, this.flags);
@@ -101,7 +98,7 @@ export class RenderMesh {
       entries: [
         {
           binding: 0,
-          resource: { buffer: this.mvpBuffer },
+          resource: { buffer: this.modelBuffer },
         }, {
           binding: 1,
           resource: { buffer: this.parent.getColorBuffer() },

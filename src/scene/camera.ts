@@ -151,15 +151,15 @@ export class Camera {
       }
 
       if (this.isMovingForward) {
-        this.goForward((now - this.lastFrameTime) / 50);
+        this.goForward((now - this.lastFrameTime) / 20);
       } else if (this.isMovingBackward) {
-        this.goForward((this.lastFrameTime - now) / 50);
+        this.goForward((this.lastFrameTime - now) / 20);
       }
 
       if (this.isMovingRight) {
-        this.goRight((now - this.lastFrameTime) / 50);
+        this.goRight((now - this.lastFrameTime) / 20);
       } else if (this.isMovingLeft) {
-        this.goRight((this.lastFrameTime - now) / 50);
+        this.goRight((this.lastFrameTime - now) / 20);
       }
     }
 
@@ -201,7 +201,7 @@ export class Camera {
     const up: Vec3 = swapYZ(this.up);
 
     mat4.lookAt(position, vec3.add(position, forward), up, view);
-    mat4.perspective(this.fovy, this.screen.width / this.screen.height, 0.1, 1000.0, proj);
+    mat4.perspective(this.fovy, this.screen.width / this.screen.height, 0.001, 1000.0, proj);
     mat4.multiply(proj, view, this.viewProj);
 
   }

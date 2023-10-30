@@ -3,6 +3,7 @@ import { INSTANCE } from "../cad"
 import { mat4, Mat4 } from "wgpu-matrix"
 import { Geometry } from "../geometry/geometry";
 import { RenderMesh } from "./renderMesh";
+import { CONSTANT_SCREEN_SIZE_BIT } from "./flags";
 
 export class RenderMeshInstanced extends RenderMesh {
 
@@ -39,7 +40,7 @@ export class RenderMeshInstanced extends RenderMesh {
       entries: [
         {
           binding: 0,
-          resource: { buffer: this.mvpBuffer },
+          resource: { buffer: this.modelBuffer },
         }, {
           binding: 1,
           resource: { buffer: this.parent.getColorBuffer() },
@@ -52,6 +53,14 @@ export class RenderMeshInstanced extends RenderMesh {
         }
       ]
     });
+  }
+
+  public setConstantScreenSize(b: boolean): void {
+    if (b) {
+      this.flags[0] |= CONSTANT_SCREEN_SIZE_BIT;
+    } else {
+      this.flags[0] &= ~CONSTANT_SCREEN_SIZE_BIT;
+    }
   }
 
   public override draw(pass: GPURenderPassEncoder): void {

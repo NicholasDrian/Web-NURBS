@@ -17,8 +17,7 @@ export class RenderPoints {
 
   private bindGroup!: GPUBindGroup;
 
-  private mvp: Float32Array;
-  private mvpBuffer: GPUBuffer;
+  private modelBuffer: GPUBuffer;
 
   private flags: Int32Array;
   private flagsBuffer: GPUBuffer;
@@ -45,12 +44,11 @@ export class RenderPoints {
     this.vertexCount = vertexArray.length / 4;
 
     //mvp
-    this.mvpBuffer = INSTANCE.getRenderer().getDevice().createBuffer({
+    this.modelBuffer = INSTANCE.getRenderer().getDevice().createBuffer({
       label: "mvp",
       size: 64,
       usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
     });
-    this.mvp = new Float32Array(16);
 
     //flags
     this.flagsBuffer = INSTANCE.getRenderer().getDevice().createBuffer({
@@ -71,7 +69,7 @@ export class RenderPoints {
 
   public update(): void {
     this.updateFlags();
-    this.updateMVP();
+    this.updateModel();
     this.updateBindGroup();
   }
 
@@ -79,9 +77,8 @@ export class RenderPoints {
     INSTANCE.getRenderer().getDevice().queue.writeBuffer(this.flagsBuffer, 0, this.flags);
   }
 
-  private updateMVP(): void {
-    mat4.mul(INSTANCE.getScene().getCamera().getViewProj(), this.model, this.mvp);
-    INSTANCE.getRenderer().getDevice().queue.writeBuffer(this.mvpBuffer, 0, this.mvp);
+  private updateModel(): void {
+    INSTANCE.getRenderer().getDevice().queue.writeBuffer(this.modelBuffer, 0, <Float32Array>this.model);
   }
 
   private updateBindGroup(): void {
@@ -91,7 +88,7 @@ export class RenderPoints {
       entries: [
         {
           binding: 0,
-          resource: { buffer: this.mvpBuffer },
+          resource: { buffer: this.modelBuffer },
         }, {
           binding: 1,
           resource: { buffer: this.parent.getColorBuffer() },

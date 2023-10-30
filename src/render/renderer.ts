@@ -169,30 +169,29 @@ export class Renderer {
 
   }
 
-
   private createPipelines() {
     this.trianglePipeline = new Pipeline(
       this.device,
       this.canvasFormat,
-      this.bindGroupLayout,
+      [this.bindGroupLayout, this.globalUniforms.getLayout()],
       this.triangleShaderModule,
       PipelinePrimitive.Triangle);
     this.linePipeline = new Pipeline(
       this.device,
       this.canvasFormat,
-      this.bindGroupLayout,
+      [this.bindGroupLayout, this.globalUniforms.getLayout()],
       this.lineShaderModule,
       PipelinePrimitive.Line);
     this.pointPipeline = new Pipeline(
       this.device,
       this.canvasFormat,
-      this.bindGroupLayout,
+      [this.bindGroupLayout, this.globalUniforms.getLayout()],
       this.pointShaderModule,
       PipelinePrimitive.Point);
     this.instancedTrianglePipeline = new Pipeline(
       this.device,
       this.canvasFormat,
-      this.bindGroupLayoutInstanced,
+      [this.bindGroupLayoutInstanced, this.globalUniforms.getLayout()],
       this.instancedTriangleShaderModule,
       PipelinePrimitive.Triangle);
   }

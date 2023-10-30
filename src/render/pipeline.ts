@@ -13,12 +13,12 @@ export class Pipeline {
 
   private gpuPipeline: GPURenderPipeline;
 
-  constructor(device: GPUDevice, format: GPUTextureFormat, layout: GPUBindGroupLayout, shaderModule: GPUShaderModule, primitive: PipelinePrimitive) {
+  constructor(device: GPUDevice, format: GPUTextureFormat, layouts: GPUBindGroupLayout[], shaderModule: GPUShaderModule, primitive: PipelinePrimitive) {
 
 
     const pipelineLayout: GPUPipelineLayout = device.createPipelineLayout({
       label: getLabel(primitive) + " label",
-      bindGroupLayouts: [layout],
+      bindGroupLayouts: layouts,
     });
 
     this.gpuPipeline = device.createRenderPipeline({
