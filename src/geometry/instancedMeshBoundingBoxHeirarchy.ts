@@ -34,9 +34,13 @@ class InstancedMeshBoundingBoxHeirarchyNode {
     this.axis = this.depth % 3;
 
     this.boundingBox = new BoundingBox();
+    var averageCenter: Vec3 = vec3.create(0, 0, 0);
     for (let bb of boundingBoxes) {
       this.boundingBox.addBoundingBox(bb);
+      averageCenter = vec3.add(averageCenter, bb.getCenter());
     }
+    averageCenter = vec3.scale(averageCenter, 1 / boundingBoxes.length);
+
 
     if (instances.length <= InstancedMeshBoundingBoxHeirarchy.MAX_INSTANCES_PER_LEAF) {
       // leaf
@@ -48,10 +52,9 @@ class InstancedMeshBoundingBoxHeirarchyNode {
       this.instances = null;
       const child1Indices: number[] = [];
       const child2Indices: number[] = [];
-      const nodeCenter = this.boundingBox.getCenter();
       for (let i = 0; i < instances.length; i++) {
         const bbCenter = boundingBoxes[i].getCenter();
-        if (bbCenter[this.axis] < nodeCenter[this.axis]) {
+        if (bbCenter[this.axis] < averageCenter[this.axis]) {
           child1Indices.push(instances[i]);
         } else {
           child2Indices.push(instances[i]);

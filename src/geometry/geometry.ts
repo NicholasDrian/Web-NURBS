@@ -4,13 +4,14 @@ import { Material, MaterialName } from "../materials/material";
 import { BoundingBox } from "./boundingBox";
 import { Ray } from "./ray";
 
+
 export abstract class Geometry {
 
 
   constructor(
     private parent: Geometry | null = null,
     private model: Mat4 = mat4.identity(),
-    private material: MaterialName | null
+    private material: MaterialName | null,
   ) {
 
   }

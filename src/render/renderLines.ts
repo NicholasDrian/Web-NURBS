@@ -21,8 +21,13 @@ export class RenderLines {
   private vertexBuffer: GPUBuffer;
   private indexBuffer: GPUBuffer;
   private bindGroup!: GPUBindGroup;
+
   private mvp: Float32Array;
   private mvpBuffer: GPUBuffer;
+
+  private flags: Int32Array;
+  private flagsBuffer: GPUBuffer;
+
   private indexCount: number;
 
   constructor(
@@ -58,6 +63,13 @@ export class RenderLines {
     });
     this.mvp = new Float32Array(16);
 
+    this.flagsBuffer = INSTANCE.getRenderer().getDevice().createBuffer({
+      label: "render lines flags buffer",
+      size: 4,
+      usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+    })
+    this.flags = new Int32Array([0]);
+
   }
 
   public draw(pass: GPURenderPassEncoder): void {
@@ -68,8 +80,13 @@ export class RenderLines {
   }
 
   public update(): void {
+    this.updateFlags();
     this.updateMVP();
     this.updateBindGroup();
+  }
+
+  private updateFlags(): void {
+    INSTANCE.getRenderer().getDevice().queue.writeBuffer(this.flagsBuffer, 0, this.flags);
   }
 
   private updateMVP(): void {
@@ -89,6 +106,9 @@ export class RenderLines {
         }, {
           binding: 1,
           resource: { buffer: this.parent.getColorBuffer() },
+        }, {
+          binding: 2,
+          resource: { buffer: this.flagsBuffer }
         }
       ]
     });

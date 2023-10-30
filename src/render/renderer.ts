@@ -6,6 +6,7 @@ import instancedTriangleShader from "./shaders/instancedTriangleShader.wgsl"
 import { Scene } from "../scene/scene"
 import { Pipeline, PipelinePrimitive } from "./pipeline"
 import { INSTANCE } from "../cad";
+import { GlobalUniforms } from "./globalUniforms";
 
 const compatibilityCheck: HTMLElement = <HTMLElement>document.getElementById("compatibility-check");
 
@@ -23,8 +24,11 @@ export class Renderer {
 
   private depthTexture!: GPUTexture;
   private renderTarget!: GPUTexture;
+
   private bindGroupLayout!: GPUBindGroupLayout;
   private bindGroupLayoutInstanced!: GPUBindGroupLayout;
+
+  private globalUniforms!: GlobalUniforms;
 
   private trianglePipeline!: Pipeline;
   private linePipeline!: Pipeline;
@@ -130,6 +134,10 @@ export class Renderer {
           binding: 1, // color
           visibility: GPUShaderStage.FRAGMENT,
           buffer: {},
+        }, {
+          binding: 2, // flags
+          visibility: GPUShaderStage.VERTEX,
+          buffer: {},
         }
       ]
     });
@@ -145,12 +153,17 @@ export class Renderer {
           visibility: GPUShaderStage.FRAGMENT,
           buffer: {},
         }, {
-          binding: 2, // transform buffer
+          binding: 2, // flags
+          visibility: GPUShaderStage.VERTEX,
+          buffer: {},
+        }, {
+          binding: 3, // transform buffer
           visibility: GPUShaderStage.VERTEX,
           buffer: { type: "read-only-storage" },
         }
       ]
     });
+    this.globalUniforms = new GlobalUniforms(this.device);
 
     this.updateScreenSize();
 
@@ -223,6 +236,9 @@ export class Renderer {
         depthStoreOp: "store"
       }
     });
+
+    this.globalUniforms.tick();
+    this.globalUniforms.bind(pass);
 
     var drawCalls: number = 0;
 

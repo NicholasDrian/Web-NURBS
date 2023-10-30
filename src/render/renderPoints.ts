@@ -15,10 +15,15 @@ export class RenderPoints {
     ]
   };
 
-  private vertexBuffer: GPUBuffer;
   private bindGroup!: GPUBindGroup;
+
   private mvp: Float32Array;
   private mvpBuffer: GPUBuffer;
+
+  private flags: Int32Array;
+  private flagsBuffer: GPUBuffer;
+
+  private vertexBuffer: GPUBuffer;
   private vertexCount: number;
 
   constructor(
@@ -46,8 +51,16 @@ export class RenderPoints {
       usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
     });
     this.mvp = new Float32Array(16);
-    this.update();
 
+    //flags
+    this.flagsBuffer = INSTANCE.getRenderer().getDevice().createBuffer({
+      label: "render points flags buffer",
+      size: 4,
+      usage: GPUBufferUsage.UNIFORM
+    });
+    this.flags = new Int32Array([0]);
+
+    this.update();
   }
 
   public draw(pass: GPURenderPassEncoder): void {
@@ -57,8 +70,13 @@ export class RenderPoints {
   }
 
   public update(): void {
+    this.updateFlags();
     this.updateMVP();
     this.updateBindGroup();
+  }
+
+  private updateFlags(): void {
+    INSTANCE.getRenderer().getDevice().queue.writeBuffer(this.flagsBuffer, 0, this.flags);
   }
 
   private updateMVP(): void {
@@ -77,6 +95,9 @@ export class RenderPoints {
         }, {
           binding: 1,
           resource: { buffer: this.parent.getColorBuffer() },
+        }, {
+          binding: 2,
+          resource: { buffer: this.flagsBuffer }
         }
       ]
     });

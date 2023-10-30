@@ -3,9 +3,7 @@ import { MaterialName } from "../materials/material";
 import { BoundingBox } from "./boundingBox";
 import { Geometry } from "./geometry";
 import { Ray } from "./ray";
-import { Mesh } from "./mesh"
 import { InstancedMesh } from "./instancedMesh";
-import { printMat4 } from "../utils/print";
 
 
 const unitPointVerts: Vec3[] = [
@@ -50,11 +48,23 @@ export class Points extends Geometry {
 
     const transforms: Mat4[] = [];
     for (let i = 0; i < points.length; i++) {
-      var transform: Mat4 = mat4.identity();
+
       const pointXZY: Vec3 = vec3.create(points[i][0], points[i][2], points[i][1]);
-      transform = mat4.translate(transform, pointXZY);
-      transform = mat4.scale(transform, vec3.create(0.1, 0.1, 0.1));
-      printMat4(transform);
+      var translation: Mat4 = mat4.translate(mat4.identity(), pointXZY);
+
+      var scale: Mat4 = mat4.scale(mat4.identity(), vec3.create(0.1, 0.1, 0.1));
+
+      // make sure point scale is not affected by model scale
+      var modelScale: Mat4 = mat4.scaling(mat4.getScaling(this.getModel()));
+
+      var transform: Mat4 = mat4.multiply(
+        translation,
+        mat4.multiply(
+          scale,
+          mat4.inverse(modelScale)
+        )
+      );
+
       transforms.push(transform);
     }
 
@@ -67,7 +77,7 @@ export class Points extends Geometry {
 
 
   public override getBoundingBox(): BoundingBox {
-    throw new Error("Method not implemented.");
+    return this.instancedMesh!.getBoundingBox();
   }
   public override intersect(ray: Ray): number | null {
     const objectSpaceRay: Ray = Ray.transform(ray, mat4.inverse(this.getModel()));

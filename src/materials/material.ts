@@ -5,7 +5,8 @@ export type MaterialName = string;
 
 export class Material {
 
-  private colorBuffer: GPUBuffer | null = null;
+  // regular color
+  private diffuseColorBuffer: GPUBuffer | null = null;
 
   constructor(
     public name: string,
@@ -16,19 +17,19 @@ export class Material {
 
   private updateColor() {
     if (this.color) {
-      this.colorBuffer = INSTANCE.getRenderer().getDevice().createBuffer({
+      this.diffuseColorBuffer = INSTANCE.getRenderer().getDevice().createBuffer({
         label: "color buffer for material " + this.name,
         size: 16,
         usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
       })
-      INSTANCE.getRenderer().getDevice().queue.writeBuffer(this.colorBuffer, 0, <Float32Array>this.color);
+      INSTANCE.getRenderer().getDevice().queue.writeBuffer(this.diffuseColorBuffer, 0, <Float32Array>this.color);
     } else {
-      this.colorBuffer = null;
+      this.diffuseColorBuffer = null;
     }
   }
 
   public getColorBuffer(): GPUBuffer | null {
-    return this.colorBuffer;
+    return this.diffuseColorBuffer;
   }
 
 

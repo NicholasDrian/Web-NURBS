@@ -1,5 +1,7 @@
+import { warn } from "console";
 import { mat4, vec3, Vec3 } from "wgpu-matrix";
 import { INSTANCE } from "../cad";
+import { Line } from "../geometry/line";
 import { Lines } from "../geometry/lines";
 import { MaterialName } from "../materials/material";
 import { RenderLines } from "../render/renderLines"
@@ -10,12 +12,16 @@ export class ConstructionPlane {
 
   private majorLines: Lines | null;
   private minorLines: Lines | null;
+  private xAxis: Line | null;
+  private yAxis: Line | null;
 
   constructor(private majorCount: number = 10,
     private minorCount: number = 10,
     private cellSize: number = 1) {
     this.majorLines = null;
     this.minorLines = null;
+    this.xAxis = null;
+    this.yAxis = null;
     this.setup();
   }
 
@@ -38,21 +44,22 @@ export class ConstructionPlane {
     const z: number = -0.001;
 
     for (var i = 0; i <= cellCount; i++) {
+      let midOrEnd: number = (i === cellCount / 2) ? 0 : halfSize;
       if (i % this.minorCount === 0) { // major line
         majorVerts.push(
           vec3.create(start + i * this.cellSize, -halfSize, z),
-          vec3.create(start + i * this.cellSize, halfSize, z),
+          vec3.create(start + i * this.cellSize, midOrEnd, z),
           vec3.create(-halfSize, start + i * this.cellSize, z),
-          vec3.create(halfSize, start + i * this.cellSize,),
+          vec3.create(midOrEnd, start + i * this.cellSize,),
         );
         majorIndices.push(majorIndex, majorIndex + 1, majorIndex + 2, majorIndex + 3);
         majorIndex += 4;
       } else { // minor line
         minorVerts.push(
           vec3.create(start + i * this.cellSize, -halfSize, z),
-          vec3.create(start + i * this.cellSize, halfSize, z),
+          vec3.create(start + i * this.cellSize, midOrEnd, z),
           vec3.create(-halfSize, start + i * this.cellSize, z),
-          vec3.create(halfSize, start + i * this.cellSize, z),
+          vec3.create(midOrEnd, start + i * this.cellSize, z),
         );
         minorIndices.push(minorIndex, minorIndex + 1, minorIndex + 2, minorIndex + 3);
         minorIndex += 4;
@@ -60,8 +67,12 @@ export class ConstructionPlane {
     }
     if (this.majorLines) this.majorLines.delete();
     if (this.minorLines) this.minorLines.delete();
+    if (this.xAxis) this.xAxis.delete();
+    if (this.yAxis) this.yAxis.delete();
     this.majorLines = new Lines(majorVerts, majorIndices, null, mat4.identity(), "lighter grey");
     this.minorLines = new Lines(minorVerts, minorIndices, null, mat4.identity(), "mid grey");
+    this.xAxis = new Line(null, vec3.create(0, 0, 0), vec3.create(halfSize, 0, 0), undefined, "red");
+    this.yAxis = new Line(null, vec3.create(0, 0, 0), vec3.create(0, halfSize, 0), undefined, "green");
   }
 
 

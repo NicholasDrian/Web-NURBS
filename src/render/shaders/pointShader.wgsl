@@ -5,6 +5,10 @@ struct VertexOutput {
 
 @group(0) @binding(0) var<uniform> viewProj : mat4x4<f32>;
 @group(0) @binding(1) var<uniform> color : vec4<f32>;
+@group(0) @binding(2) var<uniform> flags: i32;
+
+// global uniforms:
+@group(1) @binding(0) var<uniform> cameraPos: vec3<f32>;
 
 @vertex
 fn vertexMain(
