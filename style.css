@@ -1,61 +1,50 @@
 
 
 :root {
-    --light-red: rgba(220, 200, 200, 1.0);
-    --dark-red: rgba(100, 0, 0, 1.0);
-    --transparent-black: rgba(0, 0, 0, 0.4);
-    --black: rgba(0, 0, 0, 1);
-    --transparent-white: rgba(255, 255, 255, 0.4);
+  --light-red: rgba(220, 200, 200, 1.0);
+  --dark-red: rgba(100, 0, 0, 1.0);
+  --transparent-black: rgba(0, 0, 0, 0.4);
+  --black: rgba(0, 0, 0, 1);
+  --transparent-white: rgba(255, 255, 255, 0.4);
 
-    --floating-window-text-color: var(--light-red);
-    --floating-window-border-color: var(--light-red);
-    --floating-window-background-color: var(--transparent-black);
+  --floating-window-text-color: var(--light-red);
+  --floating-window-border-color: var(--light-red);
+  --floating-window-background-color: var(--transparent-black);
 
-    font-family: 'Lucida Console', monospace;
-    user-select: none;
+  font-family: 'Lucida Console', monospace;
+  user-select: none;
 
 }
 
 html, body {
-    width:  100%;
-    height: 100%;
-    margin: 0;
-    overflow: hidden;
+  width:  100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
 }
 .floating-window {
-    position: absolute;
-    border-style: solid;
-    border-width: thin;
-    border-color: var(--floating-window-border-color);
-    color: var(--floating-window-text-color);
-    background-color: var(--floating-window-background-color);
-    font-size: 14px;
-    border-radius: 0.5rem;
-    padding: 5px;
-}
-#stats {
-    height: auto;
-    width: 180px;
-    left: 10px;
-    top: 10px;
+  position: absolute;
+  border-style: solid;
+  border-width: thin;
+  border-color: var(--floating-window-border-color);
+  color: var(--floating-window-text-color);
+  background-color: var(--floating-window-background-color);
+  font-size: 14px;
+  border-radius: 0.5rem;
+  padding: 5px;
+  overflow-y: scroll;
+  height: auto;
 }
 #cli {
-    font-size: 18px;
-    height: 20px;
-    width: calc(100% - 30px);
-    left: 10px;
-    bottom: 10px;
-}
-#log {
-    height: calc(100% - 70px);
-    width: 200px;
-    right: 10px;
-    top: 10px;
-    overflow: scroll;
+  font-size: 18px;
+  height: 20px;
+  width: calc(100% - 30px);
+  left: 10px;
+  bottom: 10px;
 }
 #screen {
-    /* not sure why this is flipped */
-    transform:scaleX(-1);
+  /* not sure why this is flipped */
+  transform:scaleX(-1);
 }
 #selection-rectangle {
   border-radius: 0px;
