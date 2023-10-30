@@ -32,7 +32,7 @@ export class RenderPoints {
     for (let i = 0; i < points.length; i++) verts.push(...points[i], 1);
     const vertexArray: Float32Array = new Float32Array(verts);
     this.vertexBuffer = INSTANCE.getRenderer().getDevice().createBuffer({
-      label: "vertex buffer",
+      label: "points vertex buffer",
       size: vertexArray.byteLength,
       usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST,
     });
@@ -68,7 +68,7 @@ export class RenderPoints {
 
   private updateBindGroup(): void {
     this.bindGroup = INSTANCE.getRenderer().getDevice().createBindGroup({
-      label: "bind group",
+      label: "points bind group",
       layout: INSTANCE.getRenderer().getBindGroupLayout(),
       entries: [
         {

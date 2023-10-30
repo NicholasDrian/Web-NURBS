@@ -4,21 +4,20 @@ struct VertexOutput {
 	@location(0) @interpolate(linear) normal : vec4<f32>
 }
 
-struct Uniforms {
-@group(0) @binding(0) var<uniform> viewProj : mat4x4<f32>;
+@group(0) @binding(0) var<uniform> modelViewProj : mat4x4<f32>;
 @group(0) @binding(1) var<uniform> color : vec4<f32>;
-@group(0) @binding(2) var<uniform> transforms: array<mat4x4<f32>>;
-}
+@group(0) @binding(2) var<storage, read> transforms: array<mat4x4<f32>>;
 
 @vertex
 fn vertexMain(
 	@location(0) position : vec4<f32>,
-	@location(1) normal : vec4<f32>
+	@location(1) normal : vec4<f32>,
+  @builtin(instance_index) instanceID : u32,
 	) -> VertexOutput
 {
 	var output: VertexOutput;
 	output.normal = normal.xzyw;
-	output.position = Uniforms.viewProj * position.xzyw;
+	output.position = modelViewProj * transforms[instanceID] * position.xzyw;
 	return output;
 }
 

@@ -4,6 +4,8 @@ import { BoundingBox } from "./boundingBox";
 import { Geometry } from "./geometry";
 import { Ray } from "./ray";
 import { Mesh } from "./mesh"
+import { InstancedMesh } from "./instancedMesh";
+import { printMat4 } from "../utils/print";
 
 
 const unitPointVerts: Vec3[] = [
@@ -30,7 +32,7 @@ const unitPointIndices: number[] = [
 // use instanced mesh
 export class Points extends Geometry {
 
-  private mesh: Mesh | null;
+  private instancedMesh: InstancedMesh | null;
 
   constructor(
     parent: Geometry | null,
@@ -39,24 +41,28 @@ export class Points extends Geometry {
     material: MaterialName | null = null
   ) {
     super(parent, model, material);
-    this.mesh = null;
+    this.instancedMesh = null;
     this.update(points);
   }
 
   private update(points: Vec3[]): void {
-    if (this.mesh) this.mesh.destroy();
+    if (this.instancedMesh) this.instancedMesh.destroy();
 
-    const verts: Vec3[] = []
+    const transforms: Mat4[] = [];
     for (let i = 0; i < points.length; i++) {
-
+      var transform: Mat4 = mat4.identity();
+      const pointXZY: Vec3 = vec3.create(points[i][0], points[i][2], points[i][1]);
+      transform = mat4.translate(transform, pointXZY);
+      transform = mat4.scale(transform, vec3.create(0.1, 0.1, 0.1));
+      printMat4(transform);
+      transforms.push(transform);
     }
 
-
-    // TODO:
-    //this.mesh = new Mesh(this, verts, points,)
+    this.instancedMesh = new InstancedMesh(this, unitPointVerts, unitPointVerts, unitPointIndices, transforms);
   }
 
   public delete(): void {
+    this.instancedMesh!.destroy();
   }
 
 
@@ -64,7 +70,8 @@ export class Points extends Geometry {
     throw new Error("Method not implemented.");
   }
   public override intersect(ray: Ray): number | null {
-    throw new Error("Method not implemented.");
+    const objectSpaceRay: Ray = Ray.transform(ray, mat4.inverse(this.getModel()));
+    return this.instancedMesh!.intersect(objectSpaceRay);
   }
 
 }

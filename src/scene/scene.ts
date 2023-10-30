@@ -52,7 +52,6 @@ export class Scene {
 
   public addGeometry(geo: Geometry): ObjectID {
     this.boundingBoxHeirarchy.add(geo);
-    this.boundingBoxHeirarchy.print();
     return this.objectIDGenerator++;
   }
 
@@ -60,8 +59,8 @@ export class Scene {
     this.renderMeshes.set(this.renderIDGenerator, mesh);
     return this.renderIDGenerator++;
   }
-  public addRenderMeshInstanced(mesh: RenderMesh): RenderID {
-    this.renderMeshes.set(this.renderIDGenerator, mesh);
+  public addRenderMeshInstanced(mesh: RenderMeshInstanced): RenderID {
+    this.renderMeshesInstanced.set(this.renderIDGenerator, mesh);
     return this.renderIDGenerator++;
   }
   public addRenderLines(lines: RenderLines): RenderID {
@@ -109,7 +108,7 @@ export class Scene {
     this.renderPoints.delete(id);
   }
   public removeMeshInstanced(id: RenderID): void {
-    this.renderMeshes.delete(id);
+    this.renderMeshesInstanced.delete(id);
   }
 
   public tick(): void {

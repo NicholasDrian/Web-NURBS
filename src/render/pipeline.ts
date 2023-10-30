@@ -17,12 +17,12 @@ export class Pipeline {
 
 
     const pipelineLayout: GPUPipelineLayout = device.createPipelineLayout({
-      label: "pipeline layout",
+      label: getLabel(primitive) + " label",
       bindGroupLayouts: [layout],
     });
 
     this.gpuPipeline = device.createRenderPipeline({
-      label: "pipeline",
+      label: getLabel(primitive),
       primitive: {
         topology: getTopology(primitive),
         cullMode: "none"
@@ -77,5 +77,13 @@ function getVertexBufferLayout(primitive: PipelinePrimitive): GPUVertexBufferLay
     default:
       console.error("unimplemented primitive");
       return RenderMesh.getVertexBufferLayout();
+  }
+}
+function getLabel(primitive: PipelinePrimitive): string {
+  switch (primitive) {
+    case PipelinePrimitive.Triangle: return "trinagle pipeline";
+    case PipelinePrimitive.Line: return "line pipeline";
+    case PipelinePrimitive.Point: return "point pipeline";
+    default: throw new Error("not implemented");
   }
 }

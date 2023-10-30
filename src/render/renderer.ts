@@ -134,7 +134,7 @@ export class Renderer {
       ]
     });
     this.bindGroupLayoutInstanced = this.device.createBindGroupLayout({
-      label: "bind group layout",
+      label: "bind group layout instanced",
       entries: [
         {
           binding: 0, // mvp
@@ -147,7 +147,7 @@ export class Renderer {
         }, {
           binding: 2, // transform buffer
           visibility: GPUShaderStage.VERTEX,
-          buffer: {},
+          buffer: { type: "read-only-storage" },
         }
       ]
     });
@@ -241,6 +241,12 @@ export class Renderer {
     pass.setPipeline(this.pointPipeline.get());
     for (let points of scene.getAllPoints()) {
       points.draw(pass);
+      drawCalls++;
+    }
+
+    pass.setPipeline(this.instancedTrianglePipeline.get());
+    for (let mesh of scene.getAllMeshesInstanced()) {
+      mesh.draw(pass);
       drawCalls++;
     }
 
