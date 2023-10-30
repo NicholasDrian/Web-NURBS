@@ -6,6 +6,7 @@ import { ConstructionPlane } from "./constructionPlane"
 import { RenderPoints } from "../render/renderPoints"
 import { SceneBoundingBoxHeirarchy } from "../geometry/sceneBoundingBoxHeirarcy"
 import { Geometry } from "../geometry/geometry"
+import { RenderMeshInstanced } from "../render/renterMeshInstanced"
 
 export type RenderID = number; // for gpu objects
 export type ObjectID = number; // for cpu objects
@@ -14,9 +15,12 @@ export class Scene {
 
   private camera: Camera;
   private constructionPlane!: ConstructionPlane;
+
   private renderLines: Map<RenderID, RenderLines> = new Map<RenderID, RenderLines>();
   private renderMeshes: Map<RenderID, RenderMesh> = new Map<RenderID, RenderMesh>();
   private renderPoints: Map<RenderID, RenderPoints> = new Map<RenderID, RenderPoints>();
+  private renderMeshesInstanced: Map<RenderID, RenderMeshInstanced> = new Map<RenderID, RenderMeshInstanced>();
+
   private renderIDGenerator: RenderID = 1;
   private objectIDGenerator: ObjectID = 1;
   private boundingBoxHeirarchy: SceneBoundingBoxHeirarchy = new SceneBoundingBoxHeirarchy([]);
@@ -56,12 +60,14 @@ export class Scene {
     this.renderMeshes.set(this.renderIDGenerator, mesh);
     return this.renderIDGenerator++;
   }
-
+  public addRenderMeshInstanced(mesh: RenderMesh): RenderID {
+    this.renderMeshes.set(this.renderIDGenerator, mesh);
+    return this.renderIDGenerator++;
+  }
   public addRenderLines(lines: RenderLines): RenderID {
     this.renderLines.set(this.renderIDGenerator, lines);
     return this.renderIDGenerator++;
   }
-
   public addRenderPoints(points: RenderPoints): RenderID {
     this.renderPoints.set(this.renderIDGenerator, points);
     return this.renderIDGenerator++;
@@ -76,6 +82,9 @@ export class Scene {
   public getPoints(id: RenderID): RenderPoints {
     return <RenderPoints>this.renderPoints.get(id);
   }
+  public getMeshInstanced(id: RenderID): RenderMeshInstanced {
+    return <RenderMeshInstanced>this.renderMeshes.get(id);
+  }
 
   public getAllLines(): IterableIterator<RenderLines> {
     return this.renderLines.values();
@@ -86,15 +95,21 @@ export class Scene {
   public getAllPoints(): IterableIterator<RenderPoints> {
     return this.renderPoints.values();
   }
+  public getAllMeshesInstanced(): IterableIterator<RenderMeshInstanced> {
+    return this.renderMeshesInstanced.values();
+  }
 
-  public removeMesh(id: RenderID) {
+  public removeMesh(id: RenderID): void {
     this.renderMeshes.delete(id);
   }
-  public removeLines(id: RenderID) {
+  public removeLines(id: RenderID): void {
     this.renderLines.delete(id);
   }
-  public removePoints(id: RenderID) {
+  public removePoints(id: RenderID): void {
     this.renderPoints.delete(id);
+  }
+  public removeMeshInstanced(id: RenderID): void {
+    this.renderMeshes.delete(id);
   }
 
   public tick(): void {
@@ -108,6 +123,9 @@ export class Scene {
     }
     for (const point of this.renderPoints.values()) {
       point.update();
+    }
+    for (const mesh of this.renderMeshesInstanced.values()) {
+      mesh.update();
     }
 
   }

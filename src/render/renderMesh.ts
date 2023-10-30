@@ -19,15 +19,15 @@ export class RenderMesh {
     ]
   };
 
-  private vertexBuffer: GPUBuffer;
-  private indexBuffer: GPUBuffer;
-  private bindGroup!: GPUBindGroup;
-  private mvp: Float32Array;
-  private mvpBuffer: GPUBuffer;
-  private indexCount: number;
+  protected vertexBuffer: GPUBuffer;
+  protected indexBuffer: GPUBuffer;
+  protected bindGroup!: GPUBindGroup;
+  protected mvp: Float32Array;
+  protected mvpBuffer: GPUBuffer;
+  protected indexCount: number;
 
   constructor(
-    private parent: Geometry,
+    protected parent: Geometry,
     vertices: Float32Array,
     indices: Int32Array,
     private model: Mat4) {
@@ -77,7 +77,7 @@ export class RenderMesh {
     INSTANCE.getRenderer().getDevice().queue.writeBuffer(this.mvpBuffer, 0, this.mvp.buffer);
   }
 
-  private updateBindGroup(): void {
+  protected updateBindGroup(): void {
     this.bindGroup = INSTANCE.getRenderer().getDevice().createBindGroup({
       label: "bind group",
       layout: INSTANCE.getRenderer().getBindGroupLayout(),

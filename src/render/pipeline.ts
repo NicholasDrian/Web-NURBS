@@ -5,14 +5,16 @@ import { RenderPoints } from "./renderPoints";
 export enum PipelinePrimitive {
   Triangle,
   Line,
-  Point
+  Point,
 }
 
 export class Pipeline {
 
+
   private gpuPipeline: GPURenderPipeline;
 
   constructor(device: GPUDevice, format: GPUTextureFormat, layout: GPUBindGroupLayout, shaderModule: GPUShaderModule, primitive: PipelinePrimitive) {
+
 
     const pipelineLayout: GPUPipelineLayout = device.createPipelineLayout({
       label: "pipeline layout",

@@ -12,7 +12,6 @@ import { Ray } from "./ray";
 
 export class Mesh extends Geometry {
 
-
   private renderMesh: RenderID;
   private boundingBoxHeirarchy: MeshBoundingBoxHeirarchy;
 

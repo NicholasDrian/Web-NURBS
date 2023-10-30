@@ -21,6 +21,8 @@ export class Ray {
     }).toString()}`);
   }
 
+
+
   public getOrigin(): Vec3 {
     return this.origin;
   }

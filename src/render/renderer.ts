@@ -2,6 +2,7 @@
 import triangleShader from "./shaders/triangleShader.wgsl";
 import lineShader from "./shaders/lineShader.wgsl";
 import pointShader from "./shaders/pointShader.wgsl";
+import instancedTriangleShader from "./shaders/instancedTriangleShader.wgsl"
 import { Scene } from "../scene/scene"
 import { Pipeline, PipelinePrimitive } from "./pipeline"
 import { INSTANCE } from "../cad";
@@ -18,14 +19,17 @@ export class Renderer {
   private triangleShaderModule!: GPUShaderModule;
   private lineShaderModule!: GPUShaderModule;
   private pointShaderModule!: GPUShaderModule;
+  private instancedTriangleShaderModule!: GPUShaderModule;
 
   private depthTexture!: GPUTexture;
   private renderTarget!: GPUTexture;
   private bindGroupLayout!: GPUBindGroupLayout;
+  private bindGroupLayoutInstanced!: GPUBindGroupLayout;
 
   private trianglePipeline!: Pipeline;
   private linePipeline!: Pipeline;
   private pointPipeline!: Pipeline;
+  private instancedTrianglePipeline!: Pipeline;
 
   private clearColor: [number, number, number, number];
 
@@ -39,6 +43,10 @@ export class Renderer {
 
   public getBindGroupLayout(): GPUBindGroupLayout {
     return this.bindGroupLayout;
+  }
+
+  public getBindGroupLayoutInstanced(): GPUBindGroupLayout {
+    return this.bindGroupLayoutInstanced;
   }
 
   public setClearColor(color: [number, number, number, number]): void {
@@ -93,30 +101,52 @@ export class Renderer {
 
 
     this.triangleShaderModule = this.device.createShaderModule({
-      label: "shader module",
+      label: "triangle shader module",
       code: triangleShader,
     });
 
     this.lineShaderModule = this.device.createShaderModule({
-      label: "shader module",
+      label: "line shader module",
       code: lineShader,
     });
 
     this.pointShaderModule = this.device.createShaderModule({
-      label: "shader module",
+      label: "point shader module",
       code: pointShader,
     });
+    this.instancedTriangleShaderModule = this.device.createShaderModule({
+      label: "instanced triangle shader module",
+      code: instancedTriangleShader,
+    })
 
     this.bindGroupLayout = this.device.createBindGroupLayout({
       label: "bind group layout",
       entries: [
         {
-          binding: 0,
+          binding: 0, // mvp
           visibility: GPUShaderStage.VERTEX,
           buffer: {}
         }, {
-          binding: 1,
+          binding: 1, // color
           visibility: GPUShaderStage.FRAGMENT,
+          buffer: {},
+        }
+      ]
+    });
+    this.bindGroupLayoutInstanced = this.device.createBindGroupLayout({
+      label: "bind group layout",
+      entries: [
+        {
+          binding: 0, // mvp
+          visibility: GPUShaderStage.VERTEX,
+          buffer: {}
+        }, {
+          binding: 1, // color
+          visibility: GPUShaderStage.FRAGMENT,
+          buffer: {},
+        }, {
+          binding: 2, // transform buffer
+          visibility: GPUShaderStage.VERTEX,
           buffer: {},
         }
       ]
@@ -128,9 +158,30 @@ export class Renderer {
 
 
   private createPipelines() {
-    this.trianglePipeline = new Pipeline(this.device, this.canvasFormat, this.bindGroupLayout, this.triangleShaderModule, PipelinePrimitive.Triangle);
-    this.linePipeline = new Pipeline(this.device, this.canvasFormat, this.bindGroupLayout, this.lineShaderModule, PipelinePrimitive.Line);
-    this.pointPipeline = new Pipeline(this.device, this.canvasFormat, this.bindGroupLayout, this.pointShaderModule, PipelinePrimitive.Point);
+    this.trianglePipeline = new Pipeline(
+      this.device,
+      this.canvasFormat,
+      this.bindGroupLayout,
+      this.triangleShaderModule,
+      PipelinePrimitive.Triangle);
+    this.linePipeline = new Pipeline(
+      this.device,
+      this.canvasFormat,
+      this.bindGroupLayout,
+      this.lineShaderModule,
+      PipelinePrimitive.Line);
+    this.pointPipeline = new Pipeline(
+      this.device,
+      this.canvasFormat,
+      this.bindGroupLayout,
+      this.pointShaderModule,
+      PipelinePrimitive.Point);
+    this.instancedTrianglePipeline = new Pipeline(
+      this.device,
+      this.canvasFormat,
+      this.bindGroupLayoutInstanced,
+      this.instancedTriangleShaderModule,
+      PipelinePrimitive.Triangle);
   }
 
   public updateScreenSize(): void {

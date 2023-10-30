@@ -1,42 +1,64 @@
-import { mat4, Mat4, Vec3 } from "wgpu-matrix";
-import { INSTANCE } from "../cad";
+import { mat4, Mat4, vec3, Vec3 } from "wgpu-matrix";
 import { MaterialName } from "../materials/material";
-import { RenderPoints } from "../render/renderPoints";
-import { RenderID } from "../scene/scene";
 import { BoundingBox } from "./boundingBox";
 import { Geometry } from "./geometry";
 import { Ray } from "./ray";
+import { Mesh } from "./mesh"
 
+
+const unitPointVerts: Vec3[] = [
+  vec3.create(1, 0, 0),
+  vec3.create(0, 1, 0),
+  vec3.create(0, 0, 1),
+  vec3.create(-1, 0, 0),
+  vec3.create(0, -1, 0),
+  vec3.create(0, 0, -1),
+];
+
+const unitPointIndices: number[] = [
+  0, 1, 2,
+  0, 2, 4,
+  0, 4, 5,
+  0, 5, 1,
+
+  3, 1, 5,
+  3, 5, 4,
+  3, 4, 2,
+  3, 2, 1,
+]
+
+// use instanced mesh
 export class Points extends Geometry {
 
-  private renderPoints!: RenderID;
+  private mesh: Mesh | null;
 
   constructor(
     parent: Geometry | null,
-    private points: Vec3[],
+    points: Vec3[],
     model: Mat4 = mat4.identity(),
     material: MaterialName | null = null
   ) {
     super(parent, model, material);
-    this.update();
+    this.mesh = null;
+    this.update(points);
   }
 
-  private update(): void {
-    if (this.renderPoints) {
-      INSTANCE.getScene().removePoints(this.renderPoints);
+  private update(points: Vec3[]): void {
+    if (this.mesh) this.mesh.destroy();
+
+    const verts: Vec3[] = []
+    for (let i = 0; i < points.length; i++) {
+
     }
-    this.renderPoints = INSTANCE.getScene().addRenderPoints(
-      new RenderPoints(this, this.points, this.getModel())
-    );
+
+
+    // TODO:
+    //this.mesh = new Mesh(this, verts, points,)
   }
 
   public delete(): void {
-    INSTANCE.getScene().removePoints(this.renderPoints);
   }
 
-  public getPoints(): Vec3[] {
-    return this.points;
-  }
 
   public override getBoundingBox(): BoundingBox {
     throw new Error("Method not implemented.");
