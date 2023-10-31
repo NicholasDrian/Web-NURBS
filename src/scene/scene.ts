@@ -20,6 +20,7 @@ export class Scene {
   private renderMeshes: Map<RenderID, RenderMesh> = new Map<RenderID, RenderMesh>();
   private renderPoints: Map<RenderID, RenderPoints> = new Map<RenderID, RenderPoints>();
   private renderMeshesInstanced: Map<RenderID, RenderMeshInstanced> = new Map<RenderID, RenderMeshInstanced>();
+  private geometryMap: Map<ObjectID, Geometry> = new Map<ObjectID, Geometry>();
 
   private renderIDGenerator: RenderID = 1;
   private objectIDGenerator: ObjectID = 1;
@@ -38,6 +39,7 @@ export class Scene {
 
   }
 
+
   public getConstructionPlane(): ConstructionPlane {
     return this.constructionPlane;
   }
@@ -51,8 +53,12 @@ export class Scene {
   }
 
   public addGeometry(geo: Geometry): ObjectID {
+    this.geometryMap.set(this.objectIDGenerator, geo);
     this.boundingBoxHeirarchy.add(geo);
     return this.objectIDGenerator++;
+  }
+  public getGeometry(id: ObjectID): Geometry {
+    return this.geometryMap.get(id)!;
   }
 
   public addRenderMesh(mesh: RenderMesh): RenderID {

@@ -10,3 +10,10 @@ export const swizzleYZ = function(mat: Mat4): Mat4 {
   [mat[5], mat[10]] = [mat[10], mat[5]];
   return mat;
 }
+export const bin = function(a: number, b: number): number {
+  let res: number = 1;
+  for (let i = a; i > a - b; i--) res *= i;
+  for (let i = 2; i <= b; i++) res /= i;
+  return res;
+};
+

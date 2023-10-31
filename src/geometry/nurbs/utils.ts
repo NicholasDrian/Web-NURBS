@@ -1,3 +1,5 @@
+import { Vec3, vec4, Vec4 } from "wgpu-matrix";
+
 export const span = function(knots: number[], u: number, p: number): number {
   const n: number = knots.length - p - 2;
   let l: number = p;
@@ -36,3 +38,25 @@ export const genericKnotVector = function(pointCount: number, degree: number): n
   for (let i = 0; i <= degree; i++) res.push(pointCount - degree);
   return res;
 }
+
+export const toWeightedControlPoints = function(points: Vec3[], weights?: number[]): Vec4[] {
+  const res: Vec4[] = [];
+
+  if (weights) {
+    for (let i = 0; i < weights.length; i++) {
+      const point: Vec3 = points[i];
+      res.push(vec4.create(
+        point[0] * weights[i],
+        point[1] * weights[i],
+        point[2] * weights[i],
+        weights[i]
+      ));
+    }
+  } else {
+    for (let point of points) {
+      res.push(vec4.create(...point, 1));
+    }
+  }
+  return res;
+}
+

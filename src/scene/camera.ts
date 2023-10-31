@@ -162,7 +162,6 @@ export class Camera {
         this.goRight((this.lastFrameTime - now) / 20);
       }
     }
-
     this.updateViewProj();
     this.lastFrameTime = now;
   }
@@ -201,7 +200,7 @@ export class Camera {
     const up: Vec3 = swapYZ(this.up);
 
     mat4.lookAt(position, vec3.add(position, forward), up, view);
-    mat4.perspective(this.fovy, this.screen.width / this.screen.height, 0.001, 1000.0, proj);
+    mat4.perspective(this.fovy, this.screen.width / this.screen.height, 0.1, 10000.0, proj);
     mat4.multiply(proj, view, this.viewProj);
 
   }
