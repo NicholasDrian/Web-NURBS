@@ -161,64 +161,9 @@ export class Curve extends Geometry {
 
     this.updateSamples();
 
-    /*
-    int idx = NURBSUtils::Span(m_Knots, knot, m_Degree);
-  std::vector<glm::vec4> newPoints;
-
-  newPoints.push_back(m_Points[0]);
-  for (int i = 1; i < m_Points.size(); i++) {
-    float alpha;
-    if (i <= idx - m_Degree) alpha = 1.0f;
-    else if (i >= idx + 1) alpha = 0.0f;
-    else alpha = (knot - m_Knots[i]) / (m_Knots[i + m_Degree] - m_Knots[i]);
-    newPoints.push_back(alpha * m_Points[i] + (1.0f - alpha) * m_Points[i - 1]);
-  }
-  newPoints.push_back(m_Points.back());
-
-  m_Points = newPoints;
-  m_Knots.insert(std::upper_bound(m_Knots.begin(), m_Knots.end(), knot), knot);
-
-  std::vector<glm::vec3> controlPoints;
-  for (const auto& p : m_Points) controlPoints.push_back(glm::vec3(p.x, p.y, p.z) / p.w);
-  m_ControlPolyLine = std::make_unique<PolyLine>(controlPoints, true, m_ID);
-  m_ControlPolyLine->PointsOn();
-  m_ControlPolyLine->SetModel(m_Model);
-  */
   }
 
   public elevateDegree(n: number): void {
-    /*
-    std::vector<std::vector<float>> BezierAlphas(m_Degree + n + 1, std::vector(m_Degree + 1, 0.0f));
-    std::vector<glm::vec4> BezControls(m_Degree + 1), ElvevatedBezControls(m_Degree + n + 1), NextBezControls(m_Degree - 1);
-    std::vector<float> Alphas(m_Degree - 1);
-    auto Bin = [](int a, int b) -> int {
-      int res = 1;
-      for (int i = a; i > a - b; i--) res *= i;
-      for (int i = 2; i <= b; i++) res /= i;
-      return res;
-    };
-    int DistinctKnots = 1;
-    for (int i = 1; i < m_Knots.size(); i++)
-      if (m_Knots[i] != m_Knots[i - 1]) DistinctKnots++;
-    std::vector<glm::vec4> NewPoints(m_Points.size() + n * (DistinctKnots - 1));
-    std::vector<float> NewKnots(m_Knots.size() + n * DistinctKnots);
-    int NewDegree = m_Degree + n;
-  */
-    /*
-      BezierAlphas[0][0] = BezierAlphas[NewDegree][m_Degree] = 1.0f;
-      for (int i = 1; i <= NewDegree / 2; i++) {
-        float inv = 1.0f / Bin(NewDegree, i);
-        float mpi = (float)std::min((int)m_Degree, i);
-        for (int j = std::max(0, i - (int)n); j <= mpi; j++) 
-          BezierAlphas[i][j] = inv * Bin(m_Degree, j) * Bin(n, i - j);
-    
-      }
-      for (int i = NewDegree / 2 + 1; i <= NewDegree - 1; i++) {
-        float mpi = (float)std::min((int)m_Degree, i);
-        for (int j = std::max(0, i - (int)n); j <= mpi; j++)
-          BezierAlphas[i][j] = BezierAlphas[NewDegree - i][m_Degree - j];
-      }
-      */
     // Compute Bezier Coeficients
     // could cache this
     // TODO: factor this out
@@ -266,17 +211,7 @@ export class Curve extends Geometry {
     for (let i = 0; i < this.knots.length + n * distinctKnots; i++) newKnots.push(0);
 
 
-    /*
-      // Initialize First Segment
-    
-      int mh = NewDegree, kind = NewDegree + 1;
-      int r = -1;
-      int a = m_Degree, b = m_Degree + 1, cind = 1;
-      float ua = m_Knots[0];
-      NewPoints[0] = m_Points[0];
-      for (int i = 0; i <= NewDegree; i++) NewKnots[i] = ua;
-      for (int i = 0; i <= m_Degree; i++) BezControls[i] = m_Points[i];
-      */
+    // Initialize First Segment
 
     let mh: number = newDegree;
     let kind: number = newDegree + 1;
@@ -289,18 +224,6 @@ export class Curve extends Geometry {
     for (let i = 0; i <= newDegree; i++) newKnots.push(ua);
     for (let i = 0; i <= this.degree; i++) bezierControls.push(this.weightedControlPoints[0]);
 
-    /*
-    while (b < m_Knots.size() - 1) {
-      int i = b;
-      while (b < m_Knots.size() - 1 && m_Knots[b] == m_Knots[b + 1]) b++;
-      int mul = b - i + 1;
-      mh += mul + n;
-      float ub = m_Knots[b];
-      int oldr = r;
-      r = m_Degree - mul;
-      int lbz = (oldr > 0) ? (oldr + 2) / 2 : 1;
-      int rbz = (r > 0) ? NewDegree - (r + 1) / 2 : NewDegree;
-     */
 
     //main loop
     while (b < this.knots.length) {
@@ -314,19 +237,6 @@ export class Curve extends Geometry {
       const lbz: number = (oldr > 0) ? (oldr + 2) / 2 : 1;
       const rbz: number = (r > 0) ? newDegree - (r + 1) / 2 : newDegree;
       // insert knots  
-      /*
-      if (r > 0) { 
-        float number = ub - ua;
-        for (int k = m_Degree; k > mul; k--) Alphas[k - mul - 1] = number / (m_Knots[a + k] - ua);
-        for (int j = 1; j <= r; j++) {
-          int save = r - j;
-          int s = mul + j;
-          for (int k = m_Degree; k >= s; k--) {
-            BezControls[k] = Alphas[k - s] * BezControls[k] + (1.0f - Alphas[k - s]) * BezControls[k - 1];
-          }
-          NextBezControls[save] = BezControls[m_Degree];
-        }
-      }*/
       if (r > 0) {
         const num: number = ub - ua;
         for (let k = this.degree; k > mul; k--) alphas[k - mul - 1] = num / (this.knots[a + k] - ua);
@@ -343,14 +253,6 @@ export class Curve extends Geometry {
         }
       }
       // Elevate Bezier 
-      /*
-      for (int i = lbz; i <= NewDegree; i++) {
-        ElvevatedBezControls[i] = { 0.0f, 0.0f, 0.0f, 0.0f };
-        for (int j = std::max(0, i - (int)n); j <= std::min((int)m_Degree, i); j++) {
-          ElvevatedBezControls[i] += BezierAlphas[i][j] * BezControls[j];
-        }
-      }
-       */
       for (let i = lbz; i <= newDegree; i++) {
         elevatedBezierControls[i] = vec4.create(0, 0, 0, 0);
         for (let j = Math.max(0, i - n); j <= Math.min(this.degree, i); j++) {
@@ -358,40 +260,6 @@ export class Curve extends Geometry {
             vec4.scale(bezierControls[j], bezierAlphas[i][j]));
         }
       }
-      /*
-          if (oldr > 1) {
-            int first = kind - 2;
-            int last = kind;
-            float den = ub - ua;
-            float bet = (ub - NewKnots[kind - 1]) / den;
-            for (int tr = 1; tr < oldr; tr++) {
-              int i = first, j = last, kj = j - kind + 1;
-              while (j - i > tr) {
-                if (i < cind) {
-                  float alf = (ub - NewKnots[i]) / (ua - NewKnots[i]);
-                  NewPoints[i] = alf * NewPoints[i] + (1.0f - alf) * NewPoints[i - 1];
-                }
-                if (j >= lbz) {
-                  if (j - tr <= kind - NewDegree - oldr) {
-                    float gam = (ub - NewKnots[j - tr]) / den;
-                    ElvevatedBezControls[kj] = gam * ElvevatedBezControls[kj] +
-                      (1.0f - gam) * ElvevatedBezControls[kj + 1];
-                  }
-                  else
-                  {
-                    ElvevatedBezControls[kj] = bet * ElvevatedBezControls[kj] +
-                      (1.0f - bet) * ElvevatedBezControls[kj + 1];
-                  }
-                }
-                i++;
-                j--;
-                kj--;
-              }
-              first--;
-              last++;
-            }
-          }
-          */
       //  Remove knots
       if (oldr > 1) {
         var first: number = kind - 2;
@@ -432,26 +300,6 @@ export class Curve extends Geometry {
           last++;
         }
       }
-      /*
-      if (a != m_Degree) { for (int i = 0; i < NewDegree - oldr; i++) {
-          NewKnots[kind++] = ua;
-        }
-      }
-      for (int j = lbz; j <= rbz; j++) {
-        NewPoints[cind++] = ElvevatedBezControls[j];
-      }
-      if (b < m_Knots.size() - 1) {
-        for (int j = 0; j < r; j++) BezControls[j] = NextBezControls[j];
-        for (int j = r; j <= m_Degree; j++) BezControls[j] = m_Points[b - m_Degree + j];
-        a = b++;
-        ua = ub;
-      }
-      else {
-        for (i = 0; i <= NewDegree; i++) {
-          NewKnots[kind + i] = ub;
-        }
-      }
-      */
       if (a != this.degree) {
         for (let i = 0; i < this.degree - oldr; i++) {
           newKnots[kind++] = ua;
@@ -480,45 +328,5 @@ export class Curve extends Geometry {
     this.updateSamples();
 
   }
-
-
-  /*
-      if (a != m_Degree) { for (int i = 0; i < NewDegree - oldr; i++) {
-          NewKnots[kind++] = ua;
-        }
-      }
-      for (int j = lbz; j <= rbz; j++) {
-        NewPoints[cind++] = ElvevatedBezControls[j];
-      }
-      if (b < m_Knots.size() - 1) {
-        for (int j = 0; j < r; j++) BezControls[j] = NextBezControls[j];
-        for (int j = r; j <= m_Degree; j++) BezControls[j] = m_Points[b - m_Degree + j];
-        a = b++;
-        ua = ub;
-      }
-      else {
-        for (i = 0; i <= NewDegree; i++) {
-          NewKnots[kind + i] = ub;
-        }
-      }
-    }
-  
-    m_Points = NewPoints;
-    m_Knots = NewKnots;
-    m_Degree = NewDegree;
-  	
-    UpdateSamples();
-    UpdateVertexArray();
-  
-    std::vector<glm::vec3> controlPoints;
-    for (const auto& p : m_Points) controlPoints.push_back(glm::vec3(p.x, p.y, p.z) / p.w);
-    m_ControlPolyLine = std::make_unique<PolyLine>(controlPoints, true, m_ID);
-    m_ControlPolyLine->PointsOn();
-    m_ControlPolyLine->SetModel(m_Model);
-  
-    DebugPrint();
-  }
-     */
-
 
 }

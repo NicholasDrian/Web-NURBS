@@ -56,34 +56,6 @@ export class Surface extends Geometry {
 
   private update(): void {
     this.delete();
-    /*
-      {
-      int sampleCountU = NURBSUtils::SAMPLES_PER_EDGE * ((int)m_Points.size() - 1);
-      int sampleCountV = NURBSUtils::SAMPLES_PER_EDGE * ((int)m_Points[0].size() - 1);
-      float firstKnotU = m_KnotsU[0];
-      float firstKnotV = m_KnotsV[0];
-      float knotSizeU = m_KnotsU.back() - firstKnotU;
-      float knotSizeV = m_KnotsV.back() - firstKnotV;
-      float stepU = knotSizeU / sampleCountU;
-      float stepV = knotSizeV / sampleCountV;
-      m_Samples.resize((sampleCountU + 1) * (sampleCountV + 1));
-      for (int i = 0; i <= sampleCountU; i++) 
-        for (int j = 0; j <= sampleCountV; j++) 
-          m_Samples[i * (sampleCountV + 1) + j] = Sample(firstKnotU + i * stepU, firstKnotV + j * stepV);
-      m_Indices.clear();
-      for (int i = 0; i < sampleCountU; i++) {
-        for (int j = 0; j < sampleCountV; j++) {
-          m_Indices.push_back(i * (sampleCountV + 1) + j);
-          m_Indices.push_back(i * (sampleCountV + 1) + j + 1);
-          m_Indices.push_back((i + 1) * (sampleCountV + 1) + j);
-    
-          m_Indices.push_back(i * (sampleCountV + 1) + j + 1);
-          m_Indices.push_back((i + 1) * (sampleCountV + 1) + j + 1);
-          m_Indices.push_back((i + 1) * (sampleCountV + 1) + j);
-        }
-      }
-  
-      */
 
     const sampleCountU: number = Curve.SAMPLES_PER_EDGE * (this.weightedControlPoints.length - 1);
     const sampleCountV: number = Curve.SAMPLES_PER_EDGE * (this.weightedControlPoints[0].length - 1);
@@ -134,39 +106,6 @@ export class Surface extends Geometry {
 
     this.mesh = new Mesh(this, meshVerts, meshNormals, meshIndices);
   }
-
-  /*
-    std::vector<glm::vec3> normals((sampleCountU + 1) * (sampleCountV + 1));
-    for (int i = 0; i <= sampleCountU; i++) {
-      for (int j = 0; j <= sampleCountV; j++) {
-        glm::vec3 v1 = (i == 0) 
-          ? (m_Samples[i * (sampleCountV + 1) + j] - m_Samples[(i + 1) * (sampleCountV + 1) + j])
-          : (m_Samples[i * (sampleCountV + 1) + j] - m_Samples[(i - 1) * (sampleCountV + 1) + j]);
-        glm::vec3 v2 = (j == 0)
-          ? (m_Samples[i * (sampleCountV + 1) + j] - m_Samples[i * (sampleCountV + 1) + j + 1])
-          : (m_Samples[i * (sampleCountV + 1) + j] - m_Samples[i * (sampleCountV + 1) + j - 1]);
-        normals[i * (sampleCountV + 1) + j] = glm::normalize(glm::cross(v1, v2));
-      }
-    }
-  
-    glm::vec4 color{ 1.0,0.0,0.0,1.0 };
-    m_VertexArray = std::make_unique<VertexArrayTriangles>(m_Samples, normals, color, m_Indices);
-  }
-  
-  glm::vec3 NURBSurface::Sample(float u, float v) const
-  {
-    int USpan = NURBSUtils::Span(m_KnotsU, u, m_DegreeU);
-    int VSpan = NURBSUtils::Span(m_KnotsV, v, m_DegreeV);
-    std::vector<float> basisFuncsU = NURBSUtils::BasisFuncs(m_KnotsU, u, m_DegreeU);
-    std::vector<float> basisFuncsV = NURBSUtils::BasisFuncs(m_KnotsV, v, m_DegreeV);
-    glm::vec4 res = { 0.0f, 0.0f, 0.0f, 0.0f };
-    for (int i = 0; i <= m_DegreeU; i++) {
-      for (int j = 0; j <= m_DegreeV; j++) 
-        res += m_Points[USpan - m_DegreeU + i][VSpan - m_DegreeV + j] * (basisFuncsV[j] * basisFuncsU[i]);
-    }
-    return glm::vec3{ res.x / res.w, res.y / res.w, res.z / res.w };
-  }
-  */
 
   public sample(u: number, v: number): Vec3 {
     const uSpan: number = span(this.uKnots, u, this.degreeU);
