@@ -1,6 +1,5 @@
 import { mat4, Mat4, vec3, Vec3, Vec4, vec4 } from "wgpu-matrix";
 import { swizzleYZ } from "../../utils/math";
-import { printMat4, vec3ToString } from "../../utils/print";
 import { Plane } from "../plane";
 import { Ray } from "../ray";
 import { Curve } from "./curve";
@@ -9,18 +8,14 @@ const UNIT_CIRCLE_DEGREE: number = 2;
 const UNIT_CIRCLE_KNOTS: number[] = [
   0, 0, 0, 1, 1, 2, 2, 3, 3, 4, 4, 4
 ];
-const UNIT_CIRCLE_POINTS: Vec3[] = [
-  vec3.create(1, 0, 0), vec3.create(1, 1, 0), vec3.create(0, 1, 0),
-  vec3.create(-1, 1, 0), vec3.create(-1, 0, 0), vec3.create(-1, -1, 0),
-  vec3.create(0, -1, 0), vec3.create(1, -1, 0), vec3.create(1, 0, 0)
-];
-const UNIT_CIRCLE_WEIGHTS: number[] = [
-  1, Math.SQRT2 / 2, 1, Math.SQRT2 / 2,
-  1, Math.SQRT2 / 2, 1, Math.SQRT2 / 2, 1
+const w: number = Math.SQRT2 / 2;
+const UNIT_CIRCLE_POINTS: Vec4[] = [
+  vec4.create(1, 0, 0, 1), vec4.create(w, w, 0, w), vec4.create(0, 1, 0, 1),
+  vec4.create(-w, w, 0, w), vec4.create(-1, 0, 0, 1), vec4.create(-w, -w, 0, w),
+  vec4.create(0, -1, 0, 1), vec4.create(w, -w, 0, w), vec4.create(1, 0, 0, 1)
 ];
 
 export const createCircleThreePoints = function(a: Vec3, b: Vec3, c: Vec3): Curve {
-  console.log("creating circle from three points", a, b, c);
   const ab: Vec3 = vec3.sub(b, a);
   const ac: Vec3 = vec3.sub(c, a);
   const normal: Vec3 = vec3.normalize(vec3.cross(ab, ac));
@@ -41,7 +36,6 @@ export const createCircleThreePoints = function(a: Vec3, b: Vec3, c: Vec3): Curv
 }
 
 export const createCircleCenterNormalRadius = function(center: Vec3, normal: Vec3, radius: number) {
-  console.log("creating circle from center normal radius", vec3ToString(center), vec3ToString(normal), radius);
   if (normal[2] < 0) normal = vec3.scale(normal, -1);
   const unitZ: Vec3 = vec3.create(0, 0, 1);
   var x: Vec3;
@@ -63,6 +57,6 @@ export const createCircleCenterNormalRadius = function(center: Vec3, normal: Vec
     normal[0], normal[1], normal[2], 0,
     center[0], center[1], center[2], 1
   ));
-  return new Curve(null, UNIT_CIRCLE_POINTS, UNIT_CIRCLE_DEGREE, UNIT_CIRCLE_KNOTS, UNIT_CIRCLE_WEIGHTS, model);
+  return new Curve(null, UNIT_CIRCLE_POINTS, UNIT_CIRCLE_DEGREE, UNIT_CIRCLE_KNOTS, model);
 }
 

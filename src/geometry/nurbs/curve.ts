@@ -21,7 +21,6 @@ export class Curve extends Geometry {
     private weightedControlPoints: Vec4[],
     private degree: number,
     private knots: number[] = [],
-    weights: number[] = [],
     model?: Mat4,
     material: MaterialName | null = null
   ) {
@@ -147,7 +146,7 @@ export class Curve extends Geometry {
       let alpha: number;
       if (i <= idx - this.degree) alpha = 1;
       else if (i >= idx + 1) alpha = 0;
-      else alpha = (knot - this.knots[i]) / this.knots[i + this.degree] - this.knots[i];
+      else alpha = (knot - this.knots[i]) / (this.knots[i + this.degree] - this.knots[i]);
       newWeightedControlPoints.push(vec4.add(
         vec4.scale(this.weightedControlPoints[i], alpha),
         vec4.scale(this.weightedControlPoints[i - 1], 1 - alpha)
@@ -164,10 +163,12 @@ export class Curve extends Geometry {
   }
 
   public elevateDegree(n: number): void {
+    console.log(this.knots);
+    console.log(this.weightedControlPoints);
     // TODO: stuff this out
     const newDegree: number = this.degree + n;
-    const bezierAlphas = calcBezierAlphas(this.degree, this.degree + n);
-    console.log("alphas", bezierAlphas);
+    const bezierAlphas = calcBezierAlphas(this.degree, newDegree);
+    //console.log("alphas", bezierAlphas);
     const bezierControls: Vec4[] = [];
     for (let i = 0; i < this.degree + 1; i++) bezierControls.push(vec4.create());
     const elevatedBezierControls: Vec4[] = [];
@@ -183,7 +184,7 @@ export class Curve extends Geometry {
     for (let i = 1; i < this.knots.length; i++) {
       if (this.knots[i] != this.knots[i - 1]) distinctKnots++;
     }
-    console.log("distinct knots", distinctKnots);
+    // console.log("distinct knots", distinctKnots);
 
     const newControlPoints: Vec4[] = [];
     for (let i = 0; i < this.weightedControlPoints.length + n * (distinctKnots - 1); i++) {
@@ -207,6 +208,7 @@ export class Curve extends Geometry {
 
     //main loop
     while (b < this.knots.length - 1) {
+      console.log("bez controls start", [...bezierControls]);
       const IDK: number = b;
       while (b < this.knots.length - 1 && this.knots[b] == this.knots[b + 1]) b++;
       const mul: number = b - IDK + 1;
@@ -216,6 +218,7 @@ export class Curve extends Geometry {
       r = this.degree - mul;
       const lbz: number = (oldr > 0) ? Math.floor((oldr + 2) / 2) : 1;
       const rbz: number = (r > 0) ? newDegree - Math.floor((r + 1) / 2) : newDegree;
+      //console.log("lbz, rbz", lbz, rbz);
       // insert knots  
       if (r > 0) {
         const num: number = ub - ua;
@@ -238,8 +241,11 @@ export class Curve extends Geometry {
         for (let j = Math.max(0, i - n); j <= Math.min(this.degree, i); j++) {
           elevatedBezierControls[i] = vec4.add(elevatedBezierControls[i],
             vec4.scale(bezierControls[j], bezierAlphas[i][j]));
+          //console.log("ba", i, j, bezierAlphas[i][j])
         }
       }
+      console.log("bez controls elevated", [...bezierControls]);
+      // console.log("elevated bezier", [...elevatedBezierControls]);
       //  Remove knots
       if (oldr > 1) {
         var first: number = kind - 2;
@@ -283,12 +289,17 @@ export class Curve extends Geometry {
         }
       }
       for (let j = lbz; j <= rbz; j++) {
-        console.log("adding point", elevatedBezierControls[j]);
+        //console.log("adding point", elevatedBezierControls[j]);
         newControlPoints[cind++] = elevatedBezierControls[j];
       }
       if (b < this.knots.length - 1) {
         for (let j = 0; j < r; j++) bezierControls[j] = nextBezierControls[j];
-        for (let j = r; j < this.degree; j++) bezierControls[j] = this.weightedControlPoints[b - this.degree + j];
+        for (let j = r; j <= this.degree; j++) {
+          console.log("b", b);
+          console.log("j", j);
+          bezierControls[j] = this.weightedControlPoints[b - this.degree + j];
+          console.log(bezierControls[j]);
+        }
         a = b++;
         ua = ub;
       } else {
@@ -296,9 +307,10 @@ export class Curve extends Geometry {
           newKnots[kind + i] = ub;
         }
       }
-      console.log("new points", newControlPoints);
-      console.log("new knots", newKnots);
-      console.log("bezierControls", bezierControls);
+
+      console.log("lap finished", [...newControlPoints])
+      // console.log("new knots", newKnots);
+      //console.log("bezierControls", bezierControls);
     }
 
 

@@ -41,11 +41,19 @@ export const addTestScene1 = function() {
       vec4.create(-50, -50, 30, 1),
       vec4.create(-50, 50, 30, 1),
       vec4.create(50, 50, 30, 1),
-      vec4.create(50, -50, 30, 1)
+      vec4.create(50, -50, 30, 1),
+      //vec4.create(150, -50, 30, 1),
+      //  vec4.create(150, 50, 30, 1),
+      // vec4.create(250, 50, 30, 1),
+      // vec4.create(250, -50, 30, 1),
+      // vec4.create(350, -50, 30, 1),
+      // vec4.create(350, 50, 30, 1),
     ],
-      2
+      3
     )
   );
+  // (<Curve>INSTANCE.getScene().getGeometry(curve3)).elevateDegree(1);
+
   const surface: ObjectID = INSTANCE.getScene().addGeometry(
     loft(
       [<Curve>INSTANCE.getScene().getGeometry(curve1),
@@ -54,7 +62,6 @@ export const addTestScene1 = function() {
       2
     )
   );
-
   /*
   const surface: ObjectID = INSTANCE.getScene().addGeometry(
     new Surface(
