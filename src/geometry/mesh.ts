@@ -13,7 +13,7 @@ import { Ray } from "./ray";
 export class Mesh extends Geometry {
 
   private renderMesh: RenderID;
-  //private boundingBoxHeirarchy: MeshBoundingBoxHeirarchy;
+  private boundingBoxHeirarchy: MeshBoundingBoxHeirarchy;
 
   constructor(
     parent: Geometry | null,
@@ -35,13 +35,12 @@ export class Mesh extends Geometry {
       new Int32Array(this.indices),
       this.getModel()
     ));
-    //this.boundingBoxHeirarchy = new MeshBoundingBoxHeirarchy(this.verts, this.indices);
+    this.boundingBoxHeirarchy = new MeshBoundingBoxHeirarchy(this.verts, this.indices);
   }
 
   public intersect(ray: Ray): number | null {
-    throw new Error("debug");
     const objectSpaceRay: Ray = Ray.transform(ray, mat4.inverse(this.getModel()));
-    //return this.boundingBoxHeirarchy.intersect(objectSpaceRay, this.verts);
+    return this.boundingBoxHeirarchy.intersect(objectSpaceRay, this.verts);
   }
 
   public destroy(): void {

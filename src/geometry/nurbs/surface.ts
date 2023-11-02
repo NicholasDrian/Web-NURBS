@@ -102,7 +102,6 @@ export class Surface extends Geometry {
         meshNormals.push(normal);
       }
     }
-    console.log(meshVerts);
 
     this.mesh = new Mesh(this, meshVerts, meshNormals, meshIndices);
   }

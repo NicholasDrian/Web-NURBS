@@ -56,7 +56,6 @@ export const loft = function(curves: Curve[], degree: number): Surface {
   }
 
   const knotsU: number[] = genericKnotVector(curves.length, degreeU);
-  console.log(points);
 
   return new Surface(points, knotsU, curves[0].getKnots(), degreeU, degreeV);
 }

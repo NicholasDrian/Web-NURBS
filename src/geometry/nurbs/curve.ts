@@ -6,7 +6,7 @@ import { Geometry } from "../geometry";
 import { Points } from "../points";
 import { PolyLine } from "../polyLine";
 import { Ray } from "../ray";
-import { basisFuncs, genericKnotVector, span } from "./utils";
+import { basisFuncs, calcBezierAlphas, genericKnotVector, span } from "./utils";
 
 export class Curve extends Geometry {
   public static readonly SAMPLES_PER_EDGE = 20;
@@ -164,55 +164,36 @@ export class Curve extends Geometry {
   }
 
   public elevateDegree(n: number): void {
-    // Compute Bezier Coeficients
-    // could cache this
-    // TODO: factor this out
+    // TODO: stuff this out
     const newDegree: number = this.degree + n;
-    const bezierAlphas: number[][] = [];
-    for (let i = 0; i < this.degree + n + 1; i++) {
-      const temp: number[] = [];
-      for (let j = 0; j < this.degree + 1; j++) {
-        temp.push(0);
-      }
-      bezierAlphas.push(temp);
-    }
-    bezierAlphas[0][0] = bezierAlphas[newDegree][this.degree] = 1;
-    for (let i = 1; i <= newDegree / 2; i++) {
-      const inv: number = 1 / bin(newDegree, i);
-      const mpi: number = Math.min(this.degree, i);
-      for (let j = Math.max(0, i - n); j <= mpi; j++)
-        bezierAlphas[i][j] = inv * bin(this.degree, j) * bin(n, i - j);
-
-    }
-    for (let i = newDegree / 2 + 1; i <= newDegree - 1; i++) {
-      const mpi: number = Math.min(this.degree, i);
-      for (let j = Math.max(0, i - n); j <= mpi; j++)
-        bezierAlphas[i][j] = bezierAlphas[newDegree - i][this.degree - j];
-    }
-
-
+    const bezierAlphas = calcBezierAlphas(this.degree, this.degree + n);
+    console.log("alphas", bezierAlphas);
     const bezierControls: Vec4[] = [];
     for (let i = 0; i < this.degree + 1; i++) bezierControls.push(vec4.create());
     const elevatedBezierControls: Vec4[] = [];
     for (let i = 0; i < this.degree + n + 1; i++) elevatedBezierControls.push(vec4.create());
     const nextBezierControls: Vec4[] = [];
-    for (let i = 0; i < this.degree - 1; i++) nextBezierControls.push(vec4.create());
     const alphas: number[] = [];
-    for (let i = 0; i < this.degree - 1; i++) alphas.push(0);
+    for (let i = 0; i < this.degree - 1; i++) {
+      nextBezierControls.push(vec4.create());
+      alphas.push(0);
+    }
 
     let distinctKnots = 1;
     for (let i = 1; i < this.knots.length; i++) {
       if (this.knots[i] != this.knots[i - 1]) distinctKnots++;
     }
+    console.log("distinct knots", distinctKnots);
 
     const newControlPoints: Vec4[] = [];
-    for (let i = 0; i < this.weightedControlPoints.length + n * (distinctKnots - 1); i++) newControlPoints.push(vec4.create());
+    for (let i = 0; i < this.weightedControlPoints.length + n * (distinctKnots - 1); i++) {
+      newControlPoints.push(vec4.create());
+    }
     const newKnots: number[] = [];
     for (let i = 0; i < this.knots.length + n * distinctKnots; i++) newKnots.push(0);
 
 
     // Initialize First Segment
-
     let mh: number = newDegree;
     let kind: number = newDegree + 1;
     let r: number = -1;
@@ -221,21 +202,20 @@ export class Curve extends Geometry {
     let cind: number = 1;
     let ua: number = this.knots[0];
     newControlPoints[0] = this.weightedControlPoints[0];
-    for (let i = 0; i <= newDegree; i++) newKnots.push(ua);
-    for (let i = 0; i <= this.degree; i++) bezierControls.push(this.weightedControlPoints[0]);
-
+    for (let i = 0; i <= newDegree; i++) newKnots[i] = ua;
+    for (let i = 0; i <= this.degree; i++) bezierControls[i] = this.weightedControlPoints[i];
 
     //main loop
-    while (b < this.knots.length) {
-      const i: number = b;
+    while (b < this.knots.length - 1) {
+      const IDK: number = b;
       while (b < this.knots.length - 1 && this.knots[b] == this.knots[b + 1]) b++;
-      const mul: number = b - i + 1;
+      const mul: number = b - IDK + 1;
       mh += mul + n;
       const ub: number = this.knots[b];
       const oldr: number = r;
       r = this.degree - mul;
-      const lbz: number = (oldr > 0) ? (oldr + 2) / 2 : 1;
-      const rbz: number = (r > 0) ? newDegree - (r + 1) / 2 : newDegree;
+      const lbz: number = (oldr > 0) ? Math.floor((oldr + 2) / 2) : 1;
+      const rbz: number = (r > 0) ? newDegree - Math.floor((r + 1) / 2) : newDegree;
       // insert knots  
       if (r > 0) {
         const num: number = ub - ua;
@@ -243,7 +223,7 @@ export class Curve extends Geometry {
         for (let j = 1; j <= r; j++) {
           const save: number = r - j;
           const s: number = mul + j;
-          for (let k = this.degree; k > mul; k--) {
+          for (let k = this.degree; k >= s; k--) {
             bezierControls[k] = vec4.add(
               vec4.scale(bezierControls[k], alphas[k - s]),
               vec4.scale(bezierControls[k - 1], 1 - alphas[k - s])
@@ -292,20 +272,18 @@ export class Curve extends Geometry {
                 );
               }
             }
-            i++;
-            j--;
-            kj--;
+            i++; j--; kj--;
           }
-          first--;
-          last++;
+          first--; last++;
         }
       }
       if (a != this.degree) {
-        for (let i = 0; i < this.degree - oldr; i++) {
+        for (let i = 0; i < newDegree - oldr; i++) {
           newKnots[kind++] = ua;
         }
       }
       for (let j = lbz; j <= rbz; j++) {
+        console.log("adding point", elevatedBezierControls[j]);
         newControlPoints[cind++] = elevatedBezierControls[j];
       }
       if (b < this.knots.length - 1) {
@@ -318,12 +296,17 @@ export class Curve extends Geometry {
           newKnots[kind + i] = ub;
         }
       }
+      console.log("new points", newControlPoints);
+      console.log("new knots", newKnots);
+      console.log("bezierControls", bezierControls);
     }
 
 
     this.weightedControlPoints = newControlPoints;
     this.knots = newKnots;
     this.degree = newDegree;
+    console.log(newControlPoints);
+    console.log(newKnots);
 
     this.updateSamples();
 

@@ -1,4 +1,6 @@
+import { warn } from "console";
 import { Vec3, vec4, Vec4 } from "wgpu-matrix";
+import { bin } from "../../utils/math";
 
 export const span = function(knots: number[], u: number, p: number): number {
   const n: number = knots.length - p - 2;
@@ -60,3 +62,27 @@ export const toWeightedControlPoints = function(points: Vec3[], weights?: number
   return res;
 }
 
+export const calcBezierAlphas = function(startDegree: number, endDegree: number): number[][] {
+  const bezierAlphas: number[][] = [];
+  for (let i = 0; i < endDegree + 1; i++) {
+    const temp: number[] = [];
+    for (let j = 0; j < startDegree + 1; j++) {
+      temp.push(0);
+    }
+    bezierAlphas.push(temp);
+  }
+  bezierAlphas[0][0] = bezierAlphas[endDegree][startDegree] = 1;
+  for (let i = 1; i <= Math.floor(endDegree / 2); i++) {
+    const inv: number = 1 / bin(endDegree, i);
+    const mpi: number = Math.min(startDegree, i);
+    for (let j = Math.max(0, i - endDegree + startDegree); j <= mpi; j++)
+      bezierAlphas[i][j] = inv * bin(startDegree, j) * bin(endDegree - startDegree, i - j);
+
+  }
+  for (let i = Math.floor(endDegree / 2) + 1; i <= endDegree - 1; i++) {
+    const mpi: number = Math.min(startDegree, i);
+    for (let j = Math.max(0, i - endDegree + startDegree); j <= mpi; j++)
+      bezierAlphas[i][j] = bezierAlphas[endDegree - i][startDegree - j];
+  }
+  return bezierAlphas;
+}
