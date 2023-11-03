@@ -2,6 +2,7 @@ import { mat4, Mat4, vec3, Vec3 } from "wgpu-matrix";
 import { INSTANCE } from "../cad";
 import { ConstructionPlane } from "../scene/constructionPlane";
 import { Scene } from "../scene/scene";
+import { printVec3 } from "../utils/print";
 import { BoundingBox } from "./boundingBox";
 import { Geometry } from "./geometry";
 import { Intersection } from "./intersection";
@@ -152,8 +153,44 @@ export class Ray {
     );
   }
 
-  // returns time and dist
-  public almostIntersectLine(start: Vec3, end: Vec3, pixels: number): [number, number] | null {
+  // returns time, dist, pLine
+  public almostIntersectLine(start: Vec3, end: Vec3, pixels: number): [number, number, Vec3] | null {
+
+    const p1: Vec3 = start;
+    const p2: Vec3 = end;
+    const p3: Vec3 = this.origin;
+    const p4: Vec3 = vec3.add(this.origin, this.direction);
+
+    const v13: Vec3 = vec3.sub(p1, p3);
+    const v43: Vec3 = vec3.sub(p4, p3);
+    const v21: Vec3 = vec3.sub(p2, p1);
+
+    const d1343: number = vec3.dot(v13, v43);
+    const d4321: number = vec3.dot(v43, v21);
+    const d1321: number = vec3.dot(v13, v21);
+    const d4343: number = vec3.dot(v43, v43);
+    const d2121: number = vec3.dot(v21, v21);
+
+    const mua: number = (d1343 * d4321 - d1321 * d4343) / (d2121 * d4343 - d4321 * d4321);
+    const mub: number = (d1343 + mua * d4321) / d4343;
+
+    // p line
+    const pa: Vec3 = vec3.add(p1, vec3.scale(v21, mua));
+    //p ray
+    const pb: Vec3 = vec3.add(p3, vec3.scale(v43, mub));
+
+
+    const distToIntersection: number = vec3.distance(this.origin, pb);
+    const closest: number = vec3.distance(pa, pb);
+    const sizeOfPixel: number = INSTANCE.getScene().getCamera().pixelSizeAtDist(distToIntersection);
+
+    if (closest < sizeOfPixel * pixels) {
+      return [mub, closest, pa];
+    } else {
+      return null;
+    }
+
+    /*
     const a: Vec3 = this.direction;
     const b: Vec3 = vec3.normalize(vec3.sub(end, start));
     if (a === b) {
@@ -175,19 +212,28 @@ export class Ray {
       // TODO: figure out whats happening here
     }
 
-    const tRay: number = (ab * bc + ac * bb) / denom;
+    //const tRay: number = (ab * bc + ac * bb) / denom;
     const length: number = vec3.distance(start, end);
     const tLine: number = Math.min(Math.max((ab * ac - bc * aa) / denom, 0), length);
+    const tRay: number = (ab + tLine * ac) / aa / length;
     const pRay: Vec3 = this.at(tRay);
-    const pLine: Vec3 = this.at(tLine);
+    const pLine: Vec3 = vec3.add(B, vec3.scale(b, tLine));
+    this.print();
+    console.log("t ray", tRay);
+    console.log("pray, pline");
+    printVec3(pRay);
+    printVec3(pLine);
     const closest: number = vec3.distance(pRay, pLine);
     const distToIntersection: number = vec3.distance(this.origin, pRay);
     const sizeOfPixel: number = INSTANCE.getScene().getCamera().pixelSizeAtDist(distToIntersection);
+    console.log("size of pix", sizeOfPixel);
+    console.log("closest", closest);
     if (closest < sizeOfPixel * pixels) {
+      console.log("HERERERERERERERERERERE");
       return [tRay, closest];
     }
     return null;
-
+*/
   }
 
 }

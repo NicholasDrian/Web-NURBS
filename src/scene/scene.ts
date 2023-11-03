@@ -57,6 +57,7 @@ export class Scene {
   }
 
   public addGeometry(geo: Geometry): void {
+    this.boundingBoxHeirarchy.add(geo);
     this.geometryMap.set(geo.getID(), geo);
   }
   public getGeometry(id: ObjectID): Geometry {

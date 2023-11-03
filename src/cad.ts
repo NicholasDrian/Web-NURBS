@@ -11,6 +11,7 @@ import { addTestScene1 } from "./tests/testScene1";
 import { WindowManager } from "./window/windowManager";
 import { SettingsManager } from "./settings/settingsManager";
 import { MaterialManager } from "./materials/materialManager";
+import { addTestScene2 } from "./tests/testScene2";
 
 /*
   * Browser Based NURBS Modeling Software
@@ -57,8 +58,8 @@ class CAD {
     this.renderStats = new RenderStats();
     this.windowManager = new WindowManager();
 
-    addTestScene1();
-
+    // addTestScene1();
+    addTestScene2();
   }
 
   public async run() {

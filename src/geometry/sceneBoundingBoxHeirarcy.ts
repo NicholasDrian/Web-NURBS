@@ -53,17 +53,23 @@ class BBHNode {
     }
   }
   public firstIntersectionsWithinMargin(ray: Ray, margin: number): Intersection[] {
-    throw new Error("");
-  }
+    const res: Intersection[] = [];
+    if (ray.intersectBoundingBox(this.boundingBox) === null) return res;
 
-  public print(): void {
-    let str: string = "";
-    for (let i = 0; i < this.depth; i++) str += "->";
-    if (this.geometry) str += `${this.geometry.length}geometry`;
-    else str += "node";
-    console.log(str);
-    this.child1?.print();
-    this.child2?.print();
+    if (this.isLeaf()) {
+      this.geometry!.forEach((geo: Geometry) => {
+        const intersection: Intersection | null = geo.intersect(ray);
+        if (intersection !== null) res.push(intersection);
+      });
+    } else {
+      res.push(...this.child1!.firstIntersectionsWithinMargin(ray, margin));
+      res.push(...this.child2!.firstIntersectionsWithinMargin(ray, margin));
+    }
+    res.sort((a: Intersection, b: Intersection) => {
+      return a.time - b.time;
+    })
+    console.log(...res);
+    return res;
   }
 
   public firstPositiveIntersection(ray: Ray): Intersection | null {
@@ -88,6 +94,16 @@ class BBHNode {
       return t1.time < t2.time ? t1 : t2;
     }
 
+  }
+
+  public print(): void {
+    let str: string = "";
+    for (let i = 0; i < this.depth; i++) str += "->";
+    if (this.geometry) str += `${this.geometry.length}geometry`;
+    else str += "node";
+    console.log(str);
+    this.child1?.print();
+    this.child2?.print();
   }
 
   public add(geo: Geometry): void {
@@ -153,7 +169,7 @@ export class SceneBoundingBoxHeirarchy {
 
   // margin is max percentage of distance from camera behind first intersection
   public firstIntersectionsWithinMargin(ray: Ray, margin: number): Intersection[] {
-    throw new Error("Method not implemented.");
+    return this.root.firstIntersectionsWithinMargin(ray, margin);
   }
 
   public print(): void {
