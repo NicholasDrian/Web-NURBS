@@ -30,7 +30,7 @@ export class Line extends Geometry {
   public intersect(ray: Ray): Intersection | null {
     const objectSpaceRay: Ray = Ray.transform(ray, mat4.inverse(this.getModel()));
     objectSpaceRay.print();
-    const i: [number, number, Vec3] | null = objectSpaceRay.almostIntersectLine(this.start, this.end, 5);
+    const i: [number, number, Vec3] | null = objectSpaceRay.almostIntersectLine(this.start, this.end, 20);
     if (i === null) return i;
     return new Intersection(i[0], "line", this.getID(), vec3.transformMat4(i[2], this.getModel()), i[1]);
   }

@@ -124,6 +124,7 @@ export class LineBoundingBoxHeirarchy {
       const b: Vec3 = verts[indices[i + 1]];
       if (a[0] !== b[0] || a[1] !== b[1] || a[2] !== b[2]) {
         reducedIndices.push(indices[i], indices[i + 1]);
+        // console.log(verts[indices[i]], verts[indices[i + 1]]);
       }
     }
     this.root = new LineBoundingBoxHeirarchyNode(id, verts, reducedIndices);

@@ -73,7 +73,7 @@ export class CurveCommand extends Command {
       if (this.curve) {
         this.curve.updateLastControlPoint(point, 1);
         this.curve.addControlPoint(point, 1);
-        if (this.curve.getDegree() < this.degree) this.curve.elevateDegree(1);
+        if (this.curve.getDegree() < this.degree) this.curve.changeDegree(this.curve.getDegree() + 1);
       } else {
         this.curve = new Curve(
           null,
