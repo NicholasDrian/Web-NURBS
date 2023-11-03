@@ -101,7 +101,7 @@ class MeshBoundingBoxHeirarchyNode {
         }
       }
       if (res == null) return res;
-      return new Intersection(res, "mesh", this.id, ray.at(res), 0);
+      return new Intersection(res, "mesh", this.id, ray.at(res), 0, 0);
     } else {
       const i1: Intersection | null = this.child1!.intersect(ray, verts);
       const i2: Intersection | null = this.child2!.intersect(ray, verts);

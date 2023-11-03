@@ -9,7 +9,8 @@ export class Intersection {
     public description: string,
     public object: ObjectID,
     public point: Vec3,
-    public dist: number
+    public dist: number,
+    public screenSpaceDist: number
   ) { }
 
 }

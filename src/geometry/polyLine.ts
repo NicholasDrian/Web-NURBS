@@ -28,7 +28,7 @@ export class PolyLine extends Geometry {
   }
 
   public intersect(ray: Ray): Intersection | null {
-    return this.boundingBoxHeirarchy.almostIntersect(ray, this.points, 3);
+    return this.boundingBoxHeirarchy.almostIntersect(ray, this.points, 20);
   }
 
   public getBoundingBox(): BoundingBox {

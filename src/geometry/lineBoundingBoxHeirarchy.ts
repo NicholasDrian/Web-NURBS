@@ -75,16 +75,15 @@ class LineBoundingBoxHeirarchyNode {
 
     if (this.isLeaf()) {
       // time, dist
-      var res: [number, number, Vec3] | null = null;
+      var closestIntersection: Intersection | null = null;
       for (let i = 0; i < this.indices!.length; i += 2) {
-        var t: [number, number, Vec3] | null = ray.almostIntersectLine(verts[this.indices![i]], verts[this.indices![i + 1]], pixels);
-        if (t !== null) {
-          if (res === null) res = t;
-          else res = (res[0] < t[0]) ? res : t;
+        var intersection: Intersection | null = ray.almostIntersectLine(this.id, verts[this.indices![i]], verts[this.indices![i + 1]], pixels);
+        if (intersection !== null) {
+          if (closestIntersection === null) closestIntersection = intersection;
+          else closestIntersection = (closestIntersection.dist < intersection.dist) ? closestIntersection : intersection;
         }
       }
-      if (res === null) return null;
-      return new Intersection(res[0], "line", this.id, res[2], res[1]);
+      return closestIntersection;
     } else {
       const t1 = this.child1!.almostIntersect(ray, verts, pixels);
       const t2 = this.child2!.almostIntersect(ray, verts, pixels);

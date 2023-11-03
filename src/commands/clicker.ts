@@ -73,7 +73,8 @@ export class Clicker {
   }
 
   public destroy(): void {
-    document.body.removeChild(this.element);
+    //document.body.removeChild(this.element);
+
     this.cursor.destroy();
   }
 

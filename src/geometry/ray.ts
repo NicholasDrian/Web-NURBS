@@ -1,7 +1,7 @@
 import { mat4, Mat4, vec3, Vec3 } from "wgpu-matrix";
 import { INSTANCE } from "../cad";
 import { ConstructionPlane } from "../scene/constructionPlane";
-import { Scene } from "../scene/scene";
+import { ObjectID, Scene } from "../scene/scene";
 import { printVec3 } from "../utils/print";
 import { BoundingBox } from "./boundingBox";
 import { Geometry } from "./geometry";
@@ -37,7 +37,7 @@ export class Ray {
     return vec3.add(this.origin, vec3.scale(this.direction, time));
   }
 
-  //todo make sure res is positive
+  // TODO: make sure res is positive
   public intersectPlane(plane: Plane, allowNegative: boolean = false): number | null {
     const numerator: number = vec3.dot(vec3.sub(plane.getOrigin(), this.origin), plane.getNormal());
     const denominator: number = vec3.dot(this.direction, plane.getNormal());
@@ -66,10 +66,10 @@ export class Ray {
     )
 
     const dist: number = vec3.distance(this.origin, farthest);
-    const delta: number = INSTANCE.getScene().getCamera().pixelSizeAtDist(dist) * pixels;
+    const maxDist: number = INSTANCE.getScene().getCamera().pixelSizeAtDist(dist) * pixels;
 
-    const min: Vec3 = vec3.create(bb.getXMin() - delta, bb.getYMin() - delta, bb.getZMin() - delta);
-    const max: Vec3 = vec3.create(bb.getXMax() - delta, bb.getYMax() - delta, bb.getZMax() - delta);
+    const min: Vec3 = vec3.create(bb.getXMin() - maxDist, bb.getYMin() - maxDist, bb.getZMin() - maxDist);
+    const max: Vec3 = vec3.create(bb.getXMax() + maxDist, bb.getYMax() + maxDist, bb.getZMax() + maxDist);
 
     if (this.direction[0] < 0) [min[0], max[0]] = [max[0], min[0]];
     if (this.direction[1] < 0) [min[1], max[1]] = [max[1], min[1]];
@@ -87,8 +87,6 @@ export class Ray {
 
     if (end < 0 || start > end) return null;
     return Math.max(start, 0);
-
-
 
   }
 
@@ -153,8 +151,7 @@ export class Ray {
     );
   }
 
-  // returns time, dist, pLine
-  public almostIntersectLine(start: Vec3, end: Vec3, pixels: number): [number, number, Vec3] | null {
+  public almostIntersectLine(id: ObjectID, start: Vec3, end: Vec3, pixels: number): Intersection | null {
 
     const p: Vec3 = vec3.add(this.origin, this.direction);
 
@@ -178,13 +175,12 @@ export class Ray {
     const pRay: Vec3 = vec3.add(this.origin, vec3.scale(v43, mub));
 
 
-    const distToIntersection: number = vec3.distance(this.origin, pRay);
+    const distToIntersection: number = vec3.distance(this.origin, pLine);
     const closest: number = vec3.distance(pLine, pRay);
     const sizeOfPixel: number = INSTANCE.getScene().getCamera().pixelSizeAtDist(distToIntersection);
 
     if (closest < sizeOfPixel * pixels) {
-      console.log(closest, sizeOfPixel);
-      return [mub, closest, pLine];
+      return new Intersection(mub, "line", id, pLine, closest, closest * sizeOfPixel);
     } else {
       return null;
     }
