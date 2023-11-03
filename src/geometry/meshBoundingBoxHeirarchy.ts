@@ -1,5 +1,8 @@
 import { vec3, Vec3 } from "wgpu-matrix";
+import { ObjectID } from "../scene/scene";
 import { BoundingBox } from "./boundingBox";
+import { Intersection } from "./intersection";
+import { Mesh } from "./mesh";
 import { Ray } from "./ray";
 
 enum Axis {
@@ -17,6 +20,7 @@ class MeshBoundingBoxHeirarchyNode {
   private axis!: Axis;
 
   constructor(
+    private id: ObjectID,
     verts: Vec3[],
     indices: number[],
     private depth: number = 0
@@ -30,7 +34,6 @@ class MeshBoundingBoxHeirarchyNode {
     for (let index of indices) {
       this.boundingBox.addVec3(verts[index]);
     }
-
     if (indices.length / 3 <= MeshBoundingBoxHeirarchy.MAX_TRIS_PER_LEAF) {
       // leaf
       this.indices = indices;
@@ -56,8 +59,8 @@ class MeshBoundingBoxHeirarchyNode {
           child2Indices.push(indices[i], indices[i + 1], indices[i + 2]);
         }
       }
-      this.child1 = new MeshBoundingBoxHeirarchyNode(verts, child1Indices, this.depth + 1);
-      this.child2 = new MeshBoundingBoxHeirarchyNode(verts, child2Indices, this.depth + 1);
+      this.child1 = new MeshBoundingBoxHeirarchyNode(this.id, verts, child1Indices, this.depth + 1);
+      this.child2 = new MeshBoundingBoxHeirarchyNode(this.id, verts, child2Indices, this.depth + 1);
     }
   }
 
@@ -84,7 +87,7 @@ class MeshBoundingBoxHeirarchyNode {
     }
   }
 
-  public intersect(ray: Ray, verts: Vec3[]): number | null {
+  public intersect(ray: Ray, verts: Vec3[]): Intersection | null {
 
     if (ray.intersectBoundingBox(this.boundingBox) === null) return null;
 
@@ -97,13 +100,14 @@ class MeshBoundingBoxHeirarchyNode {
           else res = Math.min(res, t);
         }
       }
-      return res;
+      if (res == null) return res;
+      return new Intersection(res, "mesh", this.id, ray.at(res), 0);
     } else {
-      const t1 = this.child1!.intersect(ray, verts);
-      const t2 = this.child2!.intersect(ray, verts);
-      if (t1 === null) return t2;
-      if (t2 === null) return t1;
-      return Math.min(t1, t2);
+      const i1: Intersection | null = this.child1!.intersect(ray, verts);
+      const i2: Intersection | null = this.child2!.intersect(ray, verts);
+      if (i1 === null) return i2;
+      if (i2 === null) return i1;
+      return (i1!.time < i2!.time) ? i1! : i2!;
     }
   }
 
@@ -129,8 +133,8 @@ export class MeshBoundingBoxHeirarchy {
 
   private root: MeshBoundingBoxHeirarchyNode;
 
-  constructor(verts: Vec3[], indices: number[]) {
-    this.root = new MeshBoundingBoxHeirarchyNode(verts, indices);
+  constructor(id: ObjectID, verts: Vec3[], indices: number[]) {
+    this.root = new MeshBoundingBoxHeirarchyNode(id, verts, indices);
   }
 
   public print(): void {
@@ -138,8 +142,9 @@ export class MeshBoundingBoxHeirarchy {
     this.root.print();
   }
 
-  public intersect(ray: Ray, verts: Vec3[]): number | null {
+  public firstIntersection(ray: Ray, verts: Vec3[]): Intersection | null {
     return this.root.intersect(ray, verts);
   }
+
 
 }

@@ -2,6 +2,7 @@ import { mat4, Mat4, vec3, Vec3, vec4, Vec4 } from "wgpu-matrix";
 import { MaterialName } from "../../materials/material";
 import { BoundingBox } from "../boundingBox";
 import { Geometry } from "../geometry";
+import { Intersection } from "../intersection";
 import { Mesh } from "../mesh";
 import { Ray } from "../ray";
 import { Curve } from "./curve";
@@ -49,9 +50,9 @@ export class Surface extends Geometry {
     return this.mesh!.getBoundingBox();
   }
 
-  public intersect(ray: Ray): number | null {
+  public intersect(ray: Ray): Intersection | null {
     // TODO: come back to this...
-    throw new Error("not implemented");
+    return this.mesh!.intersect(ray);
   }
 
   private update(): void {

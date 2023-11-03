@@ -1,6 +1,7 @@
 import { Mat4, mat4, Vec3 } from "wgpu-matrix"
 import { INSTANCE } from "../cad"
 import { Geometry } from "../geometry/geometry";
+import { RenderID } from "../scene/scene";
 
 export class RenderPoints {
 
@@ -24,12 +25,15 @@ export class RenderPoints {
 
   private vertexBuffer: GPUBuffer;
   private vertexCount: number;
+  private id: RenderID;
 
   constructor(
     private parent: Geometry,
     points: Vec3[],
     private model: Mat4 = mat4.identity()
   ) {
+
+    this.id = INSTANCE.getScene().generateNewRenderID();
 
     // vertex
     const verts: number[] = [];
@@ -59,6 +63,10 @@ export class RenderPoints {
     this.flags = new Int32Array([0]);
 
     this.update();
+  }
+
+  public getID(): RenderID {
+    return this.id;
   }
 
   public draw(pass: GPURenderPassEncoder): void {

@@ -1,8 +1,8 @@
 import { Mat4, vec3, Vec3, vec4, Vec4 } from "wgpu-matrix";
 import { MaterialName } from "../../materials/material";
-import { bin } from "../../utils/math";
 import { BoundingBox } from "../boundingBox";
 import { Geometry } from "../geometry";
+import { Intersection } from "../intersection";
 import { Points } from "../points";
 import { PolyLine } from "../polyLine";
 import { Ray } from "../ray";
@@ -48,7 +48,7 @@ export class Curve extends Geometry {
     return this.knots.length;
   }
 
-  public intersect(ray: Ray): number | null {
+  public intersect(ray: Ray): Intersection | null {
     return this.polyline!.intersect(ray);
   }
 
@@ -218,7 +218,6 @@ export class Curve extends Geometry {
       r = this.degree - mul;
       const lbz: number = (oldr > 0) ? Math.floor((oldr + 2) / 2) : 1;
       const rbz: number = (r > 0) ? newDegree - Math.floor((r + 1) / 2) : newDegree;
-      //console.log("lbz, rbz", lbz, rbz);
       // insert knots  
       if (r > 0) {
         const num: number = ub - ua;
@@ -241,11 +240,8 @@ export class Curve extends Geometry {
         for (let j = Math.max(0, i - n); j <= Math.min(this.degree, i); j++) {
           elevatedBezierControls[i] = vec4.add(elevatedBezierControls[i],
             vec4.scale(bezierControls[j], bezierAlphas[i][j]));
-          //console.log("ba", i, j, bezierAlphas[i][j])
         }
       }
-      console.log("bez controls elevated", [...bezierControls]);
-      // console.log("elevated bezier", [...elevatedBezierControls]);
       //  Remove knots
       if (oldr > 1) {
         var first: number = kind - 2;
@@ -289,7 +285,6 @@ export class Curve extends Geometry {
         }
       }
       for (let j = lbz; j <= rbz; j++) {
-        //console.log("adding point", elevatedBezierControls[j]);
         newControlPoints[cind++] = elevatedBezierControls[j];
       }
       if (b < this.knots.length - 1) {
@@ -308,9 +303,6 @@ export class Curve extends Geometry {
         }
       }
 
-      console.log("lap finished", [...newControlPoints])
-      // console.log("new knots", newKnots);
-      //console.log("bezierControls", bezierControls);
     }
 
 

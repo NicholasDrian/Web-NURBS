@@ -1,6 +1,7 @@
 import { INSTANCE } from "../cad"
 import { mat4, Mat4 } from "wgpu-matrix"
 import { Geometry } from "../geometry/geometry";
+import { RenderID } from "../scene/scene";
 
 export class RenderMesh {
 
@@ -30,11 +31,15 @@ export class RenderMesh {
 
   protected indexCount: number;
 
+  protected id: RenderID;
+
   constructor(
     protected parent: Geometry,
     vertices: Float32Array,
     indices: Int32Array,
     private model: Mat4) {
+
+    this.id = INSTANCE.getScene().generateNewRenderID();
 
     //vertex
     this.vertexBuffer = INSTANCE.getRenderer().getDevice().createBuffer({
@@ -68,6 +73,10 @@ export class RenderMesh {
     })
     this.flags = new Int32Array([0]);
 
+  }
+
+  public getID(): RenderID {
+    return this.id;
   }
 
   public draw(pass: GPURenderPassEncoder): void {

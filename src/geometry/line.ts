@@ -5,6 +5,7 @@ import { RenderLines } from "../render/renderLines";
 import { ObjectID, RenderID } from "../scene/scene";
 import { BoundingBox } from "./boundingBox";
 import { Geometry } from "./geometry";
+import { Intersection } from "./intersection";
 import { Ray } from "./ray";
 
 
@@ -26,8 +27,9 @@ export class Line extends Geometry {
     this.updateBoundingBox();
   }
 
-  public intersect(ray: Ray): number | null {
-    return ray.almostIntersectLine(this.start, this.end, 3);
+  public intersect(ray: Ray): Intersection | null {
+    throw new Error("not implemented");
+    //return ray.almostIntersectLine(this.start, this.end, 3);
   }
 
   public getBoundingBox(): BoundingBox {
@@ -36,11 +38,13 @@ export class Line extends Geometry {
 
   private updateRenderLines(): void {
     if (this.renderLines) INSTANCE.getScene().removeLines(this.renderLines);
-    this.renderLines = INSTANCE.getScene().addRenderLines(new RenderLines(
+    const renderLinesObj: RenderLines = new RenderLines(
       this,
       new Float32Array([...this.start, 1.0, ...this.end, 1.0]),
       new Int32Array([0, 1]),
-    ));
+    );
+    this.renderLines = renderLinesObj.getID()
+    INSTANCE.getScene().addRenderLines(renderLinesObj);
   }
 
   public delete(): void {

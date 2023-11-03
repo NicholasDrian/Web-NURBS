@@ -2,6 +2,7 @@ import { Mat4, mat4, vec4, Vec4 } from "wgpu-matrix"
 import { INSTANCE } from "../cad"
 import { Geometry } from "../geometry/geometry";
 import { Material, MaterialName } from "../materials/material";
+import { RenderID } from "../scene/scene";
 import { swizzleYZ } from "../utils/math";
 
 export class RenderLines {
@@ -28,6 +29,7 @@ export class RenderLines {
   private flagsBuffer: GPUBuffer;
 
   private indexCount: number;
+  private id: RenderID;
 
   constructor(
     private parent: Geometry,
@@ -36,6 +38,8 @@ export class RenderLines {
     private model: Mat4 = mat4.identity(),
     private material: MaterialName = "default"
   ) {
+
+    this.id = INSTANCE.getScene().generateNewRenderID();
 
     // vertex
     this.vertexBuffer = INSTANCE.getRenderer().getDevice().createBuffer({
@@ -68,6 +72,10 @@ export class RenderLines {
     })
     this.flags = new Int32Array([0]);
 
+  }
+
+  public getID(): RenderID {
+    return this.id;
   }
 
   public draw(pass: GPURenderPassEncoder): void {

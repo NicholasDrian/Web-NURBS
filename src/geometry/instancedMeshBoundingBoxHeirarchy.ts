@@ -1,6 +1,8 @@
 import { mat4, Mat4, vec3, Vec3 } from "wgpu-matrix";
+import { ObjectID } from "../scene/scene";
 import { BoundingBox } from "./boundingBox";
 import { InstancedMesh } from "./instancedMesh";
+import { Intersection } from "./intersection";
 import { MeshBoundingBoxHeirarchy } from "./meshBoundingBoxHeirarchy";
 import { Ray } from "./ray";
 
@@ -21,6 +23,7 @@ class InstancedMeshBoundingBoxHeirarchyNode {
   private axis!: Axis;
 
   constructor(
+    private id: ObjectID,
     private heirarchy: InstancedMeshBoundingBoxHeirarchy,
     instances: number[],
     boundingBoxes: BoundingBox[],
@@ -60,23 +63,22 @@ class InstancedMeshBoundingBoxHeirarchyNode {
           child2Indices.push(instances[i]);
         }
       }
-      this.child1 = new InstancedMeshBoundingBoxHeirarchyNode(this.heirarchy, child1Indices, boundingBoxes, this.depth + 1);
-      this.child2 = new InstancedMeshBoundingBoxHeirarchyNode(this.heirarchy, child2Indices, boundingBoxes, this.depth + 1);
+      this.child1 = new InstancedMeshBoundingBoxHeirarchyNode(this.id, this.heirarchy, child1Indices, boundingBoxes, this.depth + 1);
+      this.child2 = new InstancedMeshBoundingBoxHeirarchyNode(this.id, this.heirarchy, child2Indices, boundingBoxes, this.depth + 1);
     }
   }
 
-
-  public intersect(ray: Ray, verts: Vec3[]): number | null {
+  public intersect(ray: Ray, verts: Vec3[]): Intersection | null {
 
     if (ray.intersectBoundingBox(this.boundingBox) === null) return null;
 
     if (this.isLeaf()) {
-      var res: number | null = null;
+      var res: Intersection | null = null;
       for (let i of this.instances!) {
-        var t: number | null = this.heirarchy.intersectInstance(ray, i);
+        var t: Intersection | null = this.heirarchy.intersectInstance(ray, i);
         if (t !== null) {
           if (res === null) res = t;
-          else res = Math.min(res, t);
+          else res = (res.time < t.time) ? res : t;
         }
       }
       return res;
@@ -85,7 +87,7 @@ class InstancedMeshBoundingBoxHeirarchyNode {
       const t2 = this.child2!.intersect(ray, verts);
       if (t1 === null) return t2;
       if (t2 === null) return t1;
-      return Math.min(t1, t2);
+      return (t1.time < t2.time) ? t1 : t2;
     }
   }
 
@@ -113,7 +115,7 @@ export class InstancedMeshBoundingBoxHeirarchy {
   private meshBBH: MeshBoundingBoxHeirarchy;
 
   constructor(private mesh: InstancedMesh) {
-    this.meshBBH = new MeshBoundingBoxHeirarchy(mesh.getVerts(), mesh.getIndices());
+    this.meshBBH = new MeshBoundingBoxHeirarchy(mesh.getID(), mesh.getVerts(), mesh.getIndices());
 
     const instances: number[] = [];
     const bbs: BoundingBox[] = [];
@@ -121,7 +123,7 @@ export class InstancedMeshBoundingBoxHeirarchy {
       instances.push(i);
       bbs.push(mesh.getBoundingBoxInstance(i));
     }
-    this.root = new InstancedMeshBoundingBoxHeirarchyNode(this, instances, bbs);
+    this.root = new InstancedMeshBoundingBoxHeirarchyNode(mesh.getID(), this, instances, bbs);
   }
 
   public print(): void {
@@ -129,13 +131,13 @@ export class InstancedMeshBoundingBoxHeirarchy {
     this.root.print();
   }
 
-  public intersect(ray: Ray, verts: Vec3[]): number | null {
+  public intersect(ray: Ray, verts: Vec3[]): Intersection | null {
     return this.root.intersect(ray, verts);
   }
 
-  public intersectInstance(ray: Ray, instance: number): number | null {
+  public intersectInstance(ray: Ray, instance: number): Intersection | null {
     const objectSpaceRay: Ray = Ray.transform(ray, mat4.inverse(this.mesh.getTransform(instance)));
-    return this.meshBBH.intersect(objectSpaceRay, this.mesh.getVerts());
+    return this.meshBBH.firstIntersection(objectSpaceRay, this.mesh.getVerts());
   }
 
 }

@@ -1,5 +1,8 @@
 import { vec3, Vec3 } from "wgpu-matrix";
+import { ObjectID } from "../scene/scene";
 import { BoundingBox } from "./boundingBox";
+import { Intersection } from "./intersection";
+import { Lines } from "./lines";
 import { Ray } from "./ray";
 
 enum Axis {
@@ -17,6 +20,7 @@ class LineBoundingBoxHeirarchyNode {
   private axis!: Axis;
 
   constructor(
+    private id: ObjectID,
     verts: Vec3[],
     indices: number[],
     private depth: number = 0
@@ -60,31 +64,33 @@ class LineBoundingBoxHeirarchyNode {
         }
       }
 
-      this.child1 = new LineBoundingBoxHeirarchyNode(verts, child1Indices, this.depth + 1);
-      this.child2 = new LineBoundingBoxHeirarchyNode(verts, child2Indices, this.depth + 1);
+      this.child1 = new LineBoundingBoxHeirarchyNode(this.id, verts, child1Indices, this.depth + 1);
+      this.child2 = new LineBoundingBoxHeirarchyNode(this.id, verts, child2Indices, this.depth + 1);
     }
   }
 
-  public almostIntersect(ray: Ray, verts: Vec3[], pixels: number): number | null {
+  public almostIntersect(ray: Ray, verts: Vec3[], pixels: number): Intersection | null {
 
     if (ray.almostIntersectBoundingBox(this.boundingBox, pixels) === null) return null;
 
     if (this.isLeaf()) {
-      var res: number | null = null;
+      // time, dist
+      var res: [number, number] | null = null;
       for (let i = 0; i < this.indices!.length; i += 2) {
-        var t: number | null = ray.almostIntersectLine(verts[this.indices![i]], verts[this.indices![i + 1]], pixels);
+        var t: [number, number] | null = ray.almostIntersectLine(verts[this.indices![i]], verts[this.indices![i + 1]], pixels);
         if (t !== null) {
           if (res === null) res = t;
-          else res = Math.min(res, t);
+          else res = (res[0] < t[0]) ? res : t;
         }
       }
-      return res;
+      if (res === null) return null;
+      return new Intersection(res[0], "line", this.id, ray.at(res[0]), res[1]);
     } else {
       const t1 = this.child1!.almostIntersect(ray, verts, pixels);
       const t2 = this.child2!.almostIntersect(ray, verts, pixels);
       if (t1 === null) return t2;
       if (t2 === null) return t1;
-      return Math.min(t1, t2);
+      return (t1.time < t2.time) ? t1 : t2;
     }
   }
 
@@ -110,7 +116,7 @@ export class LineBoundingBoxHeirarchy {
 
   private root: LineBoundingBoxHeirarchyNode;
 
-  constructor(verts: Vec3[], indices: number[]) {
+  constructor(id: ObjectID, verts: Vec3[], indices: number[]) {
     // remove degenerate edges, they can cause infinite loop.
     let reducedIndices: number[] = [];
     for (let i = 0; i < indices.length; i += 2) {
@@ -120,7 +126,7 @@ export class LineBoundingBoxHeirarchy {
         reducedIndices.push(indices[i], indices[i + 1]);
       }
     }
-    this.root = new LineBoundingBoxHeirarchyNode(verts, reducedIndices);
+    this.root = new LineBoundingBoxHeirarchyNode(id, verts, reducedIndices);
   }
 
   public print(): void {
@@ -128,8 +134,7 @@ export class LineBoundingBoxHeirarchy {
     this.root.print();
   }
 
-  public almostIntersect(ray: Ray, verts: Vec3[], pixels: number): number | null {
+  public almostIntersect(ray: Ray, verts: Vec3[], pixels: number): Intersection | null {
     return this.root.almostIntersect(ray, verts, pixels);
   }
-
 }

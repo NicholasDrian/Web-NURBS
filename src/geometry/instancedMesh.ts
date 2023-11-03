@@ -7,6 +7,7 @@ import { RenderID } from "../scene/scene";
 import { BoundingBox } from "./boundingBox";
 import { Geometry } from "./geometry";
 import { InstancedMeshBoundingBoxHeirarchy } from "./instancedMeshBoundingBoxHeirarchy";
+import { Intersection } from "./intersection";
 import { MeshBoundingBoxHeirarchy } from "./meshBoundingBoxHeirarchy";
 import { Ray } from "./ray";
 
@@ -40,7 +41,8 @@ export class InstancedMesh extends Geometry {
       transforms
     );
     renderMeshObj.setConstantScreenSize(true);
-    this.renderMesh = INSTANCE.getScene().addRenderMeshInstanced(renderMeshObj);
+    INSTANCE.getScene().addRenderMeshInstanced(renderMeshObj);
+    this.renderMesh = renderMeshObj.getID();
 
     this.boundingBoxHeirarchy = new InstancedMeshBoundingBoxHeirarchy(this);
   }
@@ -66,7 +68,7 @@ export class InstancedMesh extends Geometry {
     return bb;
   }
 
-  public intersect(ray: Ray): number | null {
+  public intersect(ray: Ray): Intersection | null {
     const objectSpaceRay: Ray = Ray.transform(ray, mat4.inverse(this.getModel()));
     return this.boundingBoxHeirarchy.intersect(objectSpaceRay, this.verts);
   }

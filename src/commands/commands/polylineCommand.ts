@@ -38,7 +38,7 @@ export class PolyLineCommand extends Command {
   }
 
   public override handleClick(): void {
-    if (this.clicker.getPoint) {
+    if (this.clicker.getPoint()) {
       const point: Vec3 = this.clicker.getPoint()!;
       if (this.polyline) {
         this.polyline.updateLastPoint(point);

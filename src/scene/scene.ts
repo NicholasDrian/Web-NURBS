@@ -52,30 +52,32 @@ export class Scene {
     this.constructionPlane = new ConstructionPlane();
   }
 
-  public addGeometry(geo: Geometry): ObjectID {
-    this.geometryMap.set(this.objectIDGenerator, geo);
-    this.boundingBoxHeirarchy.add(geo);
+  public generateNewObjectID(): ObjectID {
     return this.objectIDGenerator++;
+  }
+
+  public addGeometry(geo: Geometry): void {
+    this.geometryMap.set(geo.getID(), geo);
   }
   public getGeometry(id: ObjectID): Geometry {
     return this.geometryMap.get(id)!;
   }
 
-  public addRenderMesh(mesh: RenderMesh): RenderID {
-    this.renderMeshes.set(this.renderIDGenerator, mesh);
+  public generateNewRenderID(): RenderID {
     return this.renderIDGenerator++;
   }
-  public addRenderMeshInstanced(mesh: RenderMeshInstanced): RenderID {
-    this.renderMeshesInstanced.set(this.renderIDGenerator, mesh);
-    return this.renderIDGenerator++;
+
+  public addRenderMesh(mesh: RenderMesh): void {
+    this.renderMeshes.set(mesh.getID(), mesh);
   }
-  public addRenderLines(lines: RenderLines): RenderID {
-    this.renderLines.set(this.renderIDGenerator, lines);
-    return this.renderIDGenerator++;
+  public addRenderMeshInstanced(mesh: RenderMeshInstanced): void {
+    this.renderMeshesInstanced.set(mesh.getID(), mesh);
   }
-  public addRenderPoints(points: RenderPoints): RenderID {
-    this.renderPoints.set(this.renderIDGenerator, points);
-    return this.renderIDGenerator++;
+  public addRenderLines(lines: RenderLines): void {
+    this.renderLines.set(lines.getID(), lines);
+  }
+  public addRenderPoints(points: RenderPoints): void {
+    this.renderPoints.set(points.getID(), points);
   }
 
   public getLines(id: RenderID): RenderLines {

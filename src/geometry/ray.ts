@@ -4,6 +4,7 @@ import { ConstructionPlane } from "../scene/constructionPlane";
 import { Scene } from "../scene/scene";
 import { BoundingBox } from "./boundingBox";
 import { Geometry } from "./geometry";
+import { Intersection } from "./intersection";
 import { Plane } from "./plane";
 
 export class Ray {
@@ -114,8 +115,8 @@ export class Ray {
 
   }
 
-  public intersectScene(scene: Scene): number | null {
-    const intersection: number | null = scene.getBoundingBoxHeirarchy().firstIntersection(this);
+  public intersectScene(scene: Scene): Intersection | null {
+    const intersection: Intersection | null = scene.getBoundingBoxHeirarchy().firstPositiveIntersection(this);
     if (intersection !== null) return intersection;
     return null;
   }
@@ -151,7 +152,8 @@ export class Ray {
     );
   }
 
-  public almostIntersectLine(start: Vec3, end: Vec3, pixels: number): number | null {
+  // returns time and dist
+  public almostIntersectLine(start: Vec3, end: Vec3, pixels: number): [number, number] | null {
     const a: Vec3 = this.direction;
     const b: Vec3 = vec3.normalize(vec3.sub(end, start));
     if (a === b) {
@@ -182,7 +184,7 @@ export class Ray {
     const distToIntersection: number = vec3.distance(this.origin, pRay);
     const sizeOfPixel: number = INSTANCE.getScene().getCamera().pixelSizeAtDist(distToIntersection);
     if (closest < sizeOfPixel * pixels) {
-      return tRay;
+      return [tRay, closest];
     }
     return null;
 

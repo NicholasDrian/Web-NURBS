@@ -4,6 +4,7 @@ import { BoundingBox } from "./boundingBox";
 import { Geometry } from "./geometry";
 import { Ray } from "./ray";
 import { InstancedMesh } from "./instancedMesh";
+import { Intersection } from "./intersection";
 
 
 const unitPointVerts: Vec3[] = [
@@ -79,7 +80,7 @@ export class Points extends Geometry {
   public override getBoundingBox(): BoundingBox {
     return this.instancedMesh!.getBoundingBox();
   }
-  public override intersect(ray: Ray): number | null {
+  public override intersect(ray: Ray): Intersection | null {
     const objectSpaceRay: Ray = Ray.transform(ray, mat4.inverse(this.getModel()));
     return this.instancedMesh!.intersect(objectSpaceRay);
   }

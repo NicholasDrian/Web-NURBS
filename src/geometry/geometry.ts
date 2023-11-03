@@ -1,11 +1,17 @@
 import { mat4, Mat4, Vec4 } from "wgpu-matrix";
 import { INSTANCE } from "../cad";
 import { Material, MaterialName } from "../materials/material";
+import { ObjectID } from "../scene/scene";
 import { BoundingBox } from "./boundingBox";
+import { Intersection } from "./intersection";
 import { Ray } from "./ray";
 
 
 export abstract class Geometry {
+
+  private selected: boolean = false;
+  private hovered: boolean = false;
+  private id: ObjectID;
 
 
   constructor(
@@ -13,11 +19,11 @@ export abstract class Geometry {
     private model: Mat4 = mat4.identity(),
     private material: MaterialName | null,
   ) {
-
+    this.id = INSTANCE.getScene().generateNewObjectID();
   }
 
   public abstract getBoundingBox(): BoundingBox;
-  public abstract intersect(ray: Ray): number | null;
+  public abstract intersect(ray: Ray): Intersection | null;
 
   public setModel(model: Mat4): void {
     this.model = model;
@@ -29,6 +35,10 @@ export abstract class Geometry {
     } else {
       return this.model;
     }
+  }
+
+  public getID(): ObjectID {
+    return this.id;
   }
 
   public setMaterial(mat: MaterialName) {

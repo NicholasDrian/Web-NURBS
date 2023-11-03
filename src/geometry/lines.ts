@@ -5,6 +5,7 @@ import { RenderLines } from "../render/renderLines";
 import { RenderID } from "../scene/scene";
 import { BoundingBox } from "./boundingBox";
 import { Geometry } from "./geometry";
+import { Intersection } from "./intersection";
 import { LineBoundingBoxHeirarchy } from "./lineBoundingBoxHeirarchy";
 import { Ray } from "./ray";
 
@@ -26,7 +27,7 @@ export class Lines extends Geometry {
     this.update();
   }
 
-  public intersect(ray: Ray): number | null {
+  public intersect(ray: Ray): Intersection | null {
     return this.boundingBoxHeirarchy.almostIntersect(ray, this.points, 3);
   }
 
@@ -48,14 +49,16 @@ export class Lines extends Geometry {
     for (let i = 0; i < this.points.length; i++) {
       verts.push(...this.points[i], 1.0);
     }
-    this.renderLines = INSTANCE.getScene().addRenderLines(new RenderLines(
+    const renderLinesObj: RenderLines = new RenderLines(
       this,
       new Float32Array(verts),
       new Int32Array(this.indices),
-      this.getModel()));
+      this.getModel())
+    INSTANCE.getScene().addRenderLines(renderLinesObj);
+    this.renderLines = renderLinesObj.getID();
 
     this.updateBoundingBox();
-    this.boundingBoxHeirarchy = new LineBoundingBoxHeirarchy(this.points, this.indices);
+    this.boundingBoxHeirarchy = new LineBoundingBoxHeirarchy(this.getID(), this.points, this.indices);
   }
 
   private updateBoundingBox(): void {

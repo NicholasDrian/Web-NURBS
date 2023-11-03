@@ -2,6 +2,7 @@ import { Mat4, mat4 } from "wgpu-matrix";
 import { MaterialName } from "../materials/material";
 import { BoundingBox } from "./boundingBox";
 import { Geometry } from "./geometry";
+import { Intersection } from "./intersection";
 import { Ray } from "./ray";
 
 export class Group extends Geometry {
@@ -22,7 +23,7 @@ export class Group extends Geometry {
     }
     return boundingBox;
   }
-  public override intersect(ray: Ray): number | null {
+  public override intersect(ray: Ray): Intersection | null {
     throw new Error("not implemented");
   }
 

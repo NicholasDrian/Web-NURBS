@@ -5,6 +5,7 @@ import { RenderMesh } from "../render/renderMesh";
 import { RenderID } from "../scene/scene";
 import { BoundingBox } from "./boundingBox";
 import { Geometry } from "./geometry";
+import { Intersection } from "./intersection";
 import { MeshBoundingBoxHeirarchy } from "./meshBoundingBoxHeirarchy";
 import { Ray } from "./ray";
 
@@ -29,18 +30,20 @@ export class Mesh extends Geometry {
     for (let i = 0; i < verts.length; i++) {
       vertexBuffer.push(...verts[i], 1, ...normals[i], 0);
     }
-    this.renderMesh = INSTANCE.getScene().addRenderMesh(new RenderMesh(
+    const renderMeshObj: RenderMesh = new RenderMesh(
       this,
       new Float32Array(vertexBuffer),
       new Int32Array(this.indices),
       this.getModel()
-    ));
-    this.boundingBoxHeirarchy = new MeshBoundingBoxHeirarchy(this.verts, this.indices);
+    )
+    INSTANCE.getScene().addRenderMesh(renderMeshObj);
+    this.renderMesh = renderMeshObj.getID();
+    this.boundingBoxHeirarchy = new MeshBoundingBoxHeirarchy(this.getID(), this.verts, this.indices);
   }
 
-  public intersect(ray: Ray): number | null {
+  public intersect(ray: Ray): Intersection | null {
     const objectSpaceRay: Ray = Ray.transform(ray, mat4.inverse(this.getModel()));
-    return this.boundingBoxHeirarchy.intersect(objectSpaceRay, this.verts);
+    return this.boundingBoxHeirarchy.firstIntersection(objectSpaceRay, this.verts);
   }
 
   public destroy(): void {

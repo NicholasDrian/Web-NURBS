@@ -1,5 +1,7 @@
+import { INSTANCE } from "../cad";
 import { BoundingBox } from "./boundingBox";
 import { Geometry } from "./geometry";
+import { Intersection } from "./intersection";
 import { Ray } from "./ray";
 
 enum Axis {
@@ -50,6 +52,9 @@ class BBHNode {
       this.child2 = new BBHNode(child2Geometry, depth + 1);
     }
   }
+  public firstIntersectionsWithinMargin(ray: Ray, margin: number): Intersection[] {
+    throw new Error("");
+  }
 
   public print(): void {
     let str: string = "";
@@ -61,26 +66,26 @@ class BBHNode {
     this.child2?.print();
   }
 
-  public firstPositiveIntersectionTime(ray: Ray): number | null {
+  public firstPositiveIntersection(ray: Ray): Intersection | null {
 
     if (ray.intersectBoundingBox(this.boundingBox) === null) return null;
 
     if (this.isLeaf()) {
-      var res: number | null = null;
+      var res: Intersection | null = null;
       this.geometry!.forEach((geo: Geometry) => {
-        var t: number | null = geo.intersect(ray);
-        if (t !== null && t > 0) {
+        var t: Intersection | null = geo.intersect(ray);
+        if (t !== null && t.time > 0) {
           if (res === null) res = t;
-          else res = Math.min(res, t);
+          else res = res.time < t.time ? res : t;
         }
       });
       return res;
     } else {
-      const t1 = this.child1!.firstPositiveIntersectionTime(ray);
-      const t2 = this.child2!.firstPositiveIntersectionTime(ray);
+      const t1 = this.child1!.firstPositiveIntersection(ray);
+      const t2 = this.child2!.firstPositiveIntersection(ray);
       if (t1 === null) return t2;
       if (t2 === null) return t1;
-      return Math.min(t1, t2);
+      return t1.time < t2.time ? t1 : t2;
     }
 
   }
@@ -142,8 +147,13 @@ export class SceneBoundingBoxHeirarchy {
     return this.root;
   }
 
-  public firstIntersection(ray: Ray): number | null {
-    return this.root.firstPositiveIntersectionTime(ray);
+  public firstPositiveIntersection(ray: Ray): Intersection | null {
+    return this.root.firstPositiveIntersection(ray);
+  }
+
+  // margin is max percentage of distance from camera behind first intersection
+  public firstIntersectionsWithinMargin(ray: Ray, margin: number): Intersection[] {
+    throw new Error("Method not implemented.");
   }
 
   public print(): void {
