@@ -14,19 +14,27 @@ export class Clicker {
   private intersectionScreenPos: [number, number];
   private cursor: Cursor;
   private element: HTMLDivElement;
+  private clicked: boolean;
 
   constructor() {
     this.point = null;
     this.intersectionScreenPos = [-1, -1];
     this.cursor = new Cursor();
+    this.clicked = false;
     this.onMouseMove();
     this.element = document.createElement("div");
     this.element.id = "clicker";
     this.element.className = "floating-window";
+    this.element.style.width = "auto";
+    this.element.hidden = true;
+    document.body.appendChild(this.element);
   }
 
   // TODO: finish
   public onMouseMove(): void {
+
+
+    if (this.clicked) return; // currently selecting from dropdown
 
     const mousePos: [number, number] = INSTANCE.getEventManager().getMouseHandler().getMousePos();
     const ray: Ray = INSTANCE.getScene().getCamera().getRayAtPixel(mousePos[0], mousePos[1]);
@@ -53,27 +61,41 @@ export class Clicker {
     }
   }
 
-  public async click(): Promise<Intersection> {
+  public click(): void {
+    if (this.clicked) return;
+    this.element.hidden = false;
+    this.clicked = true;
     const mousePos: [number, number] = INSTANCE.getEventManager().getMouseHandler().getMousePos();
     const ray: Ray = INSTANCE.getScene().getCamera().getRayAtPixel(mousePos[0], mousePos[1]);
     const intersections: Intersection[] = INSTANCE.getScene().getBoundingBoxHeirarchy().firstIntersectionsWithinMargin(ray, 5);
-    var html: string = "<ul>";
-    for (let intersection of intersections) {
-      // TODO: add on click
-      html += "<li>" + intersection.description.toString() + "<li>";
+    if (intersections.length === 0) this.reset();
+    if (intersections.length === 1) {
+      INSTANCE.getCommandManager().handleClickResult(intersections[0]);
+      return;
     }
-    html += "<ul>";
-    this.element.innerHTML = html;
-    this.element.style.width = "100px";
-    this.element.style.height = "100px";
-    this.element.style.left = mousePos[0].toString();
-    this.element.style.right = mousePos[1].toString();
-    document.body.appendChild(this.element);
-    return intersections[0];
+
+    const list: HTMLElement = document.createElement("ul");
+    this.element.innerHTML = "";
+    this.element.appendChild(list);
+    for (let intersection of intersections) {
+      const li = document.createElement("li");
+      li.innerText = intersection.description;
+      li.onclick = function() {
+        INSTANCE.getCommandManager().handleClickResult(intersection);
+      };
+      list.appendChild(li);
+    }
+
+    this.element.setAttribute("style", `
+      left:${mousePos[0]}px;
+      top:${mousePos[1]}px;
+      width:auto;
+      height:auto;`
+    );
+
   }
 
   public destroy(): void {
-    //document.body.removeChild(this.element);
 
     this.cursor.destroy();
   }
@@ -85,6 +107,11 @@ export class Clicker {
 
   private draw(): void {
     this.cursor.setPosition(this.intersectionScreenPos);
+  }
+
+  reset() {
+    this.clicked = false;
+    this.element.hidden = true;
   }
 
 }

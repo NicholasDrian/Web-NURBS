@@ -32,7 +32,6 @@ export class Frustum {
       vec3.dot(this.right, v) > 0 &&
       vec3.dot(this.down, v) > 0 &&
       vec3.dot(this.left, v) > 0;
-
   }
 
   public containsLineFully(line: Line): boolean {

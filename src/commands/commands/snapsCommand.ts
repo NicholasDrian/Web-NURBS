@@ -1,4 +1,6 @@
+import { Vec3 } from "wgpu-matrix";
 import { INSTANCE } from "../../cad";
+import { Intersection } from "../../geometry/intersection";
 import { SnapSettings } from "../../settings/snapsManager";
 import { Command } from "../command";
 
@@ -11,7 +13,7 @@ export class SnapsCommand extends Command {
     this.finished = false;
   }
 
-  public override handleInput(input: string): void {
+  public override handleInputString(input: string): void {
     switch (input) {
       case "0":
         this.finished = true;
@@ -19,6 +21,10 @@ export class SnapsCommand extends Command {
       default:
         this.toggleSnap(input);
     }
+  }
+
+  public override handleClickResult(input: Intersection): void {
+    throw new Error("");
   }
 
   private toggleSnap(input: string): void {

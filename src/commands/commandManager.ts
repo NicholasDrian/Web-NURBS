@@ -1,4 +1,6 @@
+import { Vec3 } from "wgpu-matrix";
 import { INSTANCE } from "../cad";
+import { Intersection } from "../geometry/intersection";
 import { Command } from "./command";
 import { CameraCommand } from "./commands/cameraCommand";
 import { CircleCommand } from "./commands/circleCommand";
@@ -27,7 +29,7 @@ export class CommandManager {
 
     input = input.toLowerCase();
 
-    if (this.currentCommand) this.currentCommand.handleInput(input);
+    if (this.currentCommand) this.currentCommand.handleInputString(input);
     else {
       switch (input) {
         case "":
@@ -72,14 +74,18 @@ export class CommandManager {
 
   }
 
-  public handleClickInput() {
+  public handleClickInput(): void {
     this.currentCommand?.handleClick();
     if (this.currentCommand?.isFinished()) {
       this.currentCommand = null;
     }
   }
 
-  public handleMouseMove() {
+  public handleClickResult(intersection: Intersection): void {
+    this.currentCommand?.handleClickResult(intersection);
+  }
+
+  public handleMouseMove(): void {
     this.currentCommand?.handleMouseMove();
   }
 

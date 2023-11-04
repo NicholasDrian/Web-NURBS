@@ -3,6 +3,7 @@ import { INSTANCE } from "../../cad";
 import { PolyLine } from "../../geometry/polyLine";
 import { Command } from "../command";
 import { Clicker } from "../clicker";
+import { Intersection } from "../../geometry/intersection";
 
 export class PolyLineCommand extends Command {
 
@@ -17,7 +18,7 @@ export class PolyLineCommand extends Command {
     this.clicker = new Clicker();
   }
 
-  public override handleInput(input: string): void {
+  public override handleInputString(input: string): void {
     switch (input) {
       case "0":
         if (this.polyline) this.polyline.delete();
@@ -35,6 +36,9 @@ export class PolyLineCommand extends Command {
         this.finished = true;
         break;
     }
+  }
+
+  public override handleClickResult(input: Intersection): void {
   }
 
   public override handleClick(): void {

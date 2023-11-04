@@ -1,6 +1,7 @@
 import { warn } from "console";
 import { vec3, Vec3 } from "wgpu-matrix";
 import { INSTANCE } from "../../cad";
+import { Intersection } from "../../geometry/intersection";
 import { createCircleCenterNormalRadius, createCircleThreePoints } from "../../geometry/nurbs/circle";
 import { Curve } from "../../geometry/nurbs/curve";
 import { Clicker } from "../clicker";
@@ -35,7 +36,7 @@ export class CircleCommand extends Command {
     this.curve = null;
   }
 
-  public override handleInput(input: string): void {
+  public override handleInputString(input: string): void {
     if (input === "0") {
       this.done();
       return;
@@ -59,6 +60,10 @@ export class CircleCommand extends Command {
         break;
     }
   }
+  public override handleClickResult(input: Intersection): void {
+    throw new Error();
+  }
+
 
   public override handleClick(): void {
     if (this.clicker.getPoint()) {

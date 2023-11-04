@@ -3,6 +3,7 @@ import { INSTANCE } from "../../cad";
 import { Line } from "../../geometry/line";
 import { Command } from "../command";
 import { Clicker } from "../clicker";
+import { Intersection } from "../../geometry/intersection";
 
 
 export class LineCommand extends Command {
@@ -18,7 +19,7 @@ export class LineCommand extends Command {
     this.clicker = new Clicker();
   }
 
-  public override handleInput(input: string): void {
+  public override handleInputString(input: string): void {
     switch (input) {
       case "0": case "":
         if (this.line) this.line.delete();
@@ -28,6 +29,9 @@ export class LineCommand extends Command {
     }
 
     // TODO: 
+  }
+
+  public override handleClickResult(input: Intersection): void {
   }
 
   public override handleMouseMove(): void {

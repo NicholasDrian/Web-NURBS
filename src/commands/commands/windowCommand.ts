@@ -1,4 +1,6 @@
+import { Vec3 } from "wgpu-matrix";
 import { INSTANCE } from "../../cad";
+import { Intersection } from "../../geometry/intersection";
 import { Cursor } from "../../widgets/cursor";
 import { WINDOW_NAMES } from "../../window/windowManager";
 import { Command } from "../command";
@@ -23,7 +25,10 @@ export class WindowCommand extends Command {
     this.cursor = new Cursor();
   }
 
-  public override handleInput(input: string): void {
+  public override handleClickResult(input: Intersection): void {
+  }
+
+  public override handleInputString(input: string): void {
     switch (this.mode) {
       case WindowCommandMode.SelectWindow:
         if (input == "0") {

@@ -1,4 +1,6 @@
+import { Vec3 } from "wgpu-matrix";
 import { INSTANCE } from "../../cad";
+import { Intersection } from "../../geometry/intersection";
 import { Command } from "../command"
 
 
@@ -20,7 +22,11 @@ export class ConstructionPlaneCommand extends Command {
     this.finished = false;
   }
 
-  public override handleInput(input: string): void {
+  handleClickResult(input: Intersection): void {
+    throw new Error("Method not implemented.");
+  }
+
+  public override handleInputString(input: string): void {
     switch (this.mode) {
       case ConstructionPlaneCommandMode.Menu:
         this.handleMenuInput(input);
@@ -68,6 +74,7 @@ export class ConstructionPlaneCommand extends Command {
   public override handleMouseMove(): void {
 
   }
+
 
   private handleMenuInput(input: string): void {
     switch (input) {

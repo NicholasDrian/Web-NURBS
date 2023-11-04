@@ -4,6 +4,7 @@ import { Curve } from "../../geometry/nurbs/curve";
 import { Ray } from "../../geometry/ray";
 import { Command } from "../command";
 import { Clicker } from "../clicker";
+import { Intersection } from "../../geometry/intersection";
 
 
 enum CurveCommandMode {
@@ -28,7 +29,7 @@ export class CurveCommand extends Command {
     this.clicker = new Clicker();
   }
 
-  public override handleInput(input: string): void {
+  public override handleInputString(input: string): void {
     if (this.mode === CurveCommandMode.AddPoints) {
       switch (input) {
         case "0":
@@ -68,20 +69,7 @@ export class CurveCommand extends Command {
   }
 
   public override handleClick(): void {
-    if (this.clicker.getPoint()) {
-      const point: Vec3 = this.clicker.getPoint()!;
-      if (this.curve) {
-        this.curve.updateLastControlPoint(point, 1);
-        this.curve.addControlPoint(point, 1);
-        if (this.curve.getDegree() < this.degree) this.curve.changeDegree(this.curve.getDegree() + 1);
-      } else {
-        this.curve = new Curve(
-          null,
-          [vec4.create(...point, 1), vec4.create(...point, 1)],
-          1
-        )
-      }
-    }
+    this.clicker.click();
   }
 
   public override handleMouseMove(): void {
@@ -106,6 +94,22 @@ export class CurveCommand extends Command {
 
   public override isFinished(): boolean {
     return this.finished;
+  }
+
+  public override handleClickResult(intersection: Intersection): void {
+    const point: Vec3 = intersection.point;
+    if (this.curve) {
+      this.curve.updateLastControlPoint(point, 1);
+      this.curve.addControlPoint(point, 1);
+      if (this.curve.getDegree() < this.degree) this.curve.changeDegree(this.curve.getDegree() + 1);
+    } else {
+      this.curve = new Curve(
+        null,
+        [vec4.create(...point, 1), vec4.create(...point, 1)],
+        1
+      )
+    }
+    this.clicker.reset();
   }
 
 

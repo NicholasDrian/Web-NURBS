@@ -22,6 +22,12 @@ html, body {
   margin: 0;
   overflow: hidden;
 }
+
+ul, li {
+  margin: 0;
+  padding: 0;
+}
+
 .floating-window {
   position: absolute;
   border-style: solid;

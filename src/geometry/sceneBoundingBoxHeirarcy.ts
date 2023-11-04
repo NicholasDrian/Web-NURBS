@@ -70,7 +70,6 @@ class BBHNode {
     res.sort((a: Intersection, b: Intersection) => {
       return a.time - b.time;
     })
-    console.log(...res);
     return res;
   }
 

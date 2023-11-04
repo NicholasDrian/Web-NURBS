@@ -1,4 +1,6 @@
+import { Vec3 } from "wgpu-matrix";
 import { INSTANCE } from "../../cad";
+import { Intersection } from "../../geometry/intersection";
 import { Command } from "../command";
 
 enum CameraCommandMode {
@@ -17,7 +19,7 @@ export class CameraCommand extends Command {
     this.finished = false;
   }
 
-  public override handleInput(input: string): void {
+  public override handleInputString(input: string): void {
     switch (this.mode) {
       case CameraCommandMode.Menu:
         this.handleMenuInput(input);
@@ -34,6 +36,9 @@ export class CameraCommand extends Command {
 
   public override handleMouseMove(): void {
 
+  }
+
+  public override handleClickResult(input: Intersection): void {
   }
 
   public override getInstructions(): string {
@@ -75,6 +80,7 @@ export class CameraCommand extends Command {
         break;
     }
   }
+
 
 
 }
