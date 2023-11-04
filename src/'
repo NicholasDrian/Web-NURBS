@@ -177,9 +177,9 @@ export class SceneBoundingBoxHeirarchy {
   public getPartiallyWithinFrustum(frustum: Frustum): [] {
     throw new Error("not implemented");
   }
-
   public getFullyWithinFrustum(frustum: Frustum): ObjectID[] {
     throw new Error("not implemented");
+
   }
 
 
