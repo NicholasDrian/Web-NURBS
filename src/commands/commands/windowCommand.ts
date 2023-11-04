@@ -1,7 +1,7 @@
 import { Vec3 } from "wgpu-matrix";
 import { INSTANCE } from "../../cad";
 import { Intersection } from "../../geometry/intersection";
-import { Cursor } from "../../widgets/cursor";
+import { cursor } from "../../widgets/cursor";
 import { WINDOW_NAMES } from "../../window/windowManager";
 import { Command } from "../command";
 
@@ -16,13 +16,12 @@ export class WindowCommand extends Command {
   private finished: boolean;
   private mode: WindowCommandMode;
   private windowName: string = "none";
-  private cursor: Cursor;
 
   constructor() {
     super();
     this.finished = false;
     this.mode = WindowCommandMode.SelectWindow;
-    this.cursor = new Cursor();
+    cursor.show();
   }
 
   public override handleClickResult(input: Intersection): void {
@@ -32,7 +31,7 @@ export class WindowCommand extends Command {
     switch (this.mode) {
       case WindowCommandMode.SelectWindow:
         if (input == "0") {
-          this.cursor.destroy();
+          cursor.hide();
           this.finished = true;
           break;
         }
@@ -86,7 +85,7 @@ export class WindowCommand extends Command {
 
   public override handleMouseMove(): void {
     const [x, y] = this.roundScreenPoint(INSTANCE.getEventManager().getMouseHandler().getMousePos());
-    this.cursor.setPosition([x, y]);
+    cursor.setPosition([x, y]);
     switch (this.mode) {
       case WindowCommandMode.SelectWindow:
         break;

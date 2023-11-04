@@ -1,4 +1,4 @@
-export class Cursor {
+class Cursor {
 
   private cursor: [HTMLDivElement, HTMLDivElement];
 
@@ -13,10 +13,15 @@ export class Cursor {
     this.cursor[1].style.top = (pos[1]).toString() + "px";
   }
 
-  public destroy(): void {
-    document.body.removeChild(this.cursor[0]);
-    document.body.removeChild(this.cursor[1]);
+  public show(): void {
+    this.cursor[0].hidden = false;
+    this.cursor[1].hidden = false;
   }
+  public hide(): void {
+    this.cursor[0].hidden = true;
+    this.cursor[1].hidden = true;
+  }
+
 
   private createCursor(): [HTMLDivElement, HTMLDivElement] {
     const cursorVertical: HTMLDivElement = document.createElement("div");
@@ -39,4 +44,7 @@ export class Cursor {
     return res;
   }
 
+
 }
+
+export const cursor: Cursor = new Cursor;

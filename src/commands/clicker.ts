@@ -4,22 +4,18 @@ import { Intersection } from "../geometry/intersection";
 import { Plane } from "../geometry/plane";
 import { Ray } from "../geometry/ray";
 import { ObjectID } from "../scene/scene";
-import { Cursor } from "../widgets/cursor";
+import { cursor } from "../widgets/cursor";
 
 
 
 export class Clicker {
 
   private point: Vec3 | null;
-  private intersectionScreenPos: [number, number];
-  private cursor: Cursor;
   private element: HTMLDivElement;
   private clicked: boolean;
 
   constructor() {
     this.point = null;
-    this.intersectionScreenPos = [-1, -1];
-    this.cursor = new Cursor();
     this.clicked = false;
     this.onMouseMove();
     this.element = document.createElement("div");
@@ -28,6 +24,7 @@ export class Clicker {
     this.element.style.width = "auto";
     this.element.hidden = true;
     document.body.appendChild(this.element);
+    cursor.show();
   }
 
   // TODO: finish
@@ -42,8 +39,7 @@ export class Clicker {
     const tScene: Intersection | null = ray.intersectScene(INSTANCE.getScene());
     if (tScene) {
       this.point = tScene.point;
-      this.intersectionScreenPos = INSTANCE.getScene().getCamera().getPixelAtPoint(this.point);
-      this.draw();
+      cursor.setPosition(INSTANCE.getScene().getCamera().getPixelAtPoint(this.point));
       return;
     }
 
@@ -55,9 +51,8 @@ export class Clicker {
       pGroundPlane = INSTANCE.getScene().getConstructionPlane().snapToGrid(pGroundPlane!);
       this.point = pGroundPlane;
     }
-    if (pGroundPlane) {
-      this.intersectionScreenPos = INSTANCE.getScene().getCamera().getPixelAtPoint(pGroundPlane);
-      this.draw();
+    if (this.point) {
+      cursor.setPosition(INSTANCE.getScene().getCamera().getPixelAtPoint(this.point));
     }
   }
 
@@ -83,6 +78,9 @@ export class Clicker {
       li.onclick = function() {
         INSTANCE.getCommandManager().handleClickResult(intersection);
       };
+      li.onmouseover = function() {
+        cursor.setPosition(INSTANCE.getScene().getCamera().getPixelAtPoint(intersection.point));
+      };
       list.appendChild(li);
     }
 
@@ -96,17 +94,12 @@ export class Clicker {
   }
 
   public destroy(): void {
-
-    this.cursor.destroy();
+    cursor.hide();
   }
 
   // TODO: remove this
   public getPoint(): Vec3 | null {
     return this.point;
-  }
-
-  private draw(): void {
-    this.cursor.setPosition(this.intersectionScreenPos);
   }
 
   reset() {

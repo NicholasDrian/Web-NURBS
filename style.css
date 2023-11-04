@@ -16,6 +16,13 @@
 
 }
 
+li:hover {
+  border-style: solid;
+  border-width: thin;
+  border-color: var(--floating-window-border-color);
+  border-radius: 0.3rem;
+}
+
 html, body {
   width:  100%;
   height: 100%;
