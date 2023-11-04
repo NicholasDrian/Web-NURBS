@@ -58,8 +58,8 @@ class CAD {
     this.renderStats = new RenderStats();
     this.windowManager = new WindowManager();
 
-    // addTestScene1();
-    addTestScene2();
+    addTestScene1();
+    // addTestScene2();
   }
 
   public async run() {

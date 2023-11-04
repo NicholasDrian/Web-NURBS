@@ -2,6 +2,7 @@ import { Mat4, mat4, Vec3 } from "wgpu-matrix"
 import { INSTANCE } from "../cad"
 import { Geometry } from "../geometry/geometry";
 import { RenderID } from "../scene/scene";
+import { HOVER_BIT, SELECTED_BIT } from "./flags";
 
 export class RenderPoints {
 
@@ -82,6 +83,10 @@ export class RenderPoints {
   }
 
   private updateFlags(): void {
+    if (this.parent.isSelected()) this.flags[0] |= SELECTED_BIT;
+    else this.flags[0] &= ~SELECTED_BIT;
+    if (this.parent.isHovered()) this.flags[0] |= HOVER_BIT;
+    else this.flags[0] &= ~HOVER_BIT;
     INSTANCE.getRenderer().getDevice().queue.writeBuffer(this.flagsBuffer, 0, this.flags);
   }
 

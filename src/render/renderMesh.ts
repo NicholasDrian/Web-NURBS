@@ -2,6 +2,7 @@ import { INSTANCE } from "../cad"
 import { mat4, Mat4 } from "wgpu-matrix"
 import { Geometry } from "../geometry/geometry";
 import { RenderID } from "../scene/scene";
+import { HOVER_BIT, SELECTED_BIT } from "./flags";
 
 export class RenderMesh {
 
@@ -96,7 +97,12 @@ export class RenderMesh {
   private updateModel(): void {
     INSTANCE.getRenderer().getDevice().queue.writeBuffer(this.modelBuffer, 0, <Float32Array>this.model);
   }
+
   private updateFlags(): void {
+    if (this.parent.isSelected()) this.flags[0] |= SELECTED_BIT;
+    else this.flags[0] &= ~SELECTED_BIT;
+    if (this.parent.isHovered()) this.flags[0] |= HOVER_BIT;
+    else this.flags[0] &= ~HOVER_BIT;
     INSTANCE.getRenderer().getDevice().queue.writeBuffer(this.flagsBuffer, 0, this.flags);
   }
 

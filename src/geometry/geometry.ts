@@ -37,6 +37,13 @@ export abstract class Geometry {
     }
   }
 
+  public isSelected(): boolean {
+    return this.selected;
+  }
+  public isHovered(): boolean {
+    return this.hovered;
+  }
+
   public getID(): ObjectID {
     return this.id;
   }
