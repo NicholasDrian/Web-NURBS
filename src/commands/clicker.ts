@@ -17,13 +17,13 @@ export class Clicker {
   constructor() {
     this.point = null;
     this.clicked = false;
-    this.onMouseMove();
     this.element = document.createElement("div");
     this.element.id = "clicker";
     this.element.className = "floating-window";
     this.element.style.width = "auto";
     this.element.hidden = true;
     document.body.appendChild(this.element);
+    this.onMouseMove();
     cursor.show();
   }
 
@@ -36,6 +36,7 @@ export class Clicker {
     const mousePos: [number, number] = INSTANCE.getEventManager().getMouseHandler().getMousePos();
     const ray: Ray = INSTANCE.getScene().getCamera().getRayAtPixel(mousePos[0], mousePos[1]);
 
+    // try to intersect scene.
     const tScene: Intersection | null = ray.intersectScene(INSTANCE.getScene());
     if (tScene) {
       this.point = tScene.point;
@@ -43,17 +44,6 @@ export class Clicker {
       return;
     }
 
-    const tGroundPlane: number | null = ray.intersectPlane(new Plane(vec3.create(0, 0, 0), vec3.create(0, 0, 1)));
-    var pGroundPlane: Vec3 | null = tGroundPlane ? ray.at(tGroundPlane!) : null;
-    this.point = pGroundPlane;
-
-    if (pGroundPlane && INSTANCE.getSettingsManager().getSnapSettingsManager().getSnapSettings().snapGrid) {
-      pGroundPlane = INSTANCE.getScene().getConstructionPlane().snapToGrid(pGroundPlane!);
-      this.point = pGroundPlane;
-    }
-    if (this.point) {
-      cursor.setPosition(INSTANCE.getScene().getCamera().getPixelAtPoint(this.point));
-    }
   }
 
   public click(): void {

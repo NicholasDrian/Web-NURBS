@@ -1,8 +1,11 @@
 import { warn } from "console";
 import { mat4, vec3, Vec3 } from "wgpu-matrix";
 import { INSTANCE } from "../cad";
+import { Intersection } from "../geometry/intersection";
 import { Line } from "../geometry/line";
 import { Lines } from "../geometry/lines";
+import { Plane } from "../geometry/plane";
+import { Ray } from "../geometry/ray";
 import { MaterialName } from "../materials/material";
 import { RenderLines } from "../render/renderLines"
 import { RenderID } from "./scene";
@@ -96,6 +99,20 @@ export class ConstructionPlane {
       point[1] -= this.cellSize / 2;
     }
     return point;
+  }
+
+  public intersect(ray: Ray): Intersection | null {
+    const tGroundPlane: number | null = ray.intersectPlane(new Plane(vec3.create(0, 0, 0), vec3.create(0, 0, 1)));
+    if (tGroundPlane) { // intrsected ground plane;
+      var pGroundPlane: Vec3 | null = tGroundPlane ? ray.at(tGroundPlane!) : null;
+      if (pGroundPlane && INSTANCE.getSettingsManager().getSnapSettingsManager().getSnapSettings().snapGrid) {
+        pGroundPlane = INSTANCE.getScene().getConstructionPlane().snapToGrid(pGroundPlane);
+      }
+      if (pGroundPlane) {
+        return new Intersection(tGroundPlane, "ground plane", 0, pGroundPlane, 0, 0);
+      }
+    }
+    return null;
   }
 
   public getMinorCount(): number {

@@ -1,3 +1,4 @@
+import { Vec3 } from "wgpu-matrix";
 import { INSTANCE } from "../cad";
 import { ObjectID } from "../scene/scene";
 import { BoundingBox } from "./boundingBox";
@@ -165,12 +166,20 @@ export class SceneBoundingBoxHeirarchy {
   }
 
   public firstPositiveIntersection(ray: Ray): Intersection | null {
-    return this.root.firstPositiveIntersection(ray);
+    const sceneIntersection: Intersection | null = this.root.firstPositiveIntersection(ray);
+    if (sceneIntersection) return sceneIntersection;
+    return INSTANCE.getScene().getConstructionPlane().intersect(ray);
   }
 
   // margin is max percentage of distance from camera behind first intersection
   public firstIntersectionsWithinMargin(ray: Ray, margin: number): Intersection[] {
-    return this.root.firstIntersectionsWithinMargin(ray, margin);
+    const res: Intersection[] = this.root.firstIntersectionsWithinMargin(ray, margin);
+    const iGroundPlane: Intersection | null = INSTANCE.getScene().getConstructionPlane().intersect(ray);
+    if (res.length === 0) return iGroundPlane ? [iGroundPlane] : [];
+    if (iGroundPlane && iGroundPlane.time < res[0].time * (1 + (margin / 100))) {
+      res.push(iGroundPlane);
+    }
+    return res;
   }
 
   public getPartiallyWithinFrustum(frustum: Frustum): [] {
