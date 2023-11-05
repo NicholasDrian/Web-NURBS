@@ -35,25 +35,20 @@ export class MouseHandler {
 
   public onMouseUp(event: MouseEvent): void {
     if (event.button == 0) { // left click
-
       if (!this.drag!.isDrag()) {
         INSTANCE.getCommandManager().handleClickInput();
         INSTANCE.getCli().render();
       }
-
       this.drag!.destroy();
       this.drag = null;
       this.mouseDown = false;
-
     }
   }
 
   public getMousePos(): [number, number] {
     return this.mousePos;
   }
-
 }
-
 
 class Drag {
 

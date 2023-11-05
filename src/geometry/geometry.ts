@@ -37,11 +37,46 @@ export abstract class Geometry {
     }
   }
 
+  // an object is selected if its parent is selected
   public isSelected(): boolean {
-    return this.selected;
+    if (this.selected) return true;
+    if (this.parent && this.parent.isSelected()) return true;
+    return false;
   }
+
+  // find parent and select it. return id of selected object
+  public select(): ObjectID {
+    if (this.parent) return this.parent.select();
+    this.selected = true;
+    return this.getID();
+  }
+
+  public subSelect(): void {
+    this.selected = true;
+  }
+
+  public unSelect(): void {
+    this.selected = false;
+  }
+
   public isHovered(): boolean {
-    return this.hovered;
+    if (this.hovered) return true;
+    if (this.parent && this.parent.isHovered()) return true;
+    return false;
+  }
+
+  public hover(): ObjectID {
+    if (this.parent) return this.parent.hover();
+    this.hovered = true;
+    return this.getID();
+  }
+
+  public subHover(): void {
+    this.hovered = true;
+  }
+
+  public unHover(): void {
+    this.hovered = false;
   }
 
   public getID(): ObjectID {

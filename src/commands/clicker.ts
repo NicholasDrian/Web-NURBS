@@ -1,9 +1,7 @@
-import { vec3, Vec3 } from "wgpu-matrix";
+import { Vec3 } from "wgpu-matrix";
 import { INSTANCE } from "../cad";
 import { Intersection } from "../geometry/intersection";
-import { Plane } from "../geometry/plane";
 import { Ray } from "../geometry/ray";
-import { ObjectID } from "../scene/scene";
 import { cursor } from "../widgets/cursor";
 
 
@@ -27,21 +25,17 @@ export class Clicker {
     cursor.show();
   }
 
-  // TODO: finish
   public onMouseMove(): void {
-
 
     if (this.clicked) return; // currently selecting from dropdown
 
     const mousePos: [number, number] = INSTANCE.getEventManager().getMouseHandler().getMousePos();
     const ray: Ray = INSTANCE.getScene().getCamera().getRayAtPixel(mousePos[0], mousePos[1]);
 
-    // try to intersect scene.
-    const tScene: Intersection | null = ray.intersectScene(INSTANCE.getScene());
-    if (tScene) {
-      this.point = tScene.point;
+    const i: Intersection | null = ray.intersectScene(INSTANCE.getScene());
+    if (i) {
+      this.point = i.point;
       cursor.setPosition(INSTANCE.getScene().getCamera().getPixelAtPoint(this.point));
-      return;
     }
 
   }
@@ -85,9 +79,9 @@ export class Clicker {
 
   public destroy(): void {
     cursor.hide();
+    document.body.removeChild(this.element);
   }
 
-  // TODO: remove this
   public getPoint(): Vec3 | null {
     return this.point;
   }

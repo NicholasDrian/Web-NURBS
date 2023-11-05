@@ -29,6 +29,9 @@ export class CurveCommand extends Command {
     this.clicker = new Clicker();
   }
 
+
+  // TODO: debug
+
   public override handleInputString(input: string): void {
     if (this.mode === CurveCommandMode.AddPoints) {
       switch (input) {
