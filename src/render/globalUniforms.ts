@@ -10,6 +10,7 @@ export class GlobalUniforms {
 
   private cameraPositionBuffer: GPUBuffer;
   private cameraViewProjBuffer: GPUBuffer;
+  private selectionBuffer: GPUBuffer;
 
   private layout: GPUBindGroupLayout;
   private bindGroup: GPUBindGroup;
@@ -26,7 +27,12 @@ export class GlobalUniforms {
       label: "camera view proj buffer",
       size: 64,
       usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
-    })
+    });
+    this.selectionBuffer = this.device.createBuffer({
+      label: "selection buffer",
+      size: 64,
+      usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+    });
     this.layout = this.device.createBindGroupLayout({
       label: "global uniforms layout",
       entries: [
@@ -39,6 +45,10 @@ export class GlobalUniforms {
           binding: 1, // camer view proj
           visibility: GPUShaderStage.VERTEX,
           buffer: {}
+        }, {
+          binding: 2, // selection transform
+          visibility: GPUShaderStage.VERTEX,
+          buffer: {}
         }
       ]
     });
@@ -49,10 +59,12 @@ export class GlobalUniforms {
         {
           binding: 0,
           resource: { buffer: this.cameraPositionBuffer },
-        },
-        {
+        }, {
           binding: 1,
           resource: { buffer: this.cameraViewProjBuffer },
+        }, {
+          binding: 2,
+          resource: { buffer: this.selectionBuffer }
         }
       ]
     });
@@ -66,6 +78,7 @@ export class GlobalUniforms {
   public tick(): void {
     this.device.queue.writeBuffer(this.cameraPositionBuffer, 0, <Float32Array>INSTANCE.getScene().getCamera().getPosition());
     this.device.queue.writeBuffer(this.cameraViewProjBuffer, 0, INSTANCE.getScene().getCamera().getViewProj());
+    this.device.queue.writeBuffer(this.selectionBuffer, 0, <Float32Array>INSTANCE.getSelector().getTransform())
   }
 
   public bind(pass: GPURenderPassEncoder): void {

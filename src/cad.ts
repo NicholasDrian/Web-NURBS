@@ -12,6 +12,7 @@ import { WindowManager } from "./window/windowManager";
 import { SettingsManager } from "./settings/settingsManager";
 import { MaterialManager } from "./materials/materialManager";
 import { addTestScene2 } from "./tests/testScene2";
+import { Selector } from "./commands/selector";
 
 /*
   * Browser Based NURBS Modeling Software
@@ -30,6 +31,7 @@ class CAD {
   private windowManager!: WindowManager;
   private settingsManager!: SettingsManager;
   private materialManager!: MaterialManager;
+  private selector!: Selector;
 
   private renderStats!: RenderStats;
   private operatingMode!: OperatingMode;
@@ -57,6 +59,8 @@ class CAD {
 
     this.renderStats = new RenderStats();
     this.windowManager = new WindowManager();
+    this.selector = new Selector();
+
 
     addTestScene1();
     // addTestScene2();
@@ -147,6 +151,10 @@ class CAD {
 
   public getEventManager(): EventManager {
     return this.eventManager;
+  }
+
+  public getSelector(): Selector {
+    return this.selector;
   }
 
 }

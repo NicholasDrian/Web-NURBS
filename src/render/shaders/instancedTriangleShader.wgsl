@@ -13,6 +13,7 @@ struct VertexOutput {
 // global uniforms:
 @group(1) @binding(0) var<uniform> cameraPos: vec3<f32>;
 @group(1) @binding(1) var<uniform> cameraViewProj: mat4x4<f32>;
+@group(1) @binding(2) var<uniform> selectionTransform: mat4x4<f32>;
 
 const CONSTANT_SCREEN_SIZE_BIT: u32 = 1 << 0;
 

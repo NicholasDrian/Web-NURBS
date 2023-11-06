@@ -10,11 +10,13 @@ import { ObjectID } from "../scene/scene";
 export class Selector {
 
   private selection: Set<ObjectID> = new Set<ObjectID>;
-  private transform!: Mat4;
+  private selectionTransform: Mat4;
   private element: HTMLElement;
+  private selectionTransformBuffer!: GPUBuffer;
 
   constructor() {
-    this.updateTransform(mat4.identity());
+    this.updateSelectionTransform(mat4.identity());
+    this.selectionTransform = mat4.identity();
     this.element = document.createElement("div");
     this.element.id = "clicker";
     this.element.className = "floating-window";
@@ -29,15 +31,19 @@ export class Selector {
       geo.unSelect();
     }
     this.selection.clear();
-    this.transform = mat4.identity();
+    this.selectionTransform = mat4.identity();
   }
 
-  public updateTransform(mat: Mat4): void {
-    this.transform = mat;
+  public updateSelectionTransform(mat: Mat4) {
+
   }
 
-  public getTransform(): Mat4 {
-    return this.transform;
+  public getSelectionTransform(): Mat4 {
+    return this.selectionTransform;
+  }
+
+  getSelectionTransformBuffer(): GPUBuffer {
+    return this.selectionTransformBuffer;
   }
 
   public selectAtPixel(x: number, y: number): void {
