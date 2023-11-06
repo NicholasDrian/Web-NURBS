@@ -136,7 +136,7 @@ export class Renderer {
           buffer: {},
         }, {
           binding: 2, // flags
-          visibility: GPUShaderStage.VERTEX,
+          visibility: GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT,
           buffer: {},
         }
       ]

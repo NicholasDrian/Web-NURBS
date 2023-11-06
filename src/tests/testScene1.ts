@@ -54,4 +54,5 @@ export const addTestScene1 = function() {
   INSTANCE.getScene().addGeometry(curve2);
   INSTANCE.getScene().addGeometry(curve3);
   INSTANCE.getScene().addGeometry(surface);
+
 }

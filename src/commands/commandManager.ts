@@ -73,6 +73,9 @@ export class CommandManager {
 
 
   }
+  hasActiveCommand(): boolean {
+    return this.currentCommand != null;
+  }
 
   public handleClickInput(): void {
     this.currentCommand?.handleClick();

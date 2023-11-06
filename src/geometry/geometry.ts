@@ -19,7 +19,7 @@ export abstract class Geometry {
     private model: Mat4 = mat4.identity(),
     private material: MaterialName | null,
   ) {
-    this.id = INSTANCE.getScene().generateNewObjectID();
+    this.id = INSTANCE.getScene().generateNewObjectID(this);
   }
 
   public abstract getBoundingBox(): BoundingBox;

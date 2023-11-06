@@ -35,9 +35,17 @@ export class MouseHandler {
 
   public onMouseUp(event: MouseEvent): void {
     if (event.button == 0) { // left click
-      if (!this.drag!.isDrag()) {
-        INSTANCE.getCommandManager().handleClickInput();
-        INSTANCE.getCli().render();
+      if (!this.drag!.isDrag()) { // not drag
+        if (INSTANCE.getCommandManager().hasActiveCommand()) { // forward click to active command
+          INSTANCE.getCommandManager().handleClickInput();
+          INSTANCE.getCli().render();
+        } else {
+          if (!this.shiftDown) INSTANCE.getSelector().reset();
+          INSTANCE.getSelector().selectAtPixel(event.clientX, event.clientY, this.controlDown);
+        }
+      } else {
+        if (!this.shiftDown) INSTANCE.getSelector().reset();
+        // TODO: frustum selection
       }
       this.drag!.destroy();
       this.drag = null;

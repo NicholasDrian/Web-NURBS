@@ -20,7 +20,10 @@ export class Scene {
   private renderMeshes: Map<RenderID, RenderMesh> = new Map<RenderID, RenderMesh>();
   private renderPoints: Map<RenderID, RenderPoints> = new Map<RenderID, RenderPoints>();
   private renderMeshesInstanced: Map<RenderID, RenderMeshInstanced> = new Map<RenderID, RenderMeshInstanced>();
-  private geometryMap: Map<ObjectID, Geometry> = new Map<ObjectID, Geometry>();
+
+  private highLevelGeometry: Map<ObjectID, Geometry> = new Map<ObjectID, Geometry>(); // stores geometry with no parents
+  private geometry: Map<ObjectID, Geometry> = new Map<ObjectID, Geometry>(); // stores all geometry
+
 
   private renderIDGenerator: RenderID = 1;
   private objectIDGenerator: ObjectID = 1;
@@ -48,20 +51,23 @@ export class Scene {
     return this.boundingBoxHeirarchy;
   }
 
-  public async init(): Promise<void> {
+  public init(): void {
     this.constructionPlane = new ConstructionPlane();
   }
 
-  public generateNewObjectID(): ObjectID {
+  public generateNewObjectID(geo: Geometry): ObjectID {
+    this.geometry.set(this.objectIDGenerator, geo);
     return this.objectIDGenerator++;
   }
 
   public addGeometry(geo: Geometry): void {
+    console.log(geo.getID(), "added");
     this.boundingBoxHeirarchy.add(geo);
-    this.geometryMap.set(geo.getID(), geo);
+    this.highLevelGeometry.set(geo.getID(), geo);
   }
+
   public getGeometry(id: ObjectID): Geometry {
-    return this.geometryMap.get(id)!;
+    return this.geometry.get(id)!;
   }
 
   public generateNewRenderID(): RenderID {

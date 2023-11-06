@@ -12,8 +12,10 @@ export class Selector {
   private selection: Set<ObjectID> = new Set<ObjectID>;
   private transform!: Mat4;
   private element: HTMLElement;
+  private selecting: boolean;
 
   constructor() {
+    this.selecting = false;
     this.updateTransform(mat4.identity());
     this.element = document.createElement("div");
     this.element.id = "clicker";
@@ -40,26 +42,49 @@ export class Selector {
     return this.transform;
   }
 
-  public selectAtPixel(x: number, y: number): void {
+  public addToSelection(...geometry: Geometry[]): void {
+    for (let geo of geometry) {
+      this.selection.add(geo.getID());
+      geo.select();
+    }
+  }
+
+  public selectAtPixel(x: number, y: number, sub: boolean): void {
+    console.log("here");
+    if (this.selecting) return;
+    this.selecting = true;
     const ray: Ray = INSTANCE.getScene().getCamera().getRayAtPixel(x, y);
     const intersections: Intersection[] = INSTANCE.getScene().getBoundingBoxHeirarchy().firstIntersectionsWithinMargin(ray, 5);
     if (intersections.length == 0) return;
     if (intersections.length == 1) {
+      if (intersections[0].object === 0) return;
       const geo: Geometry = INSTANCE.getScene().getGeometry(intersections[0].object);
-      geo.select();
+      this.addToSelection(geo);
+      this.doneSelecting();
+      return;
     }
     const list: HTMLElement = document.createElement("ul");
     this.element.innerHTML = "";
     this.element.appendChild(list);
+    const found: Set<Geometry> = new Set<Geometry>;
     for (let intersection of intersections) {
-      var geo: Geometry = INSTANCE.getScene().getGeometry(intersection.object);
-      while (geo.getParent()) geo = geo.getParent()!;
 
-      // TODO: find parent....
+      if (intersection.object === 0) continue; // construction plane intersection
+
+      var geo: Geometry = INSTANCE.getScene().getGeometry(intersection.object);
+
+      if (sub) {
+        while (geo.getParent()) geo = geo.getParent()!;
+        if (found.has(geo)) continue;
+        found.add(geo);
+      }
+
       const li = document.createElement("li");
       li.innerText = intersection.description;
       li.onclick = function() {
-        INSTANCE.getCommandManager().handleClickResult(intersection);
+        geo.unHover();
+        INSTANCE.getSelector().addToSelection(geo);
+        INSTANCE.getSelector().doneSelecting();
       };
       li.onmouseover = function() {
         geo.hover();
@@ -76,17 +101,23 @@ export class Selector {
       width:auto;
       height:auto;`
     );
+    this.element.hidden = false;
   }
 
-  public unSelectAtPixel(x: number, y: number): void {
+  public doneSelecting(): void {
+    this.selecting = false;
+    this.element.hidden = true;
+  }
+
+  public unSelectAtPixel(x: number, y: number, sub: boolean): void {
 
   }
 
-  public selectInRectangle(left: number, top: number, right: number, bottom: number, inclusive: boolean): void {
+  public selectInRectangle(left: number, top: number, right: number, bottom: number, inclusive: boolean, sub: boolean): void {
 
   }
 
-  public unSelectInRectangle(left: number, top: number, right: number, bottom: number, inclusive: boolean): void {
+  public unSelectInRectangle(left: number, top: number, right: number, bottom: number, inclusive: boolean, sub: boolean): void {
 
   }
 
