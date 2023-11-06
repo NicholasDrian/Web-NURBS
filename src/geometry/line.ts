@@ -48,6 +48,10 @@ export class Line extends Geometry {
     INSTANCE.getScene().addRenderLines(renderLinesObj);
   }
 
+  public override getTypeName(): string {
+    return "Line";
+  }
+
   public delete(): void {
     INSTANCE.getScene().removeLines(this.renderLines);
   }

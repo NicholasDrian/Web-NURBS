@@ -45,20 +45,28 @@ export class Selector {
     const intersections: Intersection[] = INSTANCE.getScene().getBoundingBoxHeirarchy().firstIntersectionsWithinMargin(ray, 5);
     if (intersections.length == 0) return;
     if (intersections.length == 1) {
-
+      const geo: Geometry = INSTANCE.getScene().getGeometry(intersections[0].object);
+      geo.select();
     }
     const list: HTMLElement = document.createElement("ul");
     this.element.innerHTML = "";
     this.element.appendChild(list);
     for (let intersection of intersections) {
+      var geo: Geometry = INSTANCE.getScene().getGeometry(intersection.object);
+      while (geo.getParent()) geo = geo.getParent()!;
+
+      // TODO: find parent....
       const li = document.createElement("li");
       li.innerText = intersection.description;
       li.onclick = function() {
         INSTANCE.getCommandManager().handleClickResult(intersection);
       };
       li.onmouseover = function() {
-        // hover
+        geo.hover();
       };
+      li.onmouseleave = function() {
+        geo.unHover();
+      }
       list.appendChild(li);
     }
 
@@ -68,8 +76,6 @@ export class Selector {
       width:auto;
       height:auto;`
     );
-
-
   }
 
   public unSelectAtPixel(x: number, y: number): void {

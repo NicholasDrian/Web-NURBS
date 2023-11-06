@@ -1,5 +1,6 @@
 import { Vec3 } from "wgpu-matrix";
 import { INSTANCE } from "../cad";
+import { Geometry } from "../geometry/geometry";
 import { Intersection } from "../geometry/intersection";
 import { Ray } from "../geometry/ray";
 import { cursor } from "../widgets/cursor";
@@ -62,15 +63,15 @@ export class Clicker {
       li.onclick = function() {
         INSTANCE.getCommandManager().handleClickResult(intersection);
       };
-      li.onmouseover = function() {
+      li.onmouseenter = function() {
         cursor.setPosition(INSTANCE.getScene().getCamera().getPixelAtPoint(intersection.point));
       };
       list.appendChild(li);
     }
 
     this.element.setAttribute("style", `
-      left:${mousePos[0]}px;
-      top:${mousePos[1]}px;
+      left:${mousePos[0] + 20}px;
+      top:${mousePos[1] - 20}px;
       width:auto;
       height:auto;`
     );

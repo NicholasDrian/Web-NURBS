@@ -40,6 +40,10 @@ export class Lines extends Geometry {
     return this.indices.length / 2;
   }
 
+  public override getTypeName(): string {
+    return "Lines";
+  }
+
   public delete(): void {
     INSTANCE.getScene().removeLines(this.renderLines);
   }

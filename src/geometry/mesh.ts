@@ -46,6 +46,10 @@ export class Mesh extends Geometry {
     return this.boundingBoxHeirarchy.firstIntersection(objectSpaceRay, this.verts);
   }
 
+  public override getTypeName(): string {
+    return "Mesh";
+  }
+
   public destroy(): void {
     INSTANCE.getScene().removeMesh(this.renderMesh);
   }

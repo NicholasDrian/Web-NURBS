@@ -23,6 +23,10 @@ export class Group extends Geometry {
     }
     return boundingBox;
   }
+  public override getTypeName(): string {
+    return "Group";
+  }
+
   public override intersect(ray: Ray): Intersection | null {
     throw new Error("not implemented");
   }

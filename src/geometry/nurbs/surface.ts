@@ -55,6 +55,10 @@ export class Surface extends Geometry {
     return this.mesh!.intersect(ray);
   }
 
+  public override getTypeName(): string {
+    return "Surface";
+  }
+
   private update(): void {
     this.delete();
 

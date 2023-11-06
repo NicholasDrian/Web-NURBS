@@ -162,6 +162,10 @@ export class Curve extends Geometry {
 
   }
 
+  public override getTypeName(): string {
+    return "Curve";
+  }
+
   public elevateDegree(n: number): void {
     // TODO: clean up
     const newDegree: number = this.degree + n;

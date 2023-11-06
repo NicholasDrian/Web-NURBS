@@ -46,6 +46,9 @@ export class InstancedMesh extends Geometry {
 
     this.boundingBoxHeirarchy = new InstancedMeshBoundingBoxHeirarchy(this);
   }
+  public override getTypeName(): string {
+    return "Instanced Mesh";
+  }
 
   public getInstanceCount(): number {
     return this.transforms.length;

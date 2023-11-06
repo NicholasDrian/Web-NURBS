@@ -76,6 +76,10 @@ export class Points extends Geometry {
     this.instancedMesh!.destroy();
   }
 
+  public override getTypeName(): string {
+    return "Points";
+  }
+
 
   public override getBoundingBox(): BoundingBox {
     return this.instancedMesh!.getBoundingBox();

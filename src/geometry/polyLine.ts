@@ -38,6 +38,9 @@ export class PolyLine extends Geometry {
   public getSegmentCount(): number {
     return this.points.length - 1;
   }
+  public override getTypeName(): string {
+    return "PolyLine";
+  }
 
   public updateLastPoint(point: Vec3): void {
     this.points[this.points.length - 1] = point;

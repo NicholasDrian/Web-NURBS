@@ -23,6 +23,7 @@ export abstract class Geometry {
   }
 
   public abstract getBoundingBox(): BoundingBox;
+  public abstract getTypeName(): string;
   public abstract intersect(ray: Ray): Intersection | null;
 
   public setModel(model: Mat4): void {
@@ -36,6 +37,9 @@ export abstract class Geometry {
       return this.model;
     }
   }
+  getParent(): Geometry | null {
+    return this.parent;
+  }
 
   // an object is selected if its parent is selected
   public isSelected(): boolean {
@@ -45,13 +49,7 @@ export abstract class Geometry {
   }
 
   // find parent and select it. return id of selected object
-  public select(): ObjectID {
-    if (this.parent) return this.parent.select();
-    this.selected = true;
-    return this.getID();
-  }
-
-  public subSelect(): void {
+  public select(): void {
     this.selected = true;
   }
 
@@ -65,13 +63,7 @@ export abstract class Geometry {
     return false;
   }
 
-  public hover(): ObjectID {
-    if (this.parent) return this.parent.hover();
-    this.hovered = true;
-    return this.getID();
-  }
-
-  public subHover(): void {
+  public hover(): void {
     this.hovered = true;
   }
 
