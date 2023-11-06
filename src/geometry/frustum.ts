@@ -1,5 +1,6 @@
 import { vec3, Vec3 } from "wgpu-matrix";
 import { INSTANCE } from "../cad";
+import { printVec3 } from "../utils/print";
 import { BoundingBox } from "./boundingBox";
 import { Line } from "./line";
 import { Plane } from "./plane";
@@ -14,11 +15,12 @@ export class Frustum {
   private left: Vec3;
 
   constructor(left: number, right: number, top: number, bottom: number) {
+    console.log("frustum from", left, right, top, bottom);
     this.origin = INSTANCE.getScene().getCamera().getPosition();
     const topLeft: Ray = INSTANCE.getScene().getCamera().getRayAtPixel(left, top);
-    const topRight: Ray = INSTANCE.getScene().getCamera().getRayAtPixel(left, right);
-    const bottomLeft: Ray = INSTANCE.getScene().getCamera().getRayAtPixel(bottom, top);
-    const bottomRight: Ray = INSTANCE.getScene().getCamera().getRayAtPixel(bottom, right);
+    const topRight: Ray = INSTANCE.getScene().getCamera().getRayAtPixel(right, top);
+    const bottomLeft: Ray = INSTANCE.getScene().getCamera().getRayAtPixel(left, bottom);
+    const bottomRight: Ray = INSTANCE.getScene().getCamera().getRayAtPixel(right, bottom);
     this.up = vec3.normalize(vec3.cross(topLeft.getDirection(), topRight.getDirection()));
     this.right = vec3.normalize(vec3.cross(topRight.getDirection(), bottomRight.getDirection()));
     this.down = vec3.normalize(vec3.cross(bottomRight.getDirection(), bottomLeft.getDirection()));
@@ -47,10 +49,10 @@ export class Frustum {
 
     const r: Ray = new Ray(a, dir);
 
-    const tUp: number = r.intersectPlane(new Plane(this.origin, this.up)) ?? 0;
-    const tRight: number = r.intersectPlane(new Plane(this.origin, this.right)) ?? 0;
-    const tDown: number = r.intersectPlane(new Plane(this.origin, this.down)) ?? 0;
-    const tLeft: number = r.intersectPlane(new Plane(this.origin, this.left)) ?? 0;
+    const tUp: number = r.intersectPlane(new Plane(this.origin, this.up), true) ?? 0;
+    const tRight: number = r.intersectPlane(new Plane(this.origin, this.right), true) ?? 0;
+    const tDown: number = r.intersectPlane(new Plane(this.origin, this.down), true) ?? 0;
+    const tLeft: number = r.intersectPlane(new Plane(this.origin, this.left), true) ?? 0;
 
     var near: number = 0;
     var far: number = size;
@@ -83,6 +85,7 @@ export class Frustum {
   public intersectsBoundingBox(boundingBox: BoundingBox): boolean {
     // if frustum ray intersects boundingBox then there is an intersection
     const tr: Ray = new Ray(this.origin, vec3.cross(this.up, this.right));
+    console.log(tr);
     if (tr.intersectBoundingBox(boundingBox)) return true;
     const br: Ray = new Ray(this.origin, vec3.cross(this.right, this.down));
     if (br.intersectBoundingBox(boundingBox)) return true;
@@ -133,6 +136,15 @@ export class Frustum {
       this.containsPoint(p101) ||
       this.containsPoint(p110) ||
       this.containsPoint(p111);
+  }
+
+  public print(): void {
+    console.log("Frustum:");
+    console.log("\torigin: ", this.origin);
+    console.log("\ttop: ", this.up);
+    console.log("\tright: ", this.right);
+    console.log("\tbottom: ", this.down);
+    console.log("\tleft: ", this.left);
   }
 
 }

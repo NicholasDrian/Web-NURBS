@@ -89,11 +89,13 @@ class MeshBoundingBoxHeirarchyNode {
   }
 
   public isWithinFrustum(frustum: Frustum, inclusive: boolean): boolean {
-
+    console.log(1);
     if (frustum.containsBoundingBoxFully(this.boundingBox)) return true;
 
+    console.log(2);
     if (!frustum.intersectsBoundingBox(this.boundingBox)) return false;
 
+    console.log(3);
     if (this.isLeaf()) {
       if (inclusive) {
         for (let i = 0; i < this.indices!.length; i += 3) {
@@ -180,6 +182,7 @@ export class MeshBoundingBoxHeirarchy {
   }
 
   public isWithinFrustum(frustum: Frustum, inclusive: boolean): boolean {
+    console.log("mesh bb is within frustum, inclusive: ", inclusive);
     return this.root.isWithinFrustum(frustum, inclusive);
   }
 

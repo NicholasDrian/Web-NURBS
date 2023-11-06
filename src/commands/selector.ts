@@ -123,8 +123,9 @@ export class Selector {
     console.log(this.selection);
   }
 
-  public selectInRectangle(left: number, top: number, right: number, bottom: number, inclusive: boolean, sub: boolean): void {
+  public selectInRectangle(left: number, right: number, top: number, bottom: number, inclusive: boolean, sub: boolean): void {
     const frustum: Frustum = new Frustum(left, right, top, bottom);
+    //frustum.print();
     const within: ObjectID[] = INSTANCE.getScene().getBoundingBoxHeirarchy().getWithinFrustum(frustum, sub, inclusive);
     for (const obj of within) {
       const geo: Geometry = INSTANCE.getScene().getGeometry(obj);
@@ -132,7 +133,7 @@ export class Selector {
     }
   }
 
-  public unSelectInRectangle(left: number, top: number, right: number, bottom: number, inclusive: boolean, sub: boolean): void {
+  public unSelectInRectangle(left: number, right: number, top: number, bottom: number, inclusive: boolean, sub: boolean): void {
     const frustum: Frustum = new Frustum(left, right, top, bottom);
     const within: ObjectID[] = INSTANCE.getScene().getBoundingBoxHeirarchy().getWithinFrustum(frustum, sub, inclusive);
     for (const obj of within) {

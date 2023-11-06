@@ -37,7 +37,8 @@ export class Ray {
     return vec3.add(this.origin, vec3.scale(this.direction, time));
   }
 
-  // TODO: make sure res is positive
+
+
   public intersectPlane(plane: Plane, allowNegative: boolean = false): number | null {
     const numerator: number = vec3.dot(vec3.sub(plane.getOrigin(), this.origin), plane.getNormal());
     const denominator: number = vec3.dot(this.direction, plane.getNormal());

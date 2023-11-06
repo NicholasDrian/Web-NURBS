@@ -62,8 +62,8 @@ class CAD {
     this.selector = new Selector();
 
 
-    addTestScene1();
-    // addTestScene2();
+    // addTestScene1();
+    addTestScene2();
   }
 
   public async run() {

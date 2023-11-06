@@ -52,7 +52,7 @@ export class Mesh extends Geometry {
   }
 
   public isWithinFrustum(frustum: Frustum, inclusive: boolean): boolean {
-    throw new Error("Method not implemented.");
+    return this.boundingBoxHeirarchy.isWithinFrustum(frustum, inclusive);
   }
 
   public destroy(): void {

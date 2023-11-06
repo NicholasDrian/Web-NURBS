@@ -44,7 +44,7 @@ export class PolyLine extends Geometry {
   }
 
   public isWithinFrustum(frustum: Frustum, inclusive: boolean): boolean {
-    throw new Error("Method not implemented.");
+    return this.boundingBoxHeirarchy.isWithinFrustum(frustum, inclusive);
   }
 
   public updateLastPoint(point: Vec3): void {

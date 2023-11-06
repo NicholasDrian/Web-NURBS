@@ -44,9 +44,10 @@ export class MouseHandler {
           if (!this.shiftDown) INSTANCE.getSelector().reset();
           INSTANCE.getSelector().toggleSelectionAtPixel(event.clientX, event.clientY, this.controlDown);
         }
-      } else {
+      } else { // drag
         if (!this.shiftDown) INSTANCE.getSelector().reset();
-        // TODO: frustum selection
+        const inclusive: boolean = this.drag!.isLeftward();
+        INSTANCE.getSelector().selectInRectangle(...this.drag!.getBounds(), inclusive, false);
       }
       this.drag!.destroy();
       this.drag = null;
@@ -91,6 +92,19 @@ class Drag {
 
   public isDrag(): boolean {
     return this.x1 != this.x2 || this.y1 != this.y2;
+  }
+
+  public isLeftward(): boolean {
+    return this.x2 < this.x1;
+  }
+
+  public getBounds(): [number, number, number, number] {
+    return [
+      Math.min(this.x1, this.x2),
+      Math.max(this.x1, this.x2),
+      Math.min(this.y1, this.y2),
+      Math.max(this.y1, this.y2),
+    ]
   }
 
   public destroy(): void {

@@ -113,7 +113,7 @@ export class Surface extends Geometry {
   }
 
   public isWithinFrustum(frustum: Frustum, inclusive: boolean): boolean {
-    throw new Error("Method not implemented.");
+    return this.mesh!.isWithinFrustum(frustum, inclusive);
   }
 
   public sample(u: number, v: number): Vec3 {

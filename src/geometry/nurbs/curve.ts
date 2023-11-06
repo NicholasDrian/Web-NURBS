@@ -168,7 +168,7 @@ export class Curve extends Geometry {
   }
 
   public isWithinFrustum(frustum: Frustum, inclusive: boolean): boolean {
-    throw new Error("Method not implemented.");
+    return this.polyline!.isWithinFrustum(frustum, inclusive);
   }
 
   public elevateDegree(n: number): void {

@@ -54,7 +54,9 @@ export class Line extends Geometry {
   }
 
   public isWithinFrustum(frustum: Frustum, inclusive: boolean): boolean {
-    throw new Error("Method not implemented.");
+    console.log("Chicking if line is in frustum");
+    if (inclusive) return frustum.containsLinePartially(this.start, this.end);
+    return frustum.containsLineFully(this.start, this.end);
   }
 
   public delete(): void {
