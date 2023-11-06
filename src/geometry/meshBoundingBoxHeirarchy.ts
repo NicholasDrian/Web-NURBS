@@ -1,6 +1,7 @@
 import { vec3, Vec3 } from "wgpu-matrix";
 import { ObjectID } from "../scene/scene";
 import { BoundingBox } from "./boundingBox";
+import { Frustum } from "./frustum";
 import { Intersection } from "./intersection";
 import { Mesh } from "./mesh";
 import { Ray } from "./ray";
@@ -87,6 +88,10 @@ class MeshBoundingBoxHeirarchyNode {
     }
   }
 
+  public isWithinFrustum(frustum: Frustum, inclusive: boolean): boolean {
+    throw new Error("Method not implemented.");
+  }
+
   public intersect(ray: Ray, verts: Vec3[]): Intersection | null {
 
     if (ray.intersectBoundingBox(this.boundingBox) === null) return null;
@@ -144,6 +149,10 @@ export class MeshBoundingBoxHeirarchy {
 
   public firstIntersection(ray: Ray, verts: Vec3[]): Intersection | null {
     return this.root.intersect(ray, verts);
+  }
+
+  public isWithinFrustum(frustum: Frustum, inclusive: boolean): boolean {
+    return this.root.isWithinFrustum(frustum, inclusive);
   }
 
 

@@ -9,7 +9,6 @@ import { Frustum } from "./frustum";
 import { Geometry } from "./geometry";
 import { InstancedMeshBoundingBoxHeirarchy } from "./instancedMeshBoundingBoxHeirarchy";
 import { Intersection } from "./intersection";
-import { MeshBoundingBoxHeirarchy } from "./meshBoundingBoxHeirarchy";
 import { Ray } from "./ray";
 
 

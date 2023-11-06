@@ -64,6 +64,22 @@ export class Frustum {
 
   }
 
+  public containsTriangle(p1: Vec3, p2: Vec3, p3: Vec3, inclusive: boolean) {
+    if (inclusive) {
+      const tr: Ray = new Ray(this.origin, vec3.cross(this.up, this.right));
+      if (tr.intersectTriangle(p1, p2, p3)) return true;
+      const br: Ray = new Ray(this.origin, vec3.cross(this.right, this.down));
+      if (br.intersectTriangle(p1, p2, p3)) return true;
+      const bl: Ray = new Ray(this.origin, vec3.cross(this.down, this.left));
+      if (bl.intersectTriangle(p1, p2, p3)) return true;
+      const tl: Ray = new Ray(this.origin, vec3.cross(this.left, this.up));
+      if (tl.intersectTriangle(p1, p2, p3)) return true;
+      return this.containsPoint(p1) || this.containsPoint(p2) || this.containsPoint(p3);
+    } else {
+      return this.containsPoint(p1) && this.containsPoint(p2) && this.containsPoint(p3);
+    }
+  }
+
   public intersectsBoundingBox(boundingBox: BoundingBox): boolean {
     // if frustum ray intersects boundingBox then there is an intersection
     const tr: Ray = new Ray(this.origin, vec3.cross(this.up, this.right));
