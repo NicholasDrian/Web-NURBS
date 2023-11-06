@@ -3,6 +3,7 @@ import { INSTANCE } from "../cad";
 import { Material, MaterialName } from "../materials/material";
 import { ObjectID } from "../scene/scene";
 import { BoundingBox } from "./boundingBox";
+import { Frustum } from "./frustum";
 import { Intersection } from "./intersection";
 import { Ray } from "./ray";
 
@@ -25,6 +26,7 @@ export abstract class Geometry {
   public abstract getBoundingBox(): BoundingBox;
   public abstract getTypeName(): string;
   public abstract intersect(ray: Ray): Intersection | null;
+  public abstract isWithinFrustum(frustum: Frustum, inclusive: boolean): boolean;
 
   public setModel(model: Mat4): void {
     this.model = model;

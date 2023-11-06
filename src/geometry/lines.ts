@@ -4,6 +4,7 @@ import { MaterialName } from "../materials/material";
 import { RenderLines } from "../render/renderLines";
 import { RenderID } from "../scene/scene";
 import { BoundingBox } from "./boundingBox";
+import { Frustum } from "./frustum";
 import { Geometry } from "./geometry";
 import { Intersection } from "./intersection";
 import { LineBoundingBoxHeirarchy } from "./lineBoundingBoxHeirarchy";
@@ -38,6 +39,10 @@ export class Lines extends Geometry {
 
   public getSegmentCount(): number {
     return this.indices.length / 2;
+  }
+
+  public isWithinFrustum(frustum: Frustum, inclusive: boolean): boolean {
+    throw new Error("Method not implemented.");
   }
 
   public override getTypeName(): string {

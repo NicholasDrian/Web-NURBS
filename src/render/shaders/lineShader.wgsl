@@ -17,7 +17,7 @@ const CONSTANT_SCREEN_SIZE_BIT: i32 = 1 << 0;
 const HOVER_BIT: i32 = 1 << 1;
 const SELECTED_BIT: i32 = 1 << 2;
 
-const STRIPE_WIDTH: f32 = 4.0;
+const STRIPE_WIDTH: f32 = 10.0;
 
 @vertex
 fn vertexMain(
@@ -64,7 +64,7 @@ fn fragmentMain(inputs: FragInputs) -> FragOutputs {
 
   var output: FragOutputs;
   output.color = fragColor;
-  output.depth = inputs.fragCoords.z * 0.9999999;
+  output.depth = inputs.fragCoords.z * 0.99999;
   return output;
 }
 

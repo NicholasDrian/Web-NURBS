@@ -1,6 +1,7 @@
 import { Mat4, vec3, Vec3, vec4, Vec4 } from "wgpu-matrix";
 import { MaterialName } from "../../materials/material";
 import { BoundingBox } from "../boundingBox";
+import { Frustum } from "../frustum";
 import { Geometry } from "../geometry";
 import { Intersection } from "../intersection";
 import { Points } from "../points";
@@ -164,6 +165,10 @@ export class Curve extends Geometry {
 
   public override getTypeName(): string {
     return "Curve";
+  }
+
+  public isWithinFrustum(frustum: Frustum, inclusive: boolean): boolean {
+    throw new Error("Method not implemented.");
   }
 
   public elevateDegree(n: number): void {

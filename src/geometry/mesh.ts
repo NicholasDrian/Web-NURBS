@@ -4,6 +4,7 @@ import { MaterialName } from "../materials/material";
 import { RenderMesh } from "../render/renderMesh";
 import { RenderID } from "../scene/scene";
 import { BoundingBox } from "./boundingBox";
+import { Frustum } from "./frustum";
 import { Geometry } from "./geometry";
 import { Intersection } from "./intersection";
 import { MeshBoundingBoxHeirarchy } from "./meshBoundingBoxHeirarchy";
@@ -48,6 +49,10 @@ export class Mesh extends Geometry {
 
   public override getTypeName(): string {
     return "Mesh";
+  }
+
+  public isWithinFrustum(frustum: Frustum, inclusive: boolean): boolean {
+    throw new Error("Method not implemented.");
   }
 
   public destroy(): void {

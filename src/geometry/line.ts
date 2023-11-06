@@ -4,6 +4,7 @@ import { MaterialName } from "../materials/material";
 import { RenderLines } from "../render/renderLines";
 import { ObjectID, RenderID } from "../scene/scene";
 import { BoundingBox } from "./boundingBox";
+import { Frustum } from "./frustum";
 import { Geometry } from "./geometry";
 import { Intersection } from "./intersection";
 import { Ray } from "./ray";
@@ -50,6 +51,10 @@ export class Line extends Geometry {
 
   public override getTypeName(): string {
     return "Line";
+  }
+
+  public isWithinFrustum(frustum: Frustum, inclusive: boolean): boolean {
+    throw new Error("Method not implemented.");
   }
 
   public delete(): void {

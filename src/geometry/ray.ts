@@ -90,6 +90,7 @@ export class Ray {
 
   }
 
+  // always posotive
   public intersectBoundingBox(bb: BoundingBox): number | null {
 
     const min: Vec3 = vec3.create(bb.getXMin(), bb.getYMin(), bb.getZMin());

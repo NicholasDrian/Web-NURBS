@@ -5,6 +5,7 @@ import { Geometry } from "./geometry";
 import { Ray } from "./ray";
 import { InstancedMesh } from "./instancedMesh";
 import { Intersection } from "./intersection";
+import { Frustum } from "./frustum";
 
 
 const unitPointVerts: Vec3[] = [
@@ -78,6 +79,10 @@ export class Points extends Geometry {
 
   public override getTypeName(): string {
     return "Points";
+  }
+
+  public isWithinFrustum(frustum: Frustum, inclusive: boolean): boolean {
+    throw new Error("Method not implemented.");
   }
 
 

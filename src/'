@@ -74,34 +74,6 @@ class BBHNode {
     return res;
   }
 
-  public getAllGeometry(): ObjectID[] {
-    if (this.isLeaf()) return this.geometry!.map((geo: Geometry) => { return geo.getID(); });
-    return [...this.child1!.getAllGeometry(), ...this.child2!.getAllGeometry()];
-  }
-
-  public getWithinFrustum(frustum: Frustum, sub: boolean, inclusive: boolean): ObjectID[] {
-    if (frustum.containsBoundingBoxFully(this.boundingBox)) {
-      return this.getAllGeometry();
-    }
-    if (!frustum.intersectsBoundingBox(this.boundingBox)) {
-      return [];
-    }
-    if (this.isLeaf()) {
-      const res: ObjectID[] = [];
-      for (const geo of this.geometry!) {
-        if (geo.isWithinFrustum(frustum, inclusive)) {
-          res.push(geo.getID());
-        }
-      }
-      return res;
-    } else {
-      return [
-        ...this.child1!.getWithinFrustum(frustum, sub, inclusive),
-        ...this.child2!.getWithinFrustum(frustum, sub, inclusive)
-      ]
-    }
-  }
-
   public firstPositiveIntersection(ray: Ray): Intersection | null {
 
     if (ray.intersectBoundingBox(this.boundingBox) === null) return null;
@@ -210,8 +182,8 @@ export class SceneBoundingBoxHeirarchy {
     return res;
   }
 
-  public getWithinFrustum(frustum: Frustum, sub: boolean, inclusive: boolean): ObjectID[] {
-    return this.root.getWithinFrustum(frustum, sub, inclusive);
+  public getPartiallyWithinFrustum(frustum: Frustum, sub: boolean, inclusive: boolean): ObjectID[] {
+    throw new Error("not implemented");
   }
 
 

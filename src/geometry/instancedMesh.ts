@@ -5,6 +5,7 @@ import { RenderMesh } from "../render/renderMesh";
 import { RenderMeshInstanced } from "../render/renterMeshInstanced";
 import { RenderID } from "../scene/scene";
 import { BoundingBox } from "./boundingBox";
+import { Frustum } from "./frustum";
 import { Geometry } from "./geometry";
 import { InstancedMeshBoundingBoxHeirarchy } from "./instancedMeshBoundingBoxHeirarchy";
 import { Intersection } from "./intersection";
@@ -48,6 +49,10 @@ export class InstancedMesh extends Geometry {
   }
   public override getTypeName(): string {
     return "Instanced Mesh";
+  }
+
+  public isWithinFrustum(frustum: Frustum, inclusive: boolean): boolean {
+    throw new Error("Method not implemented.");
   }
 
   public getInstanceCount(): number {

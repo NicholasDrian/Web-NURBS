@@ -4,6 +4,7 @@ import { MaterialName } from "../materials/material";
 import { RenderLines } from "../render/renderLines";
 import { RenderID } from "../scene/scene";
 import { BoundingBox } from "./boundingBox";
+import { Frustum } from "./frustum";
 import { Geometry } from "./geometry";
 import { Intersection } from "./intersection";
 import { LineBoundingBoxHeirarchy } from "./lineBoundingBoxHeirarchy";
@@ -40,6 +41,10 @@ export class PolyLine extends Geometry {
   }
   public override getTypeName(): string {
     return "PolyLine";
+  }
+
+  public isWithinFrustum(frustum: Frustum, inclusive: boolean): boolean {
+    throw new Error("Method not implemented.");
   }
 
   public updateLastPoint(point: Vec3): void {

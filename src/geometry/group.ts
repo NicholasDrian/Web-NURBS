@@ -1,6 +1,7 @@
 import { Mat4, mat4 } from "wgpu-matrix";
 import { MaterialName } from "../materials/material";
 import { BoundingBox } from "./boundingBox";
+import { Frustum } from "./frustum";
 import { Geometry } from "./geometry";
 import { Intersection } from "./intersection";
 import { Ray } from "./ray";
@@ -25,6 +26,10 @@ export class Group extends Geometry {
   }
   public override getTypeName(): string {
     return "Group";
+  }
+
+  public isWithinFrustum(frustum: Frustum, inclusive: boolean): boolean {
+    throw new Error("Method not implemented.");
   }
 
   public override intersect(ray: Ray): Intersection | null {

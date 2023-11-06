@@ -64,6 +64,22 @@ export class Frustum {
 
   }
 
+  public intersectsBoundingBox(boundingBox: BoundingBox): boolean {
+    // if frustum ray intersects boundingBox then there is an intersection
+    const tr: Ray = new Ray(this.origin, vec3.cross(this.up, this.right));
+    if (tr.intersectBoundingBox(boundingBox)) return true;
+    const br: Ray = new Ray(this.origin, vec3.cross(this.right, this.down));
+    if (br.intersectBoundingBox(boundingBox)) return true;
+    const bl: Ray = new Ray(this.origin, vec3.cross(this.down, this.left));
+    if (bl.intersectBoundingBox(boundingBox)) return true;
+    const tl: Ray = new Ray(this.origin, vec3.cross(this.left, this.up));
+    if (tl.intersectBoundingBox(boundingBox)) return true;
+
+    if (this.containsBoundingBoxCorner(boundingBox)) return true;
+
+    return false;
+  }
+
   public containsBoundingBoxFully(bb: BoundingBox): boolean {
     const p000: Vec3 = vec3.create(bb.getXMin(), bb.getYMin(), bb.getZMin());
     const p001: Vec3 = vec3.create(bb.getXMin(), bb.getYMin(), bb.getZMax());
@@ -83,7 +99,8 @@ export class Frustum {
       this.containsPoint(p111);
   }
 
-  public containsBoundingBoxPartially(bb: BoundingBox): boolean {
+  private containsBoundingBoxCorner(bb: BoundingBox): boolean {
+    // TODO: fix this
     const p000: Vec3 = vec3.create(bb.getXMin(), bb.getYMin(), bb.getZMin());
     const p001: Vec3 = vec3.create(bb.getXMin(), bb.getYMin(), bb.getZMax());
     const p010: Vec3 = vec3.create(bb.getXMin(), bb.getYMax(), bb.getZMin());

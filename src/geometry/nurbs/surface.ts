@@ -1,6 +1,7 @@
 import { mat4, Mat4, vec3, Vec3, vec4, Vec4 } from "wgpu-matrix";
 import { MaterialName } from "../../materials/material";
 import { BoundingBox } from "../boundingBox";
+import { Frustum } from "../frustum";
 import { Geometry } from "../geometry";
 import { Intersection } from "../intersection";
 import { Mesh } from "../mesh";
@@ -109,6 +110,10 @@ export class Surface extends Geometry {
     }
 
     this.mesh = new Mesh(this, meshVerts, meshNormals, meshIndices);
+  }
+
+  public isWithinFrustum(frustum: Frustum, inclusive: boolean): boolean {
+    throw new Error("Method not implemented.");
   }
 
   public sample(u: number, v: number): Vec3 {
