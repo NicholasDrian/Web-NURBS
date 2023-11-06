@@ -50,21 +50,11 @@ export class Selector {
   }
 
   public selectAtPixel(x: number, y: number, sub: boolean): void {
+    console.log("selecting at pixel");
     if (this.selecting) return;
     this.selecting = true;
     const ray: Ray = INSTANCE.getScene().getCamera().getRayAtPixel(x, y);
     const intersections: Intersection[] = INSTANCE.getScene().getBoundingBoxHeirarchy().firstIntersectionsWithinMargin(ray, 5);
-    if (intersections.length == 0) {
-      this.doneSelecting();
-      return;
-    }
-    if (intersections.length == 1) {
-      if (intersections[0].object === 0) return;
-      const geo: Geometry = INSTANCE.getScene().getGeometry(intersections[0].object);
-      this.addToSelection(geo);
-      this.doneSelecting();
-      return;
-    }
     const list: HTMLElement = document.createElement("ul");
     this.element.innerHTML = "";
     this.element.appendChild(list);
@@ -72,14 +62,12 @@ export class Selector {
     for (let intersection of intersections) {
 
       if (intersection.object === 0) continue; // construction plane intersection
-
       let geo: Geometry = INSTANCE.getScene().getGeometry(intersection.object);
-
       if (sub) {
         while (geo.getParent()) geo = geo.getParent()!;
         if (found.has(geo)) continue;
-        found.add(geo);
       }
+      found.add(geo);
 
       const li = document.createElement("li");
       li.innerText = intersection.description;
@@ -95,6 +83,16 @@ export class Selector {
         geo.unHover();
       }
       list.appendChild(li);
+    }
+
+    if (found.size === 0) {
+      this.doneSelecting();
+      return;
+    }
+    if (found.size === 1) {
+      this.addToSelection(found.values().next().value);
+      this.doneSelecting();
+      return;
     }
 
     this.element.setAttribute("style", `

@@ -12,12 +12,13 @@ struct VertexOutput {
 @group(1) @binding(1) var<uniform> cameraViewProj: mat4x4<f32>;
 @group(1) @binding(2) var<uniform> selectionTransform: mat4x4<f32>;
 @group(1) @binding(3) var<uniform> resolution: vec2<f32>;
+// TODO: why is resolution.x 0? 
 
 const CONSTANT_SCREEN_SIZE_BIT: i32 = 1 << 0;
 const HOVER_BIT: i32 = 1 << 1;
 const SELECTED_BIT: i32 = 1 << 2;
 
-const STRIPE_WIDTH: f32 = 2.0;
+const STRIPE_WIDTH: f32 = 4.0;
 
 @vertex
 fn vertexMain(
@@ -41,28 +42,28 @@ struct FragInputs {
 fn fragmentMain(inputs: FragInputs) -> @location(0) vec4f {
 
   var normalizedNormal: vec3<f32> = normalize(inputs.normal.xyz);
-  var res: vec4<f32> = vec4<f32>(normalizedNormal/2.0 + vec3<f32>(0.5, 0.5, 0.5), 1.0);
+  var fragColor: vec4<f32> = vec4<f32>(normalizedNormal/2.0 + vec3<f32>(0.5, 0.5, 0.5), 1.0);
 
-  var pixelCoord: vec2<f32> = (inputs.fragCoords.xy * 0.5 + vec2<f32>(0.5, 0.5)) * resolution;
-  var scaledPixelCoord: vec2<f32> = pixelCoord / STRIPE_WIDTH;
-  // why is resolution.x 0? 
-
-
+  var scaledFragCoords: vec2<f32> = inputs.fragCoords.xy / STRIPE_WIDTH;
   if ((flags & SELECTED_BIT) == SELECTED_BIT) {
     
-    if (modf(scaledPixelCoord.y).fract < 0.5) {
-      res = vec4<f32>(0.0, 0.0, 0.0, 1.0);
-    }
+      var evenX: bool = modf(scaledFragCoords.x).fract < 0.5;
+      var evenY: bool = modf(scaledFragCoords.y).fract < 0.5;
+      if ((evenX && !evenY) || (evenY && !evenX)) {
+        fragColor = vec4<f32>(1.0, 1.0, 0.0, 1.0);
+      }
    
   }
   if ((flags & HOVER_BIT) == HOVER_BIT) {
 
-    if (modf(scaledPixelCoord.y).fract < 0.5) {
-      res = vec4<f32>(1.0, 1.0, 0.0, 1.0);
-    }
+      var evenX: bool = modf(scaledFragCoords.x).fract < 0.5;
+      var evenY: bool = modf(scaledFragCoords.y).fract < 0.5;
+      if ((evenX && !evenY) || (evenY && !evenX)) {
+        fragColor = vec4<f32>(0.0, 0.0, 1.0, 1.0);
+      }
 
   }
-  return res;
+  return fragColor;
 
 }
 
