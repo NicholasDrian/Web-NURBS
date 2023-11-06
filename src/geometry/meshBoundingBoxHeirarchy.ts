@@ -22,7 +22,7 @@ class MeshBoundingBoxHeirarchyNode {
 
   constructor(
     private id: ObjectID,
-    verts: Vec3[],
+    private verts: Vec3[],
     indices: number[],
     private depth: number = 0
   ) {
@@ -89,7 +89,35 @@ class MeshBoundingBoxHeirarchyNode {
   }
 
   public isWithinFrustum(frustum: Frustum, inclusive: boolean): boolean {
-    throw new Error("Method not implemented.");
+
+    if (frustum.containsBoundingBoxFully(this.boundingBox)) return true;
+
+    if (!frustum.intersectsBoundingBox(this.boundingBox)) return false;
+
+    if (this.isLeaf()) {
+      if (inclusive) {
+        for (let i = 0; i < this.indices!.length; i += 3) {
+          if (frustum.containsTriangle(this.verts[i], this.verts[i + 1], this.verts[i + 2], inclusive)) {
+            return true;
+          }
+        }
+        return false;
+      } else {
+        for (let i = 0; i < this.indices!.length; i += 3) {
+          if (!frustum.containsTriangle(this.verts[i], this.verts[i + 1], this.verts[1 + 2], inclusive)) {
+            return false;
+          }
+        }
+        return true;
+      }
+    } else {
+      if (inclusive) {
+        return this.child1!.isWithinFrustum(frustum, inclusive) || this.child2!.isWithinFrustum(frustum, inclusive);
+      } else {
+        return this.child1!.isWithinFrustum(frustum, inclusive) && this.child2!.isWithinFrustum(frustum, inclusive);
+      }
+    }
+
   }
 
   public intersect(ray: Ray, verts: Vec3[]): Intersection | null {

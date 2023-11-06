@@ -34,18 +34,18 @@ export class Frustum {
       vec3.dot(this.left, v) > 0;
   }
 
-  public containsLineFully(line: Line): boolean {
-    return this.containsPoint(line.getStart()) && this.containsPoint(line.getEnd());
+  public containsLineFully(a: Vec3, b: Vec3): boolean {
+    return this.containsPoint(a) && this.containsPoint(b);
   }
 
-  public containsLinePartially(line: Line): boolean {
+  public containsLinePartially(a: Vec3, b: Vec3): boolean {
 
-    var dir: Vec3 = vec3.sub(line.getEnd(), line.getStart());
+    var dir: Vec3 = vec3.sub(b, a);
 
     const size: number = vec3.length(dir);
     dir = vec3.scale(dir, 1 / size);
 
-    const r: Ray = new Ray(line.getStart(), dir);
+    const r: Ray = new Ray(a, dir);
 
     const tUp: number = r.intersectPlane(new Plane(this.origin, this.up)) ?? 0;
     const tRight: number = r.intersectPlane(new Plane(this.origin, this.right)) ?? 0;

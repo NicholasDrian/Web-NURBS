@@ -1,7 +1,9 @@
 import { vec3, Vec3 } from "wgpu-matrix";
 import { ObjectID } from "../scene/scene";
 import { BoundingBox } from "./boundingBox";
+import { Frustum } from "./frustum";
 import { Intersection } from "./intersection";
+import { Line } from "./line";
 import { Lines } from "./lines";
 import { Ray } from "./ray";
 
@@ -21,7 +23,7 @@ class LineBoundingBoxHeirarchyNode {
 
   constructor(
     private id: ObjectID,
-    verts: Vec3[],
+    private verts: Vec3[],
     indices: number[],
     private depth: number = 0
   ) {
@@ -66,6 +68,30 @@ class LineBoundingBoxHeirarchyNode {
 
       this.child1 = new LineBoundingBoxHeirarchyNode(this.id, verts, child1Indices, this.depth + 1);
       this.child2 = new LineBoundingBoxHeirarchyNode(this.id, verts, child2Indices, this.depth + 1);
+    }
+  }
+
+  isWithinFrustum(frustum: Frustum, inclusive: boolean): boolean {
+    if (frustum.containsBoundingBoxFully(this.boundingBox)) return true;
+    if (!frustum.intersectsBoundingBox(this.boundingBox)) return false;
+    if (this.isLeaf()) {
+      if (inclusive) {
+        for (let i = 0; i < this.indices!.length; i += 2) {
+          if (frustum.containsLinePartially(this.verts[i], this.verts[i + 1])) return true;
+        }
+        return false;
+      } else {
+        for (let i = 0; i < this.indices!.length; i += 2) {
+          if (!frustum.containsLineFully(this.verts[i], this.verts[i + 1])) return false;
+        }
+        return true;
+      }
+    } else {
+      if (inclusive) {
+        return this.child1!.isWithinFrustum(frustum, inclusive) || this.child2!.isWithinFrustum(frustum, inclusive);
+      } else {
+        return this.child1!.isWithinFrustum(frustum, inclusive) && this.child2!.isWithinFrustum(frustum, inclusive);
+      }
     }
   }
 
@@ -136,5 +162,9 @@ export class LineBoundingBoxHeirarchy {
 
   public almostIntersect(ray: Ray, verts: Vec3[], pixels: number): Intersection | null {
     return this.root.almostIntersect(ray, verts, pixels);
+  }
+
+  public isWithinFrustum(frustum: Frustum, inclusive: boolean): boolean {
+    return this.root.isWithinFrustum(frustum, inclusive);
   }
 }
