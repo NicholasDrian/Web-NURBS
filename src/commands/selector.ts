@@ -50,12 +50,14 @@ export class Selector {
   }
 
   public selectAtPixel(x: number, y: number, sub: boolean): void {
-    console.log("here");
     if (this.selecting) return;
     this.selecting = true;
     const ray: Ray = INSTANCE.getScene().getCamera().getRayAtPixel(x, y);
     const intersections: Intersection[] = INSTANCE.getScene().getBoundingBoxHeirarchy().firstIntersectionsWithinMargin(ray, 5);
-    if (intersections.length == 0) return;
+    if (intersections.length == 0) {
+      this.doneSelecting();
+      return;
+    }
     if (intersections.length == 1) {
       if (intersections[0].object === 0) return;
       const geo: Geometry = INSTANCE.getScene().getGeometry(intersections[0].object);
@@ -71,7 +73,7 @@ export class Selector {
 
       if (intersection.object === 0) continue; // construction plane intersection
 
-      var geo: Geometry = INSTANCE.getScene().getGeometry(intersection.object);
+      let geo: Geometry = INSTANCE.getScene().getGeometry(intersection.object);
 
       if (sub) {
         while (geo.getParent()) geo = geo.getParent()!;
@@ -107,6 +109,7 @@ export class Selector {
   public doneSelecting(): void {
     this.selecting = false;
     this.element.hidden = true;
+    console.log(this.selection);
   }
 
   public unSelectAtPixel(x: number, y: number, sub: boolean): void {

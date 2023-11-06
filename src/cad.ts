@@ -52,7 +52,7 @@ class CAD {
     this.materialManager = new MaterialManager();
 
     this.scene = new Scene();
-    await this.scene.init();
+    this.scene.init();
 
     this.eventManager = new EventManager();
     this.log = new Log();
