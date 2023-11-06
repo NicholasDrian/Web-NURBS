@@ -40,8 +40,9 @@ export class MouseHandler {
           INSTANCE.getCommandManager().handleClickInput();
           INSTANCE.getCli().render();
         } else {
+          if (this.shiftDown) console.log("shift click");
           if (!this.shiftDown) INSTANCE.getSelector().reset();
-          INSTANCE.getSelector().selectAtPixel(event.clientX, event.clientY, this.controlDown);
+          INSTANCE.getSelector().toggleSelectionAtPixel(event.clientX, event.clientY, this.controlDown);
         }
       } else {
         if (!this.shiftDown) INSTANCE.getSelector().reset();

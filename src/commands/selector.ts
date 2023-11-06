@@ -49,7 +49,15 @@ export class Selector {
     }
   }
 
-  public selectAtPixel(x: number, y: number, sub: boolean): void {
+  public removeFromSelection(...geometry: Geometry[]): void {
+    for (let geo of geometry) {
+      this.selection.delete(geo.getID());
+      geo.unSelect();
+    }
+    console.log("removing from selectin");
+  }
+
+  public toggleSelectionAtPixel(x: number, y: number, sub: boolean): void {
     console.log("selecting at pixel");
     if (this.selecting) return;
     this.selecting = true;
@@ -58,39 +66,44 @@ export class Selector {
     const list: HTMLElement = document.createElement("ul");
     this.element.innerHTML = "";
     this.element.appendChild(list);
-    const found: Set<Geometry> = new Set<Geometry>;
+    const geometryAtPixel: Set<Geometry> = new Set<Geometry>;
     for (let intersection of intersections) {
 
       if (intersection.object === 0) continue; // construction plane intersection
       let geo: Geometry = INSTANCE.getScene().getGeometry(intersection.object);
       if (sub) {
         while (geo.getParent()) geo = geo.getParent()!;
-        if (found.has(geo)) continue;
+        if (geometryAtPixel.has(geo)) continue;
       }
-      found.add(geo);
+      geometryAtPixel.add(geo);
 
       const li = document.createElement("li");
       li.innerText = intersection.description;
       li.onclick = function() {
         geo.unHover();
-        INSTANCE.getSelector().addToSelection(geo);
+        if (geo.isSelected()) {
+          INSTANCE.getSelector().removeFromSelection(geo);
+        } else {
+          INSTANCE.getSelector().addToSelection(geo);
+        }
         INSTANCE.getSelector().doneSelecting();
       };
-      li.onmouseover = function() {
-        geo.hover();
-      };
-      li.onmouseleave = function() {
-        geo.unHover();
-      }
+      li.onmouseover = function() { geo.hover(); };
+      li.onmouseleave = function() { geo.unHover(); }
       list.appendChild(li);
     }
 
-    if (found.size === 0) {
+    if (geometryAtPixel.size === 0) {
       this.doneSelecting();
       return;
     }
-    if (found.size === 1) {
-      this.addToSelection(found.values().next().value);
+    if (geometryAtPixel.size === 1) {
+      const geo: Geometry = geometryAtPixel.values().next().value;
+      if (geo.isSelected()) {
+        INSTANCE.getSelector().removeFromSelection(geo);
+      } else {
+        INSTANCE.getSelector().addToSelection(geo);
+      }
       this.doneSelecting();
       return;
     }
@@ -108,10 +121,6 @@ export class Selector {
     this.selecting = false;
     this.element.hidden = true;
     console.log(this.selection);
-  }
-
-  public unSelectAtPixel(x: number, y: number, sub: boolean): void {
-
   }
 
   public selectInRectangle(left: number, top: number, right: number, bottom: number, inclusive: boolean, sub: boolean): void {

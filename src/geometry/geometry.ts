@@ -51,6 +51,7 @@ export abstract class Geometry {
   // find parent and select it. return id of selected object
   public select(): void {
     this.selected = true;
+    console.log("selecting", this.getID());
   }
 
   public unSelect(): void {
