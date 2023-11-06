@@ -1,5 +1,6 @@
 import { mat4, Mat4 } from "wgpu-matrix";
 import { INSTANCE } from "../cad";
+import { Frustum } from "../geometry/frustum";
 import { Geometry } from "../geometry/geometry";
 import { Intersection } from "../geometry/intersection";
 import { Ray } from "../geometry/ray";
@@ -54,7 +55,6 @@ export class Selector {
       this.selection.delete(geo.getID());
       geo.unSelect();
     }
-    console.log("removing from selectin");
   }
 
   public toggleSelectionAtPixel(x: number, y: number, sub: boolean): void {
@@ -124,11 +124,21 @@ export class Selector {
   }
 
   public selectInRectangle(left: number, top: number, right: number, bottom: number, inclusive: boolean, sub: boolean): void {
-
+    const frustum: Frustum = new Frustum(left, right, top, bottom);
+    const within: ObjectID[] = INSTANCE.getScene().getBoundingBoxHeirarchy().getWithinFrustum(frustum, sub, inclusive);
+    for (const obj of within) {
+      const geo: Geometry = INSTANCE.getScene().getGeometry(obj);
+      this.addToSelection(geo);
+    }
   }
 
   public unSelectInRectangle(left: number, top: number, right: number, bottom: number, inclusive: boolean, sub: boolean): void {
-
+    const frustum: Frustum = new Frustum(left, right, top, bottom);
+    const within: ObjectID[] = INSTANCE.getScene().getBoundingBoxHeirarchy().getWithinFrustum(frustum, sub, inclusive);
+    for (const obj of within) {
+      const geo: Geometry = INSTANCE.getScene().getGeometry(obj);
+      this.removeFromSelection(geo);
+    }
   }
 
   public getSelection(): Set<ObjectID> {

@@ -107,6 +107,9 @@ class InstancedMeshBoundingBoxHeirarchyNode {
 
 }
 
+
+// TODO: think about subid...
+
 export class InstancedMeshBoundingBoxHeirarchy {
 
   public static readonly MAX_INSTANCES_PER_LEAF = 5;
@@ -139,5 +142,6 @@ export class InstancedMeshBoundingBoxHeirarchy {
     const objectSpaceRay: Ray = Ray.transform(ray, mat4.inverse(this.mesh.getTransform(instance)));
     return this.meshBBH.firstIntersection(objectSpaceRay, this.mesh.getVerts());
   }
+
 
 }
