@@ -64,9 +64,9 @@ class CAD {
     this.selector = new Selector();
 
 
-    // addTestSceneComplex();
-    addTestSceneLine();
-    //addTestSceneCurve();
+    addTestSceneComplex();
+    // addTestSceneLine();
+    // addTestSceneCurve();
   }
 
   public async run() {

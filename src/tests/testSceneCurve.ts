@@ -8,10 +8,10 @@ export const addTestSceneCurve = function() {
 
   const curve1: Curve = new Curve(
     null, [
-    vec4.create(-50, -50, 0, 1),
-    vec4.create(-50, 50, 0, 1),
-    vec4.create(50, 50, 0, 1),
-    vec4.create(50, -50, 0, 1)
+    vec4.create(-30, -30, 10, 1),
+    vec4.create(-30, 30, 10, 1),
+    vec4.create(30, 30, 10, 1),
+    vec4.create(30, -30, 10, 1)
   ],
     2
   );

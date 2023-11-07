@@ -47,7 +47,7 @@ export class Ray {
     }
     const t: number = numerator / denominator;
     if (allowNegative) return t;
-    if (t < 0) return null;
+    if (t <= 0) return null;
     return t;
   }
 
@@ -87,7 +87,7 @@ export class Ray {
     const start = Math.max(xMin, Math.max(yMin, zMin));
 
     if (end < 0 || start > end) return null;
-    return Math.max(start, 0.00001); // so its truthy
+    return Math.max(start, 0);
 
   }
 
@@ -108,13 +108,11 @@ export class Ray {
     var yMax: number = this.intersectPlane(new Plane(max, vec3.create(0, 1, 0)), true) ?? Infinity;
     var zMax: number = this.intersectPlane(new Plane(max, vec3.create(0, 0, 1)), true) ?? Infinity;
 
-    const end = Math.min(xMax, Math.min(yMax, zMax));
-    const start = Math.max(xMin, Math.max(yMin, zMin));
-
-    console.log("intersect bb start end", start, end);
+    const end = Math.min(xMax, Math.min(yMax, zMax)) + epsilon;
+    const start = Math.max(xMin, Math.max(yMin, zMin)) - epsilon;
 
     if (end < 0 || start > end) return null;
-    return Math.max(start, 0.00001); // so its truthy
+    return Math.max(start, 0);
 
   }
 
