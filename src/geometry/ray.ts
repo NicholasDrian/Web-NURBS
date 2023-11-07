@@ -155,6 +155,24 @@ export class Ray {
     );
   }
 
+  intersect(other: any): Vec3 {
+
+    const p: Vec3 = vec3.add(this.origin, this.direction);
+    const v13: Vec3 = vec3.sub(other.origin, this.origin);
+    const v43: Vec3 = vec3.sub(p, this.origin);
+    const v21: Vec3 = vec3.sub(vec3.add(other.origin, other.direction), other.origin);
+
+    const d1343: number = vec3.dot(v13, v43);
+    const d4321: number = vec3.dot(v43, v21);
+    const d1321: number = vec3.dot(v13, v21);
+    const d4343: number = vec3.dot(v43, v43);
+    const d2121: number = vec3.dot(v21, v21);
+
+    var mua: number = (d1343 * d4321 - d1321 * d4343) / (d2121 * d4343 - d4321 * d4321);
+
+    return vec3.add(other.origin, vec3.scale(v21, mua));
+  }
+
   public almostIntersectLine(id: ObjectID, start: Vec3, end: Vec3, pixels: number): Intersection | null {
 
     const p: Vec3 = vec3.add(this.origin, this.direction);

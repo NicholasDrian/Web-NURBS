@@ -11,7 +11,7 @@ export class MaterialManager {
   }
 
   private createDefaultMaterial(): void {
-    this.materials.set("default", new Material("default", vec4.create(0.4, 0.4, 0.4, 1.0)));
+    this.materials.set("default", new Material("default", vec4.create(1.0, 1.0, 1.0, 1.0)));
     this.materials.set("darker grey", new Material("darker grey", vec4.create(0.1, 0.1, 0.1, 1.0)));
     this.materials.set("dark grey", new Material("dark grey", vec4.create(0.3, 0.3, 0.3, 1.0)));
     this.materials.set("lighter grey", new Material("lighter grey", vec4.create(0.9, 0.9, 0.9, 1.0)));

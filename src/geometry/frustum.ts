@@ -24,7 +24,6 @@ export class Frustum {
     this.left = vec3.normalize(vec3.cross(bottomLeft.getDirection(), topLeft.getDirection()));
   }
 
-
   public containsPoint(point: Vec3): boolean {
     const v: Vec3 = vec3.sub(point, this.origin);
     return vec3.dot(this.up, v) > 0 &&
@@ -84,7 +83,6 @@ export class Frustum {
 
   public intersectsBoundingBox(bb: BoundingBox): boolean {
     const tr: Ray = new Ray(this.origin, vec3.cross(this.up, this.right));
-    console.log(tr);
     if (tr.intersectBoundingBox(bb) !== null) return true;
     const br: Ray = new Ray(this.origin, vec3.cross(this.right, this.down));
     if (br.intersectBoundingBox(bb) !== null) return true;
@@ -140,25 +138,6 @@ export class Frustum {
       this.containsPoint(p111);
   }
 
-  private containsBoundingBoxCorner(bb: BoundingBox): boolean {
-    // TODO: fix this
-    const p000: Vec3 = vec3.create(bb.getXMin(), bb.getYMin(), bb.getZMin());
-    const p001: Vec3 = vec3.create(bb.getXMin(), bb.getYMin(), bb.getZMax());
-    const p010: Vec3 = vec3.create(bb.getXMin(), bb.getYMax(), bb.getZMin());
-    const p011: Vec3 = vec3.create(bb.getXMin(), bb.getYMax(), bb.getZMax());
-    const p100: Vec3 = vec3.create(bb.getXMax(), bb.getYMin(), bb.getZMin());
-    const p101: Vec3 = vec3.create(bb.getXMax(), bb.getYMin(), bb.getZMax());
-    const p110: Vec3 = vec3.create(bb.getXMax(), bb.getYMax(), bb.getZMin());
-    const p111: Vec3 = vec3.create(bb.getXMax(), bb.getYMax(), bb.getZMax());
-    return this.containsPoint(p000) ||
-      this.containsPoint(p001) ||
-      this.containsPoint(p010) ||
-      this.containsPoint(p011) ||
-      this.containsPoint(p100) ||
-      this.containsPoint(p101) ||
-      this.containsPoint(p110) ||
-      this.containsPoint(p111);
-  }
 
   public print(): void {
     console.log("Frustum:");

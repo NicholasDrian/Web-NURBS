@@ -15,6 +15,7 @@ import { Selector } from "./commands/selector";
 import { addTestSceneLine } from "./tests/testSceneLine";
 import { addTestSceneComplex } from "./tests/testSceneComplex";
 import { addTestSceneCurve } from "./tests/testSceneCurve"
+import { addTestSceneArc } from "./tests/testSceneArc";
 
 /*
   * Browser Based NURBS Modeling Software
@@ -64,9 +65,11 @@ class CAD {
     this.selector = new Selector();
 
 
-    addTestSceneComplex();
+    //addTestSceneComplex();
     // addTestSceneLine();
     // addTestSceneCurve();
+    addTestSceneArc();
+
   }
 
   public async run() {
