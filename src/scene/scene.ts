@@ -61,7 +61,6 @@ export class Scene {
   }
 
   public addGeometry(geo: Geometry): void {
-    console.log(geo.getID(), "added");
     this.boundingBoxHeirarchy.add(geo);
     this.highLevelGeometry.set(geo.getID(), geo);
   }

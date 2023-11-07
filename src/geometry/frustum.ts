@@ -1,8 +1,6 @@
 import { vec3, Vec3 } from "wgpu-matrix";
 import { INSTANCE } from "../cad";
-import { printVec3 } from "../utils/print";
 import { BoundingBox } from "./boundingBox";
-import { Line } from "./line";
 import { Plane } from "./plane";
 import { Ray } from "./ray";
 
@@ -15,7 +13,6 @@ export class Frustum {
   private left: Vec3;
 
   constructor(left: number, right: number, top: number, bottom: number) {
-    console.log("frustum from", left, right, top, bottom);
     this.origin = INSTANCE.getScene().getCamera().getPosition();
     const topLeft: Ray = INSTANCE.getScene().getCamera().getRayAtPixel(left, top);
     const topRight: Ray = INSTANCE.getScene().getCamera().getRayAtPixel(right, top);
@@ -85,7 +82,6 @@ export class Frustum {
   public intersectsBoundingBox(boundingBox: BoundingBox): boolean {
     // if frustum ray intersects boundingBox then there is an intersection
     const tr: Ray = new Ray(this.origin, vec3.cross(this.up, this.right));
-    console.log(tr);
     if (tr.intersectBoundingBox(boundingBox)) return true;
     const br: Ray = new Ray(this.origin, vec3.cross(this.right, this.down));
     if (br.intersectBoundingBox(boundingBox)) return true;

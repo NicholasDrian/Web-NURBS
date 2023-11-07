@@ -3,8 +3,6 @@ import { ObjectID } from "../scene/scene";
 import { BoundingBox } from "./boundingBox";
 import { Frustum } from "./frustum";
 import { Intersection } from "./intersection";
-import { Line } from "./line";
-import { Lines } from "./lines";
 import { Ray } from "./ray";
 
 enum Axis {
@@ -77,12 +75,16 @@ class LineBoundingBoxHeirarchyNode {
     if (this.isLeaf()) {
       if (inclusive) {
         for (let i = 0; i < this.indices!.length; i += 2) {
-          if (frustum.containsLinePartially(this.verts[i], this.verts[i + 1])) return true;
+          if (frustum.containsLinePartially(
+            this.verts[this.indices![i]],
+            this.verts[this.indices![i + 1]])) return true;
         }
         return false;
       } else {
         for (let i = 0; i < this.indices!.length; i += 2) {
-          if (!frustum.containsLineFully(this.verts[i], this.verts[i + 1])) return false;
+          if (!frustum.containsLineFully(
+            this.verts[this.indices![i]],
+            this.verts[this.indices![i + 1]])) return false;
         }
         return true;
       }
@@ -149,7 +151,6 @@ export class LineBoundingBoxHeirarchy {
       const b: Vec3 = verts[indices[i + 1]];
       if (a[0] !== b[0] || a[1] !== b[1] || a[2] !== b[2]) {
         reducedIndices.push(indices[i], indices[i + 1]);
-        // console.log(verts[indices[i]], verts[indices[i + 1]]);
       }
     }
     this.root = new LineBoundingBoxHeirarchyNode(id, verts, reducedIndices);

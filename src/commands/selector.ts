@@ -58,7 +58,6 @@ export class Selector {
   }
 
   public toggleSelectionAtPixel(x: number, y: number, sub: boolean): void {
-    console.log("selecting at pixel");
     if (this.selecting) return;
     this.selecting = true;
     const ray: Ray = INSTANCE.getScene().getCamera().getRayAtPixel(x, y);
@@ -120,12 +119,10 @@ export class Selector {
   public doneSelecting(): void {
     this.selecting = false;
     this.element.hidden = true;
-    console.log(this.selection);
   }
 
   public selectInRectangle(left: number, right: number, top: number, bottom: number, inclusive: boolean, sub: boolean): void {
     const frustum: Frustum = new Frustum(left, right, top, bottom);
-    //frustum.print();
     const within: ObjectID[] = INSTANCE.getScene().getBoundingBoxHeirarchy().getWithinFrustum(frustum, sub, inclusive);
     for (const obj of within) {
       const geo: Geometry = INSTANCE.getScene().getGeometry(obj);
