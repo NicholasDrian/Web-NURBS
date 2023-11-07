@@ -2,6 +2,7 @@ import { Vec3 } from "wgpu-matrix";
 import { INSTANCE } from "../cad";
 import { Intersection } from "../geometry/intersection";
 import { Command } from "./command";
+import { ArcCommand } from "./commands/arcCommand";
 import { CameraCommand } from "./commands/cameraCommand";
 import { CircleCommand } from "./commands/circleCommand";
 import { ConstructionPlaneCommand } from "./commands/constructionPlaneCommand";
@@ -61,6 +62,9 @@ export class CommandManager {
           break;
         case "circle": case "ci":
           this.currentCommand = new CircleCommand();
+          break;
+        case "arc": case "a":
+          this.currentCommand = new ArcCommand();
           break;
         default: INSTANCE.getLog().log("Invalid Command");
       }
