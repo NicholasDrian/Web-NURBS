@@ -7,12 +7,14 @@ import { OperatingMode } from "./mode"
 import { CLI } from "./commands/cli"
 import { Log } from "./log";
 import { CommandManager } from "./commands/commandManager";
-import { addTestScene1 } from "./tests/testScene1";
 import { WindowManager } from "./window/windowManager";
 import { SettingsManager } from "./settings/settingsManager";
 import { MaterialManager } from "./materials/materialManager";
-import { addTestScene2 } from "./tests/testScene2";
 import { Selector } from "./commands/selector";
+
+import { addTestSceneLine } from "./tests/testSceneLine";
+import { addTestSceneComplex } from "./tests/testSceneComplex";
+import { addTestSceneCurve } from "./tests/testSceneCurve"
 
 /*
   * Browser Based NURBS Modeling Software
@@ -62,8 +64,9 @@ class CAD {
     this.selector = new Selector();
 
 
-    addTestScene1();
-    // addTestScene2();
+    // addTestSceneComplex();
+    // addTestSceneLine();
+    addTestSceneCurve();
   }
 
   public async run() {

@@ -5,7 +5,7 @@ import { Curve } from "../geometry/nurbs/curve";
 import { loft } from "../geometry/nurbs/loft";
 import { Surface } from "../geometry/nurbs/surface";
 
-export const addTestScene1 = function() {
+export const addTestSceneComplex = function() {
 
   const mesh: Mesh = new Mesh(
     null,
