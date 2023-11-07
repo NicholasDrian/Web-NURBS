@@ -38,6 +38,7 @@ export class Frustum {
   }
 
   public containsLinePartially(a: Vec3, b: Vec3): boolean {
+    console.log("testing contains line partially");
 
     var dir: Vec3 = vec3.sub(b, a);
 
@@ -66,33 +67,59 @@ export class Frustum {
   public containsTriangle(p1: Vec3, p2: Vec3, p3: Vec3, inclusive: boolean) {
     if (inclusive) {
       const tr: Ray = new Ray(this.origin, vec3.cross(this.up, this.right));
-      if (tr.intersectTriangle(p1, p2, p3)) return true;
+      if (tr.intersectTriangle(p1, p2, p2)) return true;
       const br: Ray = new Ray(this.origin, vec3.cross(this.right, this.down));
-      if (br.intersectTriangle(p1, p2, p3)) return true;
+      if (br.intersectTriangle(p1, p2, p2)) return true;
       const bl: Ray = new Ray(this.origin, vec3.cross(this.down, this.left));
-      if (bl.intersectTriangle(p1, p2, p3)) return true;
+      if (bl.intersectTriangle(p1, p2, p2)) return true;
       const tl: Ray = new Ray(this.origin, vec3.cross(this.left, this.up));
-      if (tl.intersectTriangle(p1, p2, p3)) return true;
-      return this.containsPoint(p1) || this.containsPoint(p2) || this.containsPoint(p3);
+      if (tl.intersectTriangle(p1, p2, p2)) return true;
+      if (this.containsLinePartially(p1, p2)) return true;
+      if (this.containsLinePartially(p2, p3)) return true;
+      if (this.containsLinePartially(p3, p1)) return true;
+      return false;
     } else {
       return this.containsPoint(p1) && this.containsPoint(p2) && this.containsPoint(p3);
     }
   }
 
-  public intersectsBoundingBox(boundingBox: BoundingBox): boolean {
+  public intersectsBoundingBox(bb: BoundingBox): boolean {
     // if frustum ray intersects boundingBox then there is an intersection
     const tr: Ray = new Ray(this.origin, vec3.cross(this.up, this.right));
-    if (tr.intersectBoundingBox(boundingBox)) return true;
+    if (tr.intersectBoundingBox(bb)) return true;
     const br: Ray = new Ray(this.origin, vec3.cross(this.right, this.down));
-    if (br.intersectBoundingBox(boundingBox)) return true;
+    if (br.intersectBoundingBox(bb)) return true;
     const bl: Ray = new Ray(this.origin, vec3.cross(this.down, this.left));
-    if (bl.intersectBoundingBox(boundingBox)) return true;
+    if (bl.intersectBoundingBox(bb)) return true;
     const tl: Ray = new Ray(this.origin, vec3.cross(this.left, this.up));
-    if (tl.intersectBoundingBox(boundingBox)) return true;
+    if (tl.intersectBoundingBox(bb)) return true;
 
-    if (this.containsBoundingBoxCorner(boundingBox)) return true;
 
-    return false;
+    const p000: Vec3 = vec3.create(bb.getXMin(), bb.getYMin(), bb.getZMin());
+    const p001: Vec3 = vec3.create(bb.getXMin(), bb.getYMin(), bb.getZMax());
+    const p010: Vec3 = vec3.create(bb.getXMin(), bb.getYMax(), bb.getZMin());
+    const p011: Vec3 = vec3.create(bb.getXMin(), bb.getYMax(), bb.getZMax());
+    const p100: Vec3 = vec3.create(bb.getXMax(), bb.getYMin(), bb.getZMin());
+    const p101: Vec3 = vec3.create(bb.getXMax(), bb.getYMin(), bb.getZMax());
+    const p110: Vec3 = vec3.create(bb.getXMax(), bb.getYMax(), bb.getZMin());
+    const p111: Vec3 = vec3.create(bb.getXMax(), bb.getYMax(), bb.getZMax());
+
+    return this.containsLinePartially(p000, p100) ||
+      this.containsLinePartially(p000, p010) ||
+      this.containsLinePartially(p000, p001) ||
+
+      this.containsLinePartially(p110, p010) ||
+      this.containsLinePartially(p110, p100) ||
+      this.containsLinePartially(p110, p111) ||
+
+      this.containsLinePartially(p011, p111) ||
+      this.containsLinePartially(p011, p001) ||
+      this.containsLinePartially(p011, p010) ||
+
+      this.containsLinePartially(p101, p001) ||
+      this.containsLinePartially(p101, p111) ||
+      this.containsLinePartially(p101, p100);
+
   }
 
   public containsBoundingBoxFully(bb: BoundingBox): boolean {

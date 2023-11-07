@@ -80,12 +80,16 @@ class BBHNode {
   }
 
   public getWithinFrustum(frustum: Frustum, sub: boolean, inclusive: boolean): ObjectID[] {
+    console.log("testing node in frustum");
     if (frustum.containsBoundingBoxFully(this.boundingBox)) {
       return this.getAllGeometry();
     }
+    console.log(1);
+    this.boundingBox.print();
     if (!frustum.intersectsBoundingBox(this.boundingBox)) {
       return [];
     }
+    console.log(2);
     if (this.isLeaf()) {
       const res: ObjectID[] = [];
       for (const geo of this.geometry!) {
@@ -211,6 +215,7 @@ export class SceneBoundingBoxHeirarchy {
   }
 
   public getWithinFrustum(frustum: Frustum, sub: boolean, inclusive: boolean): ObjectID[] {
+    console.log("testing scene in frustum");
     return this.root.getWithinFrustum(frustum, sub, inclusive);
   }
 

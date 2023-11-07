@@ -65,8 +65,8 @@ class CAD {
 
 
     // addTestSceneComplex();
-    // addTestSceneLine();
-    addTestSceneCurve();
+    addTestSceneLine();
+    //addTestSceneCurve();
   }
 
   public async run() {

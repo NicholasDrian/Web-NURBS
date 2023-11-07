@@ -30,7 +30,6 @@ export class Line extends Geometry {
 
   public intersect(ray: Ray): Intersection | null {
     const objectSpaceRay: Ray = Ray.transform(ray, mat4.inverse(this.getModel()));
-    objectSpaceRay.print();
     return objectSpaceRay.almostIntersectLine(this.getID(), this.start, this.end, 20);
   }
 
@@ -54,7 +53,7 @@ export class Line extends Geometry {
   }
 
   public isWithinFrustum(frustum: Frustum, inclusive: boolean): boolean {
-    console.log("Chicking if line is in frustum");
+    console.log("testing line in frustum");
     if (inclusive) return frustum.containsLinePartially(this.start, this.end);
     return frustum.containsLineFully(this.start, this.end);
   }
