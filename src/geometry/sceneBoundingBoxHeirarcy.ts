@@ -57,7 +57,7 @@ class BBHNode {
   }
   public firstIntersectionsWithinMargin(ray: Ray, margin: number): Intersection[] {
     const res: Intersection[] = [];
-    if (ray.almostIntersectBoundingBox(this.boundingBox, 20) === null) return res;
+    if (ray.almostIntersectBoundingBox(this.boundingBox, 10) === null) return res;
 
     if (this.isLeaf()) {
       this.geometry!.forEach((geo: Geometry) => {

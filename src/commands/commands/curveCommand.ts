@@ -1,7 +1,6 @@
 import { Vec3, vec4 } from "wgpu-matrix";
 import { INSTANCE } from "../../cad";
 import { Curve } from "../../geometry/nurbs/curve";
-import { Ray } from "../../geometry/ray";
 import { Command } from "../command";
 import { Clicker } from "../clicker";
 import { Intersection } from "../../geometry/intersection";

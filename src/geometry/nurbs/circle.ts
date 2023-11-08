@@ -34,7 +34,7 @@ export const createCircleThreePoints = function(a: Vec3, b: Vec3, c: Vec3): Curv
   return createCircleCenterNormalRadius(center, normal, radius);
 }
 
-export const createCircleCenterNormalRadius = function(center: Vec3, normal: Vec3, radius: number) {
+export const createCircleCenterNormalRadius = function(center: Vec3, normal: Vec3, radius: number): Curve {
   if (normal[2] < 0) normal = vec3.scale(normal, -1);
   const unitZ: Vec3 = vec3.create(0, 0, 1);
   var x: Vec3;
@@ -57,5 +57,6 @@ export const createCircleCenterNormalRadius = function(center: Vec3, normal: Vec
     center[0], center[1], center[2], 1
   );
   return new Curve(null, UNIT_CIRCLE_POINTS, UNIT_CIRCLE_DEGREE, UNIT_CIRCLE_KNOTS, model);
+
 }
 

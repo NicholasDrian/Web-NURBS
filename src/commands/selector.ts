@@ -81,13 +81,7 @@ export class Selector {
       const li = document.createElement("li");
       li.innerText = intersection.description;
       li.onclick = function() {
-        geo.unHover();
-        if (geo.isSelected()) {
-          INSTANCE.getSelector().removeFromSelection(geo);
-        } else {
-          INSTANCE.getSelector().addToSelection(geo);
-        }
-        INSTANCE.getSelector().doneSelecting();
+        INSTANCE.getSelector().doneTogglingSelectionAtPixel(geo);
       };
       li.onmouseover = function() { geo.hover(); };
       li.onmouseleave = function() { geo.unHover(); }
@@ -95,17 +89,12 @@ export class Selector {
     }
 
     if (geometryAtPixel.size === 0) {
-      this.doneSelecting();
+      this.doneTogglingSelectionAtPixel(null);
       return;
     }
     if (geometryAtPixel.size === 1) {
       const geo: Geometry = geometryAtPixel.values().next().value;
-      if (geo.isSelected()) {
-        INSTANCE.getSelector().removeFromSelection(geo);
-      } else {
-        INSTANCE.getSelector().addToSelection(geo);
-      }
-      this.doneSelecting();
+      this.doneTogglingSelectionAtPixel(geo);
       return;
     }
 
@@ -118,7 +107,15 @@ export class Selector {
     this.element.hidden = false;
   }
 
-  public doneSelecting(): void {
+  private doneTogglingSelectionAtPixel(geo: Geometry | null): void {
+    if (geo !== null) {
+      geo.unHover();
+      if (geo.isSelected()) {
+        INSTANCE.getSelector().removeFromSelection(geo);
+      } else {
+        INSTANCE.getSelector().addToSelection(geo);
+      }
+    }
     this.selecting = false;
     this.element.hidden = true;
   }

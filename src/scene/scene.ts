@@ -21,9 +21,8 @@ export class Scene {
   private renderPoints: Map<RenderID, RenderPoints> = new Map<RenderID, RenderPoints>();
   private renderMeshesInstanced: Map<RenderID, RenderMeshInstanced> = new Map<RenderID, RenderMeshInstanced>();
 
-  private highLevelGeometry: Map<ObjectID, Geometry> = new Map<ObjectID, Geometry>(); // stores geometry with no parents
+  private rootGeometry: Map<ObjectID, Geometry> = new Map<ObjectID, Geometry>(); // stores geometry with no parents
   private geometry: Map<ObjectID, Geometry> = new Map<ObjectID, Geometry>(); // stores all geometry
-
 
   private renderIDGenerator: RenderID = 1;
   private objectIDGenerator: ObjectID = 1;
@@ -42,6 +41,9 @@ export class Scene {
 
   }
 
+  getRootGeometry(): IterableIterator<Geometry> {
+    return this.rootGeometry.values()
+  }
 
   public getConstructionPlane(): ConstructionPlane {
     return this.constructionPlane;
@@ -62,7 +64,7 @@ export class Scene {
 
   public addGeometry(geo: Geometry): void {
     this.boundingBoxHeirarchy.add(geo);
-    this.highLevelGeometry.set(geo.getID(), geo);
+    this.rootGeometry.set(geo.getID(), geo);
   }
 
   public getGeometry(id: ObjectID): Geometry {

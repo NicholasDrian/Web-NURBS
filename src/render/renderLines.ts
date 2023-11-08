@@ -92,6 +92,7 @@ export class RenderLines {
   }
 
   private updateFlags(): void {
+
     if (this.parent.isSelected()) this.flags[0] |= SELECTED_BIT;
     else this.flags[0] &= ~SELECTED_BIT;
     if (this.parent.isHovered()) this.flags[0] |= HOVER_BIT;
@@ -103,7 +104,6 @@ export class RenderLines {
     const model: Mat4 = this.parent.getModel();
     swizzleYZ(model);
     INSTANCE.getRenderer().getDevice().queue.writeBuffer(this.modelBuffer, 0, <Float32Array>model);
-
   }
 
   private updateBindGroup(): void {

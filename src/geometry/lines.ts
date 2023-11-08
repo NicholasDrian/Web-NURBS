@@ -29,7 +29,7 @@ export class Lines extends Geometry {
   }
 
   public intersect(ray: Ray): Intersection | null {
-    return this.boundingBoxHeirarchy.almostIntersect(ray, 20);
+    return this.boundingBoxHeirarchy.almostIntersect(ray, 10);
   }
 
   public getBoundingBox(): BoundingBox {

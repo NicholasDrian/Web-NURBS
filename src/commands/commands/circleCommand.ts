@@ -131,6 +131,7 @@ export class CircleCommand extends Command {
           )
         );
         const radius: number = vec3.distance(this.v1, this.v2);
+        if (this.curve) this.curve.destroy();
         this.curve = createCircleCenterNormalRadius(this.v1, normal, radius);
         this.done();
       }
@@ -170,6 +171,7 @@ export class CircleCommand extends Command {
       if (!vec3.equals(this.v1, point)) this.v2 = point;
     } else if (!this.v3) {
       if (!vec3.equals(this.v1, point) && !vec3.equals(this.v2, point)) {
+        if (this.curve) this.curve.destroy();
         this.curve = createCircleThreePoints(this.v1, this.v2, point);
         this.done();
       }
