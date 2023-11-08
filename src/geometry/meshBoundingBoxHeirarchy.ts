@@ -1,7 +1,8 @@
-import { vec3, Vec3 } from "wgpu-matrix";
+import { Mat4, mat4, vec3, Vec3 } from "wgpu-matrix";
 import { ObjectID } from "../scene/scene";
 import { BoundingBox } from "./boundingBox";
 import { Frustum } from "./frustum";
+import { Geometry } from "./geometry";
 import { Intersection } from "./intersection";
 import { Mesh } from "./mesh";
 import { Ray } from "./ray";
@@ -173,22 +174,27 @@ export class MeshBoundingBoxHeirarchy {
 
   private root: MeshBoundingBoxHeirarchyNode;
 
-  constructor(id: ObjectID, verts: Vec3[], indices: number[]) {
-    this.root = new MeshBoundingBoxHeirarchyNode(id, verts, indices);
+  constructor(private geometry: Geometry, private verts: Vec3[], indices: number[]) {
+    this.root = new MeshBoundingBoxHeirarchyNode(this.geometry.getID(), this.verts, indices);
   }
 
   public print(): void {
     console.log("========Mesh-BBH========");
     this.root.print();
   }
-
-  public firstIntersection(ray: Ray, verts: Vec3[]): Intersection | null {
-    return this.root.intersect(ray, verts);
+  public firstIntersection(ray: Ray): Intersection | null {
+    const model: Mat4 = this.geometry.getModel();
+    const objectSpaceRay: Ray = Ray.transform(ray, mat4.inverse(model));
+    const res: Intersection | null = this.root.intersect(objectSpaceRay, this.verts);
+    res?.transform(model);
+    return res;
   }
 
   public isWithinFrustum(frustum: Frustum, inclusive: boolean): boolean {
-    return this.root.isWithinFrustum(frustum, inclusive);
+    frustum.transform(mat4.inverse(this.geometry.getModel()));
+    const res: boolean = this.root.isWithinFrustum(frustum, inclusive);
+    frustum.transform(this.geometry.getModel());
+    return res;
   }
-
 
 }

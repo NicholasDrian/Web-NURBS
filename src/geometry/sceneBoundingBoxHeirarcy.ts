@@ -56,22 +56,29 @@ class BBHNode {
     }
   }
   public firstIntersectionsWithinMargin(ray: Ray, margin: number): Intersection[] {
-    const res: Intersection[] = [];
-    if (ray.almostIntersectBoundingBox(this.boundingBox, 10) === null) return res;
+    const intersections: Intersection[] = [];
+    if (ray.almostIntersectBoundingBox(this.boundingBox, 10) === null) return intersections;
 
     if (this.isLeaf()) {
       this.geometry!.forEach((geo: Geometry) => {
         const intersection: Intersection | null = geo.intersect(ray);
-        if (intersection !== null) res.push(intersection);
+        if (intersection !== null) intersections.push(intersection);
       });
     } else {
-      res.push(...this.child1!.firstIntersectionsWithinMargin(ray, margin));
-      res.push(...this.child2!.firstIntersectionsWithinMargin(ray, margin));
+      intersections.push(...this.child1!.firstIntersectionsWithinMargin(ray, margin));
+      intersections.push(...this.child2!.firstIntersectionsWithinMargin(ray, margin));
     }
-    res.sort((a: Intersection, b: Intersection) => {
+    intersections.sort((a: Intersection, b: Intersection) => {
       return a.time - b.time;
     })
-    return res;
+    // TODO: filter out stuff thats too far away, the margin part
+    const nearIntersections: Intersection[] = [];
+    for (const intersection of intersections) {
+      if (intersection.time <= intersections[0].time * (1 + margin / 100)) {
+        nearIntersections.push(intersection);
+      }
+    }
+    return nearIntersections;
   }
 
   public getAllGeometry(): ObjectID[] {

@@ -38,11 +38,11 @@ export class Mesh extends Geometry {
     )
     INSTANCE.getScene().addRenderMesh(renderMeshObj);
     this.renderMesh = renderMeshObj.getID();
-    this.boundingBoxHeirarchy = new MeshBoundingBoxHeirarchy(this.getID(), this.verts, this.indices);
+    this.boundingBoxHeirarchy = new MeshBoundingBoxHeirarchy(this, this.verts, this.indices);
   }
 
   public intersect(ray: Ray): Intersection | null {
-    return this.boundingBoxHeirarchy.firstIntersection(ray, this.verts);
+    return this.boundingBoxHeirarchy.firstIntersection(ray);
   }
 
   public override getTypeName(): string {

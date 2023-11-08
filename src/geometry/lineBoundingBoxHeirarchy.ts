@@ -169,7 +169,6 @@ export class LineBoundingBoxHeirarchy {
   }
 
 
-  // TODO: make other bbh work like this
 
   public almostIntersect(ray: Ray, pixels: number): Intersection | null {
     const model: Mat4 = this.geometry.getModel();

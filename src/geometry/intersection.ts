@@ -1,4 +1,3 @@
-import { transform } from "typescript";
 import { mat4, Mat4, vec3, Vec3 } from "wgpu-matrix";
 import { ObjectID } from "../scene/scene";
 
