@@ -86,14 +86,10 @@ export class Frustum {
 
   public containsTriangle(p1: Vec3, p2: Vec3, p3: Vec3, inclusive: boolean) {
     if (inclusive) {
-      const tr: Ray = new Ray(this.origin, vec3.cross(this.up, this.right));
-      if (tr.intersectTriangle(p1, p2, p2) !== null) return true;
-      const br: Ray = new Ray(this.origin, vec3.cross(this.right, this.down));
-      if (br.intersectTriangle(p1, p2, p2) !== null) return true;
-      const bl: Ray = new Ray(this.origin, vec3.cross(this.down, this.left));
-      if (bl.intersectTriangle(p1, p2, p2) !== null) return true;
-      const tl: Ray = new Ray(this.origin, vec3.cross(this.left, this.up));
-      if (tl.intersectTriangle(p1, p2, p2) !== null) return true;
+      if (this.topRight.intersectTriangle(p1, p2, p3) !== null) return true;
+      if (this.bottomRight.intersectTriangle(p1, p2, p3) !== null) return true;
+      if (this.bottomLeft.intersectTriangle(p1, p2, p3) !== null) return true;
+      if (this.topLeft.intersectTriangle(p1, p2, p3) !== null) return true;
       if (this.containsLinePartially(p1, p2)) return true;
       if (this.containsLinePartially(p2, p3)) return true;
       if (this.containsLinePartially(p3, p1)) return true;
@@ -104,14 +100,10 @@ export class Frustum {
   }
 
   public intersectsBoundingBox(bb: BoundingBox): boolean {
-    const tr: Ray = new Ray(this.origin, vec3.cross(this.up, this.right));
-    if (tr.intersectBoundingBox(bb) !== null) return true;
-    const br: Ray = new Ray(this.origin, vec3.cross(this.right, this.down));
-    if (br.intersectBoundingBox(bb) !== null) return true;
-    const bl: Ray = new Ray(this.origin, vec3.cross(this.down, this.left));
-    if (bl.intersectBoundingBox(bb) !== null) return true;
-    const tl: Ray = new Ray(this.origin, vec3.cross(this.left, this.up));
-    if (tl.intersectBoundingBox(bb) !== null) return true;
+    if (this.topRight.intersectBoundingBox(bb) !== null) return true;
+    if (this.bottomRight.intersectBoundingBox(bb) !== null) return true;
+    if (this.bottomLeft.intersectBoundingBox(bb) !== null) return true;
+    if (this.topLeft.intersectBoundingBox(bb) !== null) return true;
 
     const p000: Vec3 = vec3.create(bb.getXMin(), bb.getYMin(), bb.getZMin());
     const p001: Vec3 = vec3.create(bb.getXMin(), bb.getYMin(), bb.getZMax());

@@ -168,10 +168,11 @@ export class LineBoundingBoxHeirarchy {
     this.root.print();
   }
 
+
+  // TODO: make other bbh work like this
+
   public almostIntersect(ray: Ray, pixels: number): Intersection | null {
     const model: Mat4 = this.geometry.getModel();
-    const scale: number = vec3.length(mat4.getScaling(model)) / Math.sqrt(3);
-    // TODO: think about pixels issue
     const objectSpaceRay: Ray = Ray.transform(ray, mat4.inverse(model));
     const res: Intersection | null = this.root.almostIntersect(objectSpaceRay, this.verts, pixels);
     res?.transform(model);
@@ -179,6 +180,9 @@ export class LineBoundingBoxHeirarchy {
   }
 
   public isWithinFrustum(frustum: Frustum, inclusive: boolean): boolean {
-    return this.root.isWithinFrustum(frustum, inclusive);
+    frustum.transform(mat4.inverse(this.geometry.getModel()));
+    const res: boolean = this.root.isWithinFrustum(frustum, inclusive);
+    frustum.transform(this.geometry.getModel());
+    return res;
   }
 }
