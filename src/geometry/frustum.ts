@@ -1,5 +1,6 @@
-import { vec3, Vec3 } from "wgpu-matrix";
+import { mat4, Mat4, vec3, Vec3, Vec4, vec4 } from "wgpu-matrix";
 import { INSTANCE } from "../cad";
+import { printMat4 } from "../utils/print";
 import { BoundingBox } from "./boundingBox";
 import { Plane } from "./plane";
 import { Ray } from "./ray";
@@ -11,17 +12,22 @@ export class Frustum {
   private right: Vec3;
   private down: Vec3;
   private left: Vec3;
+  private topLeft: Ray;
+  private topRight: Ray;
+  private bottomLeft: Ray;
+  private bottomRight: Ray;
+
 
   constructor(left: number, right: number, top: number, bottom: number) {
     this.origin = INSTANCE.getScene().getCamera().getPosition();
-    const topLeft: Ray = INSTANCE.getScene().getCamera().getRayAtPixel(left, top);
-    const topRight: Ray = INSTANCE.getScene().getCamera().getRayAtPixel(right, top);
-    const bottomLeft: Ray = INSTANCE.getScene().getCamera().getRayAtPixel(left, bottom);
-    const bottomRight: Ray = INSTANCE.getScene().getCamera().getRayAtPixel(right, bottom);
-    this.up = vec3.normalize(vec3.cross(topLeft.getDirection(), topRight.getDirection()));
-    this.right = vec3.normalize(vec3.cross(topRight.getDirection(), bottomRight.getDirection()));
-    this.down = vec3.normalize(vec3.cross(bottomRight.getDirection(), bottomLeft.getDirection()));
-    this.left = vec3.normalize(vec3.cross(bottomLeft.getDirection(), topLeft.getDirection()));
+    this.topLeft = INSTANCE.getScene().getCamera().getRayAtPixel(left, top);
+    this.topRight = INSTANCE.getScene().getCamera().getRayAtPixel(right, top);
+    this.bottomLeft = INSTANCE.getScene().getCamera().getRayAtPixel(left, bottom);
+    this.bottomRight = INSTANCE.getScene().getCamera().getRayAtPixel(right, bottom);
+    this.up = vec3.normalize(vec3.cross(this.topLeft.getDirection(), this.topRight.getDirection()));
+    this.right = vec3.normalize(vec3.cross(this.topRight.getDirection(), this.bottomRight.getDirection()));
+    this.down = vec3.normalize(vec3.cross(this.bottomRight.getDirection(), this.bottomLeft.getDirection()));
+    this.left = vec3.normalize(vec3.cross(this.bottomLeft.getDirection(), this.topLeft.getDirection()));
   }
 
   public containsPoint(point: Vec3): boolean {
@@ -30,6 +36,22 @@ export class Frustum {
       vec3.dot(this.right, v) > 0 &&
       vec3.dot(this.down, v) > 0 &&
       vec3.dot(this.left, v) > 0;
+  }
+
+  public transform(transform: Mat4): void {
+    this.origin = vec3.transformMat4(this.origin, transform);
+    const newUp: Vec4 = vec4.transformMat4(vec4.create(...this.up, 0), transform);
+    this.up = vec3.normalize(vec3.create(newUp[0], newUp[1], newUp[2]));
+    const newRight: Vec4 = vec4.transformMat4(vec4.create(...this.right, 0), transform);
+    this.right = vec3.normalize(vec3.create(newRight[0], newRight[1], newRight[2]));
+    const newDown: Vec4 = vec4.transformMat4(vec4.create(...this.down, 0), transform);
+    this.down = vec3.normalize(vec3.create(newDown[0], newDown[1], newDown[2]));
+    const newLeft: Vec4 = vec4.transformMat4(vec4.create(...this.left, 0), transform);
+    this.left = vec3.normalize(vec3.create(newLeft[0], newLeft[1], newLeft[2]));
+    this.topLeft = Ray.transform(this.topLeft, transform);
+    this.topRight = Ray.transform(this.topRight, transform);
+    this.bottomLeft = Ray.transform(this.bottomLeft, transform);
+    this.bottomRight = Ray.transform(this.bottomRight, transform);
   }
 
   public containsLineFully(a: Vec3, b: Vec3): boolean {
@@ -90,7 +112,6 @@ export class Frustum {
     if (bl.intersectBoundingBox(bb) !== null) return true;
     const tl: Ray = new Ray(this.origin, vec3.cross(this.left, this.up));
     if (tl.intersectBoundingBox(bb) !== null) return true;
-
 
     const p000: Vec3 = vec3.create(bb.getXMin(), bb.getYMin(), bb.getZMin());
     const p001: Vec3 = vec3.create(bb.getXMin(), bb.getYMin(), bb.getZMax());

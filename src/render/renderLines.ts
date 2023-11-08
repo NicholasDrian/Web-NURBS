@@ -36,7 +36,6 @@ export class RenderLines {
     private parent: Geometry,
     vertices: Float32Array,
     indices: Int32Array,
-    private model: Mat4 = mat4.identity(),
     private material: MaterialName = "default"
   ) {
 
@@ -59,7 +58,7 @@ export class RenderLines {
     INSTANCE.getRenderer().getDevice().queue.writeBuffer(this.indexBuffer, 0, indices);
     this.indexCount = indices.length;
 
-    //mvp
+    //model
     this.modelBuffer = INSTANCE.getRenderer().getDevice().createBuffer({
       label: "mvp",
       size: 64,
@@ -101,7 +100,10 @@ export class RenderLines {
   }
 
   private updateModel(): void {
-    INSTANCE.getRenderer().getDevice().queue.writeBuffer(this.modelBuffer, 0, <Float32Array>this.model);
+    const model: Mat4 = this.parent.getModel();
+    swizzleYZ(model);
+    INSTANCE.getRenderer().getDevice().queue.writeBuffer(this.modelBuffer, 0, <Float32Array>model);
+
   }
 
   private updateBindGroup(): void {

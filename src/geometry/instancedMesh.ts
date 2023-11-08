@@ -37,7 +37,6 @@ export class InstancedMesh extends Geometry {
       this,
       new Float32Array(vertexBuffer),
       new Int32Array(this.indices),
-      this.getModel(),
       transforms
     );
     renderMeshObj.setConstantScreenSize(true);

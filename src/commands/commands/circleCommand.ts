@@ -231,7 +231,9 @@ export class CircleCommand extends Command {
   }
 
   private done(): void {
-    if (this.curve) INSTANCE.getScene().addGeometry(this.curve);
+    if (this.curve) {
+      INSTANCE.getScene().addGeometry(this.curve);
+    }
     this.finished = true;
     this.clicker.destroy();
   }

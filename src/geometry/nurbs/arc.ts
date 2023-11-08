@@ -87,8 +87,5 @@ export const createArc = function(
   }
   knots.push(1, 1, 1);
 
-  console.log(knots, genericKnotVector(weightedControls.length, 2));
-
-  console.log(weightedControls, knots);
   return new Curve(null, weightedControls, 2, knots);
 }

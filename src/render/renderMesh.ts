@@ -3,6 +3,7 @@ import { mat4, Mat4 } from "wgpu-matrix"
 import { Geometry } from "../geometry/geometry";
 import { RenderID } from "../scene/scene";
 import { HOVER_BIT, SELECTED_BIT } from "./flags";
+import { swizzleYZ } from "../utils/math";
 
 export class RenderMesh {
 
@@ -38,8 +39,7 @@ export class RenderMesh {
     protected parent: Geometry,
     vertices: Float32Array,
     indices: Int32Array,
-    private model: Mat4) {
-
+  ) {
     this.id = INSTANCE.getScene().generateNewRenderID();
 
     //vertex
@@ -95,7 +95,9 @@ export class RenderMesh {
   }
 
   private updateModel(): void {
-    INSTANCE.getRenderer().getDevice().queue.writeBuffer(this.modelBuffer, 0, <Float32Array>this.model);
+    const model: Mat4 = this.parent.getModel();
+    swizzleYZ(model);
+    INSTANCE.getRenderer().getDevice().queue.writeBuffer(this.modelBuffer, 0, <Float32Array>model);
   }
 
   private updateFlags(): void {

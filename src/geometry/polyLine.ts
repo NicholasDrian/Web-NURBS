@@ -3,6 +3,7 @@ import { INSTANCE } from "../cad";
 import { MaterialName } from "../materials/material";
 import { RenderLines } from "../render/renderLines";
 import { RenderID } from "../scene/scene";
+import { printMat4 } from "../utils/print";
 import { BoundingBox } from "./boundingBox";
 import { Frustum } from "./frustum";
 import { Geometry } from "./geometry";
@@ -29,7 +30,14 @@ export class PolyLine extends Geometry {
   }
 
   public intersect(ray: Ray): Intersection | null {
-    return this.boundingBoxHeirarchy.almostIntersect(ray, this.points, 20);
+    // only transform when accessing bbh
+    printMat4(this.getModel());
+    console.log("before");
+    ray.print();
+    const objectSpaceRay: Ray = Ray.transform(ray, mat4.inverse(this.getModel()));
+    console.log("after");
+    objectSpaceRay.print();
+    return this.boundingBoxHeirarchy.almostIntersect(objectSpaceRay, this.points, 20);
   }
 
   public getBoundingBox(): BoundingBox {
@@ -44,7 +52,11 @@ export class PolyLine extends Geometry {
   }
 
   public isWithinFrustum(frustum: Frustum, inclusive: boolean): boolean {
-    return this.boundingBoxHeirarchy.isWithinFrustum(frustum, inclusive);
+    // only transform when accessing bbh
+    frustum.transform(mat4.inverse(this.getModel()));
+    const res: boolean = this.boundingBoxHeirarchy.isWithinFrustum(frustum, inclusive);
+    frustum.transform(this.getModel());
+    return res;
   }
 
   public updateLastPoint(point: Vec3): void {
@@ -81,7 +93,6 @@ export class PolyLine extends Geometry {
       this,
       new Float32Array(verts),
       new Int32Array(indices),
-      this.getModel(),
     )
     this.renderLines = renderLinesObj.getID();
     INSTANCE.getScene().addRenderLines(renderLinesObj);

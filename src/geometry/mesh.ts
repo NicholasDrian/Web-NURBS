@@ -35,7 +35,6 @@ export class Mesh extends Geometry {
       this,
       new Float32Array(vertexBuffer),
       new Int32Array(this.indices),
-      this.getModel()
     )
     INSTANCE.getScene().addRenderMesh(renderMeshObj);
     this.renderMesh = renderMeshObj.getID();

@@ -2,6 +2,7 @@ import { Mat4, mat4, Vec3 } from "wgpu-matrix"
 import { INSTANCE } from "../cad"
 import { Geometry } from "../geometry/geometry";
 import { RenderID } from "../scene/scene";
+import { swizzleYZ } from "../utils/math";
 import { HOVER_BIT, SELECTED_BIT } from "./flags";
 
 export class RenderPoints {
@@ -31,7 +32,6 @@ export class RenderPoints {
   constructor(
     private parent: Geometry,
     points: Vec3[],
-    private model: Mat4 = mat4.identity()
   ) {
 
     this.id = INSTANCE.getScene().generateNewRenderID();
@@ -91,7 +91,9 @@ export class RenderPoints {
   }
 
   private updateModel(): void {
-    INSTANCE.getRenderer().getDevice().queue.writeBuffer(this.modelBuffer, 0, <Float32Array>this.model);
+    const model: Mat4 = this.parent.getModel();
+    swizzleYZ(model);
+    INSTANCE.getRenderer().getDevice().queue.writeBuffer(this.modelBuffer, 0, <Float32Array>model);
   }
 
   private updateBindGroup(): void {

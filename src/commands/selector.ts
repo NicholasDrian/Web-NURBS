@@ -127,6 +127,7 @@ export class Selector {
     for (const obj of within) {
       const geo: Geometry = INSTANCE.getScene().getGeometry(obj);
       this.addToSelection(geo);
+      console.log("selected", geo.getID(), geo.getTypeName());
     }
   }
 

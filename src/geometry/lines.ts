@@ -63,7 +63,7 @@ export class Lines extends Geometry {
       this,
       new Float32Array(verts),
       new Int32Array(this.indices),
-      this.getModel())
+    );
     INSTANCE.getScene().addRenderLines(renderLinesObj);
     this.renderLines = renderLinesObj.getID();
     this.updateBoundingBox();

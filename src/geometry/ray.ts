@@ -1,4 +1,4 @@
-import { mat4, Mat4, vec3, Vec3 } from "wgpu-matrix";
+import { mat4, Mat4, vec3, Vec3, vec4, Vec4 } from "wgpu-matrix";
 import { INSTANCE } from "../cad";
 import { ConstructionPlane } from "../scene/constructionPlane";
 import { ObjectID, Scene } from "../scene/scene";
@@ -111,7 +111,6 @@ export class Ray {
     const end = Math.min(xMax, Math.min(yMax, zMax));
     const start = Math.max(xMin, Math.max(yMin, zMin));
 
-    console.log("intersect bb start end", start, end);
 
     if (end < 0 || start > end) return null;
     return Math.max(start, 0.00001); // so its truthy
@@ -149,9 +148,11 @@ export class Ray {
   }
 
   public static transform(ray: Ray, mat: Mat4): Ray {
+    const newOrigin: Vec4 = vec4.transformMat4(vec4.create(...ray.origin, 1), mat);
+    const newDirection: Vec4 = vec4.transformMat4(vec4.create(...ray.direction, 0), mat);
     return new Ray(
-      vec3.add(ray.origin, mat4.getTranslation(mat)),
-      vec3.transformMat4(ray.direction, mat)
+      vec3.create(newOrigin[0], newOrigin[1], newOrigin[2]),
+      vec3.create(newDirection[0], newDirection[1], newDirection[2])
     );
   }
 
