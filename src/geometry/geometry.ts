@@ -18,7 +18,7 @@ export abstract class Geometry {
   constructor(
     private parent: Geometry | null = null,
     private model: Mat4 = mat4.identity(),
-    private material: MaterialName | null,
+    private materialName: MaterialName | null,
   ) {
     this.id = INSTANCE.getScene().generateNewObjectID(this);
   }
@@ -32,13 +32,18 @@ export abstract class Geometry {
     this.model = model;
   }
 
-  public getModel(): Mat4 {
+  public getModelRecursive(): Mat4 {
     if (this.parent) {
-      return mat4.mul(this.parent.getModel(), this.model);
+      return mat4.mul(this.parent.getModelRecursive(), this.model);
     } else {
       return this.model;
     }
   }
+
+  public getModel(): Mat4 {
+    return this.model;
+  }
+
   getParent(): Geometry | null {
     return this.parent;
   }
@@ -77,33 +82,33 @@ export abstract class Geometry {
     return this.id;
   }
 
-  public setMaterial(mat: MaterialName) {
-    this.material = mat;
+  public setMaterial(name: MaterialName) {
+    this.materialName = name;
   }
 
   public getColorBuffer(): GPUBuffer {
 
-    if (this.material) {
-      const mat: Material | undefined = INSTANCE.getMaterialManager().getMaterial(this.material);
+    if (this.materialName) {
+      const mat: Material | undefined = INSTANCE.getMaterialManager().getMaterial(this.materialName);
       if (mat && mat.color) {
         return mat.getColorBuffer()!;
       }
-      if (this.parent) {
-        return this.parent.getColorBuffer();
-      }
+    }
+    if (this.parent) {
+      return this.parent.getColorBuffer();
     }
     return INSTANCE.getMaterialManager().getDefaultMaterial().getColorBuffer()!;
   }
 
   public getColor(): Vec4 {
-    if (this.material) {
-      const mat: Material | undefined = INSTANCE.getMaterialManager().getMaterial(this.material);
+    if (this.materialName) {
+      const mat: Material | undefined = INSTANCE.getMaterialManager().getMaterial(this.materialName);
       if (mat && mat.color) {
         return mat.color;
       }
-      if (this.parent) {
-        return this.parent.getColor();
-      }
+    }
+    if (this.parent) {
+      return this.parent.getColor();
     }
     return INSTANCE.getMaterialManager().getDefaultMaterial().color!;
   }

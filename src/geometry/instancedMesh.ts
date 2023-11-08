@@ -89,7 +89,7 @@ export class InstancedMesh extends Geometry {
   public getBoundingBox(): BoundingBox {
     const boundingBox: BoundingBox = new BoundingBox();
     for (let instance = 0; instance < this.transforms.length; instance++) {
-      const transform: Mat4 = mat4.multiply(this.getModel(), this.transforms[instance]);
+      const transform: Mat4 = mat4.multiply(this.getModelRecursive(), this.transforms[instance]);
       for (let vert of this.verts) {
         boundingBox.addVec3(vec3.transformMat4(transform, vert));
       }

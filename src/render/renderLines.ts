@@ -36,7 +36,6 @@ export class RenderLines {
     private parent: Geometry,
     vertices: Float32Array,
     indices: Int32Array,
-    private material: MaterialName = "default"
   ) {
 
     this.id = INSTANCE.getScene().generateNewRenderID();
@@ -101,7 +100,7 @@ export class RenderLines {
   }
 
   private updateModel(): void {
-    const model: Mat4 = this.parent.getModel();
+    const model: Mat4 = this.parent.getModelRecursive();
     swizzleYZ(model);
     INSTANCE.getRenderer().getDevice().queue.writeBuffer(this.modelBuffer, 0, <Float32Array>model);
   }

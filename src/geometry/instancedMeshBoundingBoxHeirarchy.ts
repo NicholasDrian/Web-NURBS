@@ -140,7 +140,7 @@ export class InstancedMeshBoundingBoxHeirarchy {
   }
 
   public firstIntersection(ray: Ray): Intersection | null {
-    const model: Mat4 = this.mesh.getModel();
+    const model: Mat4 = this.mesh.getModelRecursive();
     const objectSpaceRay: Ray = Ray.transform(ray, mat4.inverse(model));
     const res: Intersection | null = this.root.intersect(objectSpaceRay, this.mesh.getVerts());
     res?.transform(model);
@@ -148,7 +148,7 @@ export class InstancedMeshBoundingBoxHeirarchy {
   }
 
   public isWithinFrustum(frustum: Frustum, inclusive: boolean): boolean {
-    const model: Mat4 = this.mesh.getModel();
+    const model: Mat4 = this.mesh.getModelRecursive();
     frustum.transform(mat4.inverse(model));
     const res: boolean = this.root.isWithinFrustum(frustum, inclusive);
     frustum.transform(model);

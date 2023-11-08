@@ -1,26 +1,13 @@
-import { Vec3 } from "wgpu-matrix";
 import { Intersection } from "../../geometry/intersection";
 import { Command } from "../command";
 
-enum ArcCommandMode {
-  Menu,
-  From3Points,
-  FromCenterPointPoint,
-}
-
-export class ArcCommand extends Command {
+export class SphereCommand extends Command {
 
   private finished: boolean;
-  private mode: ArcCommandMode;
-  private p1: Vec3 | null;
-  private p2: Vec3 | null;
 
   constructor() {
     super();
     this.finished = false;
-    this.mode = ArcCommandMode.Menu;
-    this.p1 = null;
-    this.p2 = null;
   }
 
   handleInputString(input: string): void {
@@ -36,16 +23,11 @@ export class ArcCommand extends Command {
     throw new Error("Method not implemented.");
   }
   getInstructions(): string {
-    switch (this.mode) {
-      case ArcCommandMode.Menu:
-        return "0:Exit  1:From3Points  2:FromCenterPointPoint  $";
-      default:
-        throw new Error("case not handled");
-    }
+    throw new Error("Method not implemented.");
   }
 
   isFinished(): boolean {
-    return this.finished;
+    return this.finished
   }
 
 }

@@ -54,8 +54,7 @@ class MeshBoundingBoxHeirarchyNode {
             verts[indices[i + 1]]
           )
         ), 1 / 3);
-        const bbCenter = this.boundingBox.getCenter();
-        if (triCenter[this.axis] < bbCenter[this.axis]) {
+        if (triCenter[this.axis] < this.boundingBox.getCenter()[this.axis]) {
           child1Indices.push(indices[i], indices[i + 1], indices[i + 2]);
         } else {
           child2Indices.push(indices[i], indices[i + 1], indices[i + 2]);
@@ -175,7 +174,15 @@ export class MeshBoundingBoxHeirarchy {
   private root: MeshBoundingBoxHeirarchyNode;
 
   constructor(private geometry: Geometry, private verts: Vec3[], indices: number[]) {
-    this.root = new MeshBoundingBoxHeirarchyNode(this.geometry.getID(), this.verts, indices);
+    // degenerated break the bbh
+    const reducedIndices: number[] = [];
+    for (let i = 0; i < indices.length; i += 3) {
+      const d1: number = vec3.distance(verts[indices[i]], verts[indices[i + 1]]);
+      const d2: number = vec3.distance(verts[indices[i + 1]], verts[indices[i + 2]]);
+      if (d1 === 0 || d2 == 2) continue;
+      reducedIndices.push(indices[i], indices[i + 1], indices[i + 2]);
+    }
+    this.root = new MeshBoundingBoxHeirarchyNode(this.geometry.getID(), this.verts, reducedIndices);
   }
 
   public print(): void {
@@ -183,7 +190,7 @@ export class MeshBoundingBoxHeirarchy {
     this.root.print();
   }
   public firstIntersection(ray: Ray): Intersection | null {
-    const model: Mat4 = this.geometry.getModel();
+    const model: Mat4 = this.geometry.getModelRecursive();
     const objectSpaceRay: Ray = Ray.transform(ray, mat4.inverse(model));
     const res: Intersection | null = this.root.intersect(objectSpaceRay, this.verts);
     res?.transform(model);
@@ -191,9 +198,9 @@ export class MeshBoundingBoxHeirarchy {
   }
 
   public isWithinFrustum(frustum: Frustum, inclusive: boolean): boolean {
-    frustum.transform(mat4.inverse(this.geometry.getModel()));
+    frustum.transform(mat4.inverse(this.geometry.getModelRecursive()));
     const res: boolean = this.root.isWithinFrustum(frustum, inclusive);
-    frustum.transform(this.geometry.getModel());
+    frustum.transform(this.geometry.getModelRecursive());
     return res;
   }
 

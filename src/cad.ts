@@ -16,6 +16,7 @@ import { addTestSceneLine } from "./tests/testSceneLine";
 import { addTestSceneComplex } from "./tests/testSceneComplex";
 import { addTestSceneCurve } from "./tests/testSceneCurve"
 import { addTestSceneArc } from "./tests/testSceneArc";
+import { Mover } from "./widgets/mover";
 
 /*
   * Browser Based NURBS Modeling Software
@@ -35,6 +36,7 @@ class CAD {
   private settingsManager!: SettingsManager;
   private materialManager!: MaterialManager;
   private selector!: Selector;
+  private mover!: Mover;
 
   private renderStats!: RenderStats;
   private operatingMode!: OperatingMode;
@@ -63,9 +65,10 @@ class CAD {
     this.renderStats = new RenderStats();
     this.windowManager = new WindowManager();
     this.selector = new Selector();
+    this.mover = new Mover();
 
 
-    addTestSceneComplex();
+    //addTestSceneComplex();
     // addTestSceneLine();
     // addTestSceneCurve();
     // addTestSceneArc();

@@ -92,7 +92,7 @@ export class PolyLine extends Geometry {
 
   private updateBoundingBox(): void {
     this.boundingBox = new BoundingBox();
-    const model: Mat4 = this.getModel();
+    const model: Mat4 = this.getModelRecursive();
     this.points.forEach((point: Vec3) => {
       this.boundingBox.addVec3(vec3.transformMat4(point, model));
     });

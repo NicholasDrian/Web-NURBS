@@ -38,7 +38,7 @@ export const loft = function(curves: Curve[], degree: number): Surface {
     const curveControls: Vec4[] = curve.getWeightedControlPoints();
     points.push([]);
     for (let j = 0; j < curveControls.length; j++) {
-      const model: Mat4 = curve.getModel();
+      const model: Mat4 = curve.getModelRecursive();
       const weight: number = curveControls[j][3];
       var point: Vec3 = vec3.create(
         curveControls[j][0] / weight,

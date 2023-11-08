@@ -171,7 +171,7 @@ export class LineBoundingBoxHeirarchy {
 
 
   public almostIntersect(ray: Ray, pixels: number): Intersection | null {
-    const model: Mat4 = this.geometry.getModel();
+    const model: Mat4 = this.geometry.getModelRecursive();
     const objectSpaceRay: Ray = Ray.transform(ray, mat4.inverse(model));
     const res: Intersection | null = this.root.almostIntersect(objectSpaceRay, this.verts, pixels);
     res?.transform(model);
@@ -179,9 +179,9 @@ export class LineBoundingBoxHeirarchy {
   }
 
   public isWithinFrustum(frustum: Frustum, inclusive: boolean): boolean {
-    frustum.transform(mat4.inverse(this.geometry.getModel()));
+    frustum.transform(mat4.inverse(this.geometry.getModelRecursive()));
     const res: boolean = this.root.isWithinFrustum(frustum, inclusive);
-    frustum.transform(this.geometry.getModel());
+    frustum.transform(this.geometry.getModelRecursive());
     return res;
   }
 }

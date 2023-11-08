@@ -59,7 +59,7 @@ export class Mesh extends Geometry {
 
   public getBoundingBox(): BoundingBox {
     const bb: BoundingBox = new BoundingBox();
-    const model: Mat4 = this.getModel();
+    const model: Mat4 = this.getModelRecursive();
     this.verts.forEach((vert: Vec3) => {
       bb.addVec3(vec3.transformMat4(vert, model));
     });

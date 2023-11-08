@@ -95,7 +95,7 @@ export class RenderMesh {
   }
 
   private updateModel(): void {
-    const model: Mat4 = this.parent.getModel();
+    const model: Mat4 = this.parent.getModelRecursive();
     swizzleYZ(model);
     INSTANCE.getRenderer().getDevice().queue.writeBuffer(this.modelBuffer, 0, <Float32Array>model);
   }
@@ -109,8 +109,9 @@ export class RenderMesh {
   }
 
   protected updateBindGroup(): void {
+    console.log(this.parent.getTypeName(), this.parent.getColor());
     this.bindGroup = INSTANCE.getRenderer().getDevice().createBindGroup({
-      label: "bind group",
+      label: "render mesh bind group",
       layout: INSTANCE.getRenderer().getBindGroupLayout(),
       entries: [
         {

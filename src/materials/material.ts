@@ -21,7 +21,7 @@ export class Material {
         label: "color buffer for material " + this.name,
         size: 16,
         usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
-      })
+      });
       INSTANCE.getRenderer().getDevice().queue.writeBuffer(this.diffuseColorBuffer, 0, <Float32Array>this.color);
     } else {
       this.diffuseColorBuffer = null;

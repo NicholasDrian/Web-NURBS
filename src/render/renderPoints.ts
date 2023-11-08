@@ -91,7 +91,7 @@ export class RenderPoints {
   }
 
   private updateModel(): void {
-    const model: Mat4 = this.parent.getModel();
+    const model: Mat4 = this.parent.getModelRecursive();
     swizzleYZ(model);
     INSTANCE.getRenderer().getDevice().queue.writeBuffer(this.modelBuffer, 0, <Float32Array>model);
   }

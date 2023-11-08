@@ -84,8 +84,8 @@ export class Line extends Geometry {
   }
   private updateBoundingBox(): void {
     this.boundingBox = new BoundingBox();
-    this.boundingBox.addVec3(vec3.transformMat4(this.start, this.getModel()));
-    this.boundingBox.addVec3(vec3.transformMat4(this.end, this.getModel()));
+    this.boundingBox.addVec3(vec3.transformMat4(this.start, this.getModelRecursive()));
+    this.boundingBox.addVec3(vec3.transformMat4(this.end, this.getModelRecursive()));
   }
 
 }
