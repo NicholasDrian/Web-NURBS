@@ -90,8 +90,7 @@ export class Points extends Geometry {
     return this.instancedMesh!.getBoundingBox();
   }
   public override intersect(ray: Ray): Intersection | null {
-    const objectSpaceRay: Ray = Ray.transform(ray, mat4.inverse(this.getModel()));
-    return this.instancedMesh!.intersect(objectSpaceRay);
+    return this.instancedMesh!.intersect(ray);
   }
 
 }

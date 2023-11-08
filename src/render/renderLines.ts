@@ -107,7 +107,6 @@ export class RenderLines {
   }
 
   private updateBindGroup(): void {
-    const mat: Material = INSTANCE.getMaterialManager().getMaterial(this.material)!;
     this.bindGroup = INSTANCE.getRenderer().getDevice().createBindGroup({
       label: "bind group",
       layout: INSTANCE.getRenderer().getBindGroupLayout(),

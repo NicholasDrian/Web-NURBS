@@ -30,14 +30,7 @@ export class PolyLine extends Geometry {
   }
 
   public intersect(ray: Ray): Intersection | null {
-    // only transform when accessing bbh
-    printMat4(this.getModel());
-    console.log("before");
-    ray.print();
-    const objectSpaceRay: Ray = Ray.transform(ray, mat4.inverse(this.getModel()));
-    console.log("after");
-    objectSpaceRay.print();
-    return this.boundingBoxHeirarchy.almostIntersect(objectSpaceRay, this.points, 20);
+    return this.boundingBoxHeirarchy.almostIntersect(ray, 20)
   }
 
   public getBoundingBox(): BoundingBox {
@@ -52,11 +45,7 @@ export class PolyLine extends Geometry {
   }
 
   public isWithinFrustum(frustum: Frustum, inclusive: boolean): boolean {
-    // only transform when accessing bbh
-    frustum.transform(mat4.inverse(this.getModel()));
-    const res: boolean = this.boundingBoxHeirarchy.isWithinFrustum(frustum, inclusive);
-    frustum.transform(this.getModel());
-    return res;
+    return this.boundingBoxHeirarchy.isWithinFrustum(frustum, inclusive);
   }
 
   public updateLastPoint(point: Vec3): void {
@@ -98,7 +87,7 @@ export class PolyLine extends Geometry {
     INSTANCE.getScene().addRenderLines(renderLinesObj);
 
     this.updateBoundingBox();
-    this.boundingBoxHeirarchy = new LineBoundingBoxHeirarchy(this.getID(), this.points, indices);
+    this.boundingBoxHeirarchy = new LineBoundingBoxHeirarchy(this, this.points, indices);
   }
 
   private updateBoundingBox(): void {

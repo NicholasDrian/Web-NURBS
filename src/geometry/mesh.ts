@@ -42,8 +42,7 @@ export class Mesh extends Geometry {
   }
 
   public intersect(ray: Ray): Intersection | null {
-    const objectSpaceRay: Ray = Ray.transform(ray, mat4.inverse(this.getModel()));
-    return this.boundingBoxHeirarchy.firstIntersection(objectSpaceRay, this.verts);
+    return this.boundingBoxHeirarchy.firstIntersection(ray, this.verts);
   }
 
   public override getTypeName(): string {

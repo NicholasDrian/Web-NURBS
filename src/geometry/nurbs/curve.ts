@@ -50,6 +50,7 @@ export class Curve extends Geometry {
   }
 
   public intersect(ray: Ray): Intersection | null {
+    console.log("intersecting curve id:", this.getID());
     return this.polyline!.intersect(ray);
   }
 

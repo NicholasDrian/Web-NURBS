@@ -1,7 +1,8 @@
-import { vec3, Vec3 } from "wgpu-matrix";
+import { mat4, Mat4, vec3, Vec3 } from "wgpu-matrix";
 import { ObjectID } from "../scene/scene";
 import { BoundingBox } from "./boundingBox";
 import { Frustum } from "./frustum";
+import { Geometry } from "./geometry";
 import { Intersection } from "./intersection";
 import { Ray } from "./ray";
 
@@ -20,7 +21,7 @@ class LineBoundingBoxHeirarchyNode {
   private axis!: Axis;
 
   constructor(
-    private id: ObjectID,
+    private geometry: Geometry,
     private verts: Vec3[],
     indices: number[],
     private depth: number = 0
@@ -64,8 +65,8 @@ class LineBoundingBoxHeirarchyNode {
         }
       }
 
-      this.child1 = new LineBoundingBoxHeirarchyNode(this.id, verts, child1Indices, this.depth + 1);
-      this.child2 = new LineBoundingBoxHeirarchyNode(this.id, verts, child2Indices, this.depth + 1);
+      this.child1 = new LineBoundingBoxHeirarchyNode(this.geometry, verts, child1Indices, this.depth + 1);
+      this.child2 = new LineBoundingBoxHeirarchyNode(this.geometry, verts, child2Indices, this.depth + 1);
     }
   }
 
@@ -105,10 +106,13 @@ class LineBoundingBoxHeirarchyNode {
       // time, dist
       var closestIntersection: Intersection | null = null;
       for (let i = 0; i < this.indices!.length; i += 2) {
-        var intersection: Intersection | null = ray.almostIntersectLine(this.id, verts[this.indices![i]], verts[this.indices![i + 1]], pixels);
+        var intersection: Intersection | null = ray.almostIntersectLine(this.geometry.getID(),
+          verts[this.indices![i]],
+          verts[this.indices![i + 1]],
+          pixels);
         if (intersection !== null) {
           if (closestIntersection === null) closestIntersection = intersection;
-          else closestIntersection = (closestIntersection.dist < intersection.dist) ? closestIntersection : intersection;
+          else closestIntersection = (closestIntersection.screenSpaceDist < intersection.screenSpaceDist) ? closestIntersection : intersection;
         }
       }
       return closestIntersection;
@@ -143,7 +147,10 @@ export class LineBoundingBoxHeirarchy {
 
   private root: LineBoundingBoxHeirarchyNode;
 
-  constructor(id: ObjectID, verts: Vec3[], indices: number[]) {
+  constructor(
+    private geometry: Geometry,
+    private verts: Vec3[],
+    indices: number[]) {
     // remove degenerate edges, they can cause infinite loop.
     let reducedIndices: number[] = [];
     for (let i = 0; i < indices.length; i += 2) {
@@ -153,7 +160,7 @@ export class LineBoundingBoxHeirarchy {
         reducedIndices.push(indices[i], indices[i + 1]);
       }
     }
-    this.root = new LineBoundingBoxHeirarchyNode(id, verts, reducedIndices);
+    this.root = new LineBoundingBoxHeirarchyNode(this.geometry, verts, reducedIndices);
   }
 
   public print(): void {
@@ -161,8 +168,14 @@ export class LineBoundingBoxHeirarchy {
     this.root.print();
   }
 
-  public almostIntersect(ray: Ray, verts: Vec3[], pixels: number): Intersection | null {
-    return this.root.almostIntersect(ray, verts, pixels);
+  public almostIntersect(ray: Ray, pixels: number): Intersection | null {
+    const model: Mat4 = this.geometry.getModel();
+    const scale: number = vec3.length(mat4.getScaling(model)) / Math.sqrt(3);
+    // TODO: think about pixels issue
+    const objectSpaceRay: Ray = Ray.transform(ray, mat4.inverse(model));
+    const res: Intersection | null = this.root.almostIntersect(objectSpaceRay, this.verts, pixels);
+    res?.transform(model);
+    return res;
   }
 
   public isWithinFrustum(frustum: Frustum, inclusive: boolean): boolean {

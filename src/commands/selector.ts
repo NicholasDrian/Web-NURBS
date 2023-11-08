@@ -45,6 +45,7 @@ export class Selector {
 
   public addToSelection(...geometry: Geometry[]): void {
     for (let geo of geometry) {
+      console.log("selected", geo.getID(), geo.getTypeName());
       this.selection.add(geo.getID());
       geo.select();
     }
@@ -69,9 +70,10 @@ export class Selector {
     for (let intersection of intersections) {
 
       if (intersection.object === 0) continue; // construction plane intersection
+
       let geo: Geometry = INSTANCE.getScene().getGeometry(intersection.object);
-      if (sub) {
-        while (geo.getParent()) geo = geo.getParent()!;
+      if (!sub) {
+        while (geo.getParent() !== null) geo = geo.getParent()!;
         if (geometryAtPixel.has(geo)) continue;
       }
       geometryAtPixel.add(geo);
@@ -127,7 +129,6 @@ export class Selector {
     for (const obj of within) {
       const geo: Geometry = INSTANCE.getScene().getGeometry(obj);
       this.addToSelection(geo);
-      console.log("selected", geo.getID(), geo.getTypeName());
     }
   }
 

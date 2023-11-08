@@ -139,8 +139,7 @@ export class InstancedMeshBoundingBoxHeirarchy {
   }
 
   public intersectInstance(ray: Ray, instance: number): Intersection | null {
-    const objectSpaceRay: Ray = Ray.transform(ray, mat4.inverse(this.mesh.getTransform(instance)));
-    return this.meshBBH.firstIntersection(objectSpaceRay, this.mesh.getVerts());
+    return this.meshBBH.firstIntersection(ray, this.mesh.getVerts());
   }
 
 

@@ -29,8 +29,7 @@ export class Lines extends Geometry {
   }
 
   public intersect(ray: Ray): Intersection | null {
-    const objectSpaceRay = Ray.transform(ray, mat4.inverse(this.getModel()));
-    return this.boundingBoxHeirarchy.almostIntersect(objectSpaceRay, this.points, 20);
+    return this.boundingBoxHeirarchy.almostIntersect(ray, 20);
   }
 
   public getBoundingBox(): BoundingBox {
@@ -42,7 +41,7 @@ export class Lines extends Geometry {
   }
 
   public isWithinFrustum(frustum: Frustum, inclusive: boolean): boolean {
-    throw new Error("Method not implemented.");
+    return this.boundingBoxHeirarchy.isWithinFrustum(frustum, inclusive);
   }
 
   public override getTypeName(): string {
@@ -67,7 +66,7 @@ export class Lines extends Geometry {
     INSTANCE.getScene().addRenderLines(renderLinesObj);
     this.renderLines = renderLinesObj.getID();
     this.updateBoundingBox();
-    this.boundingBoxHeirarchy = new LineBoundingBoxHeirarchy(this.getID(), this.points, this.indices);
+    this.boundingBoxHeirarchy = new LineBoundingBoxHeirarchy(this, this.points, this.indices);
   }
 
   private updateBoundingBox(): void {

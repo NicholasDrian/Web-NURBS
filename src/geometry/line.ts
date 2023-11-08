@@ -29,8 +29,7 @@ export class Line extends Geometry {
   }
 
   public intersect(ray: Ray): Intersection | null {
-    const objectSpaceRay: Ray = Ray.transform(ray, mat4.inverse(this.getModel()));
-    return objectSpaceRay.almostIntersectLine(this.getID(), this.start, this.end, 20);
+    return ray.almostIntersectLine(this.getID(), this.start, this.end, 20);
   }
 
   public getBoundingBox(): BoundingBox {

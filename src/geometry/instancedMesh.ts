@@ -75,8 +75,7 @@ export class InstancedMesh extends Geometry {
   }
 
   public intersect(ray: Ray): Intersection | null {
-    const objectSpaceRay: Ray = Ray.transform(ray, mat4.inverse(this.getModel()));
-    return this.boundingBoxHeirarchy.intersect(objectSpaceRay, this.verts);
+    return this.boundingBoxHeirarchy.intersect(ray, this.verts);
   }
 
   public getTransform(intance: number): Mat4 {
