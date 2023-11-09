@@ -2,7 +2,7 @@ import { INSTANCE } from "../cad"
 import { mat4, Mat4 } from "wgpu-matrix"
 import { Geometry } from "../geometry/geometry";
 import { RenderID } from "../scene/scene";
-import { HOVER_BIT, SELECTED_BIT } from "./flags";
+import { CONSTANT_SCREEN_SIZE_BIT, HOVER_BIT, SELECTED_BIT } from "./flags";
 import { swizzleYZ } from "../utils/math";
 
 export class RenderMesh {
@@ -110,6 +110,9 @@ export class RenderMesh {
     else this.flags[0] &= ~SELECTED_BIT;
     if (this.parent.isHovered()) this.flags[0] |= HOVER_BIT;
     else this.flags[0] &= ~HOVER_BIT;
+    if (this.parent.isConstantScreenSize()) this.flags[0] |= CONSTANT_SCREEN_SIZE_BIT;
+    else this.flags[0] &= ~CONSTANT_SCREEN_SIZE_BIT;
+
     INSTANCE.getRenderer().getDevice().queue.writeBuffer(this.flagsBuffer, 0, this.flags);
   }
 
@@ -131,6 +134,7 @@ export class RenderMesh {
       ]
     });
   }
+
 
   static getVertexBufferLayout(): GPUVertexBufferLayout {
     return this.vertexBufferLayout;

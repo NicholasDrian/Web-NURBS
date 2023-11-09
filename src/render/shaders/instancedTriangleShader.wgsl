@@ -33,7 +33,6 @@ fn vertexMain(
   var worldSpacePosition = toWorldSpace * objectSpacePosition.xzyw;
 
   if ((flags & CONSTANT_SCREEN_SIZE_BIT) != 0) {
-    // scale object by distance (in model space)
     var dist: f32 = distance(worldSpacePosition.xyz, cameraPos.xzy);
     worldSpacePosition = toWorldSpace * vec4<f32>(objectSpacePosition.xzy * dist, objectSpacePosition.w);
   } 

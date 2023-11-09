@@ -39,7 +39,6 @@ export class InstancedMesh extends Geometry {
       new Int32Array(this.indices),
       transforms
     );
-    renderMeshObj.setConstantScreenSize(true);
     INSTANCE.getScene().addRenderMeshInstanced(renderMeshObj);
     this.renderMesh = renderMeshObj.getID();
 

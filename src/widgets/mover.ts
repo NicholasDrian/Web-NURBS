@@ -11,8 +11,9 @@ import { ObjectID } from "../scene/scene";
 
 export class Mover {
 
-  private static readonly toXZPlane: Mat4 = mat4.rotateX(mat4.identity(), Math.PI / 2);
-  private static readonly toYZPlane: Mat4 = mat4.rotateY(mat4.identity(), Math.PI / -2);
+  private static readonly toXZPlane: Mat4 = mat4.uniformScale(mat4.rotateX(mat4.identity(), Math.PI / 2), 0.02);
+  private static readonly toYZPlane: Mat4 = mat4.uniformScale(mat4.rotateY(mat4.identity(), Math.PI / -2), 0.02);
+  private static readonly toXYPlane: Mat4 = mat4.uniformScale(mat4.identity(), 0.05);
 
   private originalModel!: Mat4;
   private currentModel!: Mat4;
@@ -73,6 +74,7 @@ export class Mover {
     this.surfaces = new Group([this.xyPlaneMover, this.xzPlaneMover, this.yzPlaneMover, this.xSpinner, this.ySpinner, this.zSpinner]);
     this.surfaces.hide();
     this.surfaces.setOverlay(true);
+    this.surfaces.setConstantScreenSize(true);
     INSTANCE.getScene().addGeometry(this.surfaces);
 
     // cleanup
@@ -124,8 +126,8 @@ export class Mover {
       dy > 0 ? -1 : 1,
       dz > 0 ? -1 : 1,
     ));
-    this.xyPlaneMover.setModel(flipper);
-    this.zSpinner.setModel(flipper);
+    this.xyPlaneMover.setModel(mat4.mul(flipper, Mover.toXYPlane));
+    this.zSpinner.setModel(mat4.mul(flipper, Mover.toXYPlane));
     this.xzPlaneMover.setModel(mat4.mul(flipper, Mover.toXZPlane));
     this.ySpinner.setModel(mat4.mul(flipper, Mover.toXZPlane));
     this.yzPlaneMover.setModel(mat4.mul(flipper, Mover.toYZPlane));

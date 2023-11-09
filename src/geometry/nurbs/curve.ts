@@ -117,6 +117,7 @@ export class Curve extends Geometry {
     this.polyline = new PolyLine(this, samples,);
     this.controlCage = new PolyLine(this, controlPointArray);
     this.controlPoints = new Points(this, controlPointArray);
+    this.controlPoints.setConstantScreenSize(true);
 
   }
 

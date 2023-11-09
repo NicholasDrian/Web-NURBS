@@ -54,14 +54,6 @@ export class RenderMeshInstanced extends RenderMesh {
     });
   }
 
-  public setConstantScreenSize(b: boolean): void {
-    if (b) {
-      this.flags[0] |= CONSTANT_SCREEN_SIZE_BIT;
-    } else {
-      this.flags[0] &= ~CONSTANT_SCREEN_SIZE_BIT;
-    }
-  }
-
   public override draw(pass: GPURenderPassEncoder): void {
     if (this.parent.isHidden()) return;
     pass.setBindGroup(0, this.bindGroup);

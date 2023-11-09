@@ -4,7 +4,7 @@ import { Geometry } from "../geometry/geometry";
 import { Material, MaterialName } from "../materials/material";
 import { RenderID } from "../scene/scene";
 import { swizzleYZ } from "../utils/math";
-import { HOVER_BIT, SELECTED_BIT } from "./flags";
+import { CONSTANT_SCREEN_SIZE_BIT, HOVER_BIT, SELECTED_BIT } from "./flags";
 
 export class RenderLines {
 
@@ -97,6 +97,8 @@ export class RenderLines {
     else this.flags[0] &= ~SELECTED_BIT;
     if (this.parent.isHovered()) this.flags[0] |= HOVER_BIT;
     else this.flags[0] &= ~HOVER_BIT;
+    if (this.parent.isConstantScreenSize()) this.flags[0] |= CONSTANT_SCREEN_SIZE_BIT;
+    else this.flags[0] &= ~CONSTANT_SCREEN_SIZE_BIT;
     INSTANCE.getRenderer().getDevice().queue.writeBuffer(this.flagsBuffer, 0, this.flags);
   }
 

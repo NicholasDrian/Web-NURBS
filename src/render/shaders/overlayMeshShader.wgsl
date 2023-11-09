@@ -27,10 +27,18 @@ fn vertexMain(
     @location(1) normal : vec4<f32>
     ) -> VertexOutput
 {
+  var worldSpacePosition = model * position.xzyw;
+
+  if ((flags & CONSTANT_SCREEN_SIZE_BIT) != 0) {
+    var dist: f32 = distance(worldSpacePosition.xyz, cameraPos.xzy);
+    worldSpacePosition = model * vec4<f32>(position.xzy * dist, position.w);
+  } 
+
   var output: VertexOutput;
   output.normal = normal.xzyw;
-  output.position = cameraViewProj * model * position.xzyw;
+  output.position = cameraViewProj * worldSpacePosition;
   return output;
+
 }
 
 
