@@ -15,6 +15,9 @@ export class Group extends Geometry {
     material: MaterialName | null = null
   ) {
     super(parent, model, material);
+    for (const child of children) {
+      child.setParent(this);
+    }
   }
 
   public override getBoundingBox(): BoundingBox {
@@ -29,11 +32,31 @@ export class Group extends Geometry {
   }
 
   public isWithinFrustum(frustum: Frustum, inclusive: boolean): boolean {
-    throw new Error("Method not implemented.");
+    if (this.isHidden()) return false;
+    if (inclusive) {
+      for (const geo of this.children) {
+        if (geo.isWithinFrustum(frustum, inclusive)) return true;
+      }
+      return false;
+    } else {
+      for (const geo of this.children) {
+        if (!geo.isWithinFrustum(frustum, inclusive)) return false;
+      }
+      return true;
+    }
   }
 
   public override intersect(ray: Ray): Intersection | null {
-    throw new Error("not implemented");
+    if (this.isHidden()) return null;
+    var res: Intersection | null = null;
+    for (const child of this.children) {
+      const intersection: Intersection | null = child.intersect(ray);
+      if (intersection) {
+        if (!res) res = intersection;
+        else if (intersection.time < res.time) res = intersection;
+      }
+    }
+    return res;
   }
 
 }

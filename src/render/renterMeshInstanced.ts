@@ -63,6 +63,7 @@ export class RenderMeshInstanced extends RenderMesh {
   }
 
   public override draw(pass: GPURenderPassEncoder): void {
+    if (this.parent.isHidden()) return;
     pass.setBindGroup(0, this.bindGroup);
     pass.setVertexBuffer(0, this.vertexBuffer);
     pass.setIndexBuffer(this.indexBuffer, "uint32");

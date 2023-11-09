@@ -42,6 +42,7 @@ export class Mesh extends Geometry {
   }
 
   public intersect(ray: Ray): Intersection | null {
+    if (this.isHidden()) return null;
     return this.boundingBoxHeirarchy.firstIntersection(ray);
   }
 
@@ -50,6 +51,7 @@ export class Mesh extends Geometry {
   }
 
   public isWithinFrustum(frustum: Frustum, inclusive: boolean): boolean {
+    if (this.isHidden()) return false;
     return this.boundingBoxHeirarchy.isWithinFrustum(frustum, inclusive);
   }
 

@@ -29,6 +29,7 @@ export class Line extends Geometry {
   }
 
   public intersect(ray: Ray): Intersection | null {
+    if (this.isHidden()) return null;
     return ray.almostIntersectLine(this.getID(), this.start, this.end, 10);
   }
 
@@ -52,7 +53,7 @@ export class Line extends Geometry {
   }
 
   public isWithinFrustum(frustum: Frustum, inclusive: boolean): boolean {
-    console.log("testing line in frustum");
+    if (this.isHidden()) return false;
     if (inclusive) return frustum.containsLinePartially(this.start, this.end);
     return frustum.containsLineFully(this.start, this.end);
   }

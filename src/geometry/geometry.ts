@@ -12,6 +12,7 @@ export abstract class Geometry {
 
   private selected: boolean = false;
   private hovered: boolean = false;
+  private showing: boolean = true;
   private id: ObjectID;
 
 
@@ -30,6 +31,10 @@ export abstract class Geometry {
 
   public setModel(model: Mat4): void {
     this.model = model;
+  }
+
+  public setParent(parent: Geometry): void {
+    this.parent = parent;
   }
 
   public getModelRecursive(): Mat4 {
@@ -80,6 +85,18 @@ export abstract class Geometry {
 
   public getID(): ObjectID {
     return this.id;
+  }
+
+  public hide(): void {
+    this.showing = false;
+  }
+
+  public show(): void {
+    this.showing = true;
+  }
+
+  public isHidden(): boolean {
+    return !this.showing || (this.parent && this.parent.isHidden()) || false;
   }
 
   public setMaterial(name: MaterialName) {

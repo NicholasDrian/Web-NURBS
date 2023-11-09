@@ -53,6 +53,7 @@ export class Surface extends Geometry {
 
   public intersect(ray: Ray): Intersection | null {
     // TODO: come back to this...
+    if (this.isHidden()) return null;
     return this.mesh!.intersect(ray);
   }
 
@@ -113,6 +114,7 @@ export class Surface extends Geometry {
   }
 
   public isWithinFrustum(frustum: Frustum, inclusive: boolean): boolean {
+    if (this.isHidden()) return false;
     return this.mesh!.isWithinFrustum(frustum, inclusive);
   }
 

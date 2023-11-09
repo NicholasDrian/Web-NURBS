@@ -82,6 +82,7 @@ export class Points extends Geometry {
   }
 
   public isWithinFrustum(frustum: Frustum, inclusive: boolean): boolean {
+    if (this.isHidden()) return false;
     throw new Error("Method not implemented.");
   }
 
@@ -90,6 +91,7 @@ export class Points extends Geometry {
     return this.instancedMesh!.getBoundingBox();
   }
   public override intersect(ray: Ray): Intersection | null {
+    if (this.isHidden()) return null;
     return this.instancedMesh!.intersect(ray);
   }
 

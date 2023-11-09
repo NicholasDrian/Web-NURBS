@@ -68,7 +68,7 @@ class CAD {
     this.mover = new Mover();
 
 
-    //addTestSceneComplex();
+    addTestSceneComplex();
     // addTestSceneLine();
     // addTestSceneCurve();
     // addTestSceneArc();
@@ -164,6 +164,10 @@ class CAD {
 
   public getSelector(): Selector {
     return this.selector;
+  }
+
+  public getMover(): Mover {
+    return this.mover;
   }
 
 }

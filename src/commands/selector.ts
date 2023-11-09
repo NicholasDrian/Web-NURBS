@@ -33,6 +33,7 @@ export class Selector {
     }
     this.selection.clear();
     this.transform = mat4.identity();
+    INSTANCE.getMover().updatedSelection();
   }
 
   public updateTransform(mat: Mat4): void {
@@ -49,6 +50,7 @@ export class Selector {
       this.selection.add(geo.getID());
       geo.select();
     }
+    INSTANCE.getMover().updatedSelection();
   }
 
   public removeFromSelection(...geometry: Geometry[]): void {
@@ -56,6 +58,7 @@ export class Selector {
       this.selection.delete(geo.getID());
       geo.unSelect();
     }
+    INSTANCE.getMover().updatedSelection();
   }
 
   public toggleSelectionAtPixel(x: number, y: number, sub: boolean): void {

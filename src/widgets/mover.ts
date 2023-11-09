@@ -1,21 +1,39 @@
 import { mat4, Mat4, vec3, Vec3, vec4 } from "wgpu-matrix";
 import { INSTANCE } from "../cad";
+import { BoundingBox } from "../geometry/boundingBox";
+import { Geometry } from "../geometry/geometry";
+import { Group } from "../geometry/group";
 import { createArc } from "../geometry/nurbs/arc";
 import { Curve } from "../geometry/nurbs/curve";
 import { loft } from "../geometry/nurbs/loft";
 import { Surface } from "../geometry/nurbs/surface";
+import { ObjectID } from "../scene/scene";
 
 export class Mover {
 
-  private originalModel: Mat4;
-  private currentModel: Mat4;
+  private static readonly toXZPlane: Mat4 = mat4.rotateX(mat4.identity(), Math.PI / 2);
+  private static readonly toYZPlane: Mat4 = mat4.rotateY(mat4.identity(), Math.PI / -2);
+
+  private originalModel!: Mat4;
+  private currentModel!: Mat4;
   private enabled: boolean;
+  private transformBuffer: GPUBuffer;
+  private surfaces!: Group;
+  private xyPlaneMover!: Surface;
+  private xzPlaneMover!: Surface;
+  private yzPlaneMover!: Surface;
+  private xSpinner!: Surface;
+  private ySpinner!: Surface;
+  private zSpinner!: Surface;
 
   constructor() {
-    this.originalModel = mat4.identity();
-    this.currentModel = mat4.identity();
     this.enabled = false;
-    this.currentModel = this.originalModel;
+    this.transformBuffer = INSTANCE.getRenderer().getDevice().createBuffer({
+      label: "selection transform buffer",
+      size: 64,
+      usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST
+    });
+    INSTANCE.getRenderer().getDevice().queue.writeBuffer(this.transformBuffer, 0, <Float32Array>mat4.identity());
     this.build();
   }
 
@@ -39,44 +57,24 @@ export class Mover {
     const spinnerInner: Curve = createArc(origin, xAxis, yAxis, Math.sqrt(8), 0, Math.PI / 2);
     const spinnerOuter: Curve = createArc(origin, xAxis, yAxis, Math.sqrt(8) + 1, 0, Math.PI / 2);
 
-    // create xy plane surfaces
-    const xyPlaneMover: Surface = loft([planeMoverInner, planeMoverOuter], 1);
-    xyPlaneMover.setMaterial("blue");
-    const zSpinner: Surface = loft([spinnerInner, spinnerOuter], 1);
-    zSpinner.setMaterial("blue");
-    INSTANCE.getScene().addGeometry(xyPlaneMover);
-    INSTANCE.getScene().addGeometry(zSpinner);
+    // create surfaces
+    this.xyPlaneMover = loft([planeMoverInner, planeMoverOuter], 1);
+    this.xyPlaneMover.setMaterial("blue");
+    this.zSpinner = loft([spinnerInner, spinnerOuter], 1);
+    this.zSpinner.setMaterial("blue");
+    this.xzPlaneMover = loft([planeMoverInner, planeMoverOuter], 1);
+    this.xzPlaneMover.setMaterial("green");
+    this.ySpinner = loft([spinnerInner, spinnerOuter], 1);
+    this.ySpinner.setMaterial("green");
+    this.yzPlaneMover = loft([planeMoverInner, planeMoverOuter], 1);
+    this.yzPlaneMover.setMaterial("red");
+    this.xSpinner = loft([spinnerInner, spinnerOuter], 1);
+    this.xSpinner.setMaterial("red");
+    this.surfaces = new Group([this.xyPlaneMover, this.xzPlaneMover, this.yzPlaneMover, this.xSpinner, this.ySpinner, this.zSpinner]);
+    this.surfaces.hide();
+    INSTANCE.getScene().addGeometry(this.surfaces);
 
-    // move construction lines
-    planeMoverInner.setModel(mat4.rotateX(mat4.identity(), Math.PI / 2));
-    planeMoverOuter.setModel(mat4.rotateX(mat4.identity(), Math.PI / 2));
-    spinnerInner.setModel(mat4.rotateX(mat4.identity(), Math.PI / 2));
-    spinnerOuter.setModel(mat4.rotateX(mat4.identity(), Math.PI / 2));
-
-    // create xz plane surfaces
-    const xzPlaneMover: Surface = loft([planeMoverInner, planeMoverOuter], 1);
-    xzPlaneMover.setMaterial("green");
-    const ySpinner: Surface = loft([spinnerInner, spinnerOuter], 1);
-    ySpinner.setMaterial("green");
-    INSTANCE.getScene().addGeometry(xzPlaneMover);
-    INSTANCE.getScene().addGeometry(ySpinner);
-
-    // move construction lines
-    planeMoverInner.setModel(mat4.rotateY(mat4.identity(), Math.PI / -2));
-    planeMoverOuter.setModel(mat4.rotateY(mat4.identity(), Math.PI / -2));
-    spinnerInner.setModel(mat4.rotateY(mat4.identity(), Math.PI / -2));
-    spinnerOuter.setModel(mat4.rotateY(mat4.identity(), Math.PI / -2));
-
-    // create yz plane surfaces
-    const yzPlaneMover: Surface = loft([planeMoverInner, planeMoverOuter], 1);
-    yzPlaneMover.setMaterial("red");
-    const xSpinner: Surface = loft([spinnerInner, spinnerOuter], 1);
-    xSpinner.setMaterial("red");
-    console.log(xSpinner.getColor());
-    INSTANCE.getScene().addGeometry(yzPlaneMover);
-    INSTANCE.getScene().addGeometry(xSpinner);
-
-    // clean up
+    // cleanup
     spinnerInner.destroy();
     spinnerOuter.destroy();
     planeMoverInner.destroy();
@@ -84,20 +82,39 @@ export class Mover {
 
   }
 
-  public init(position: Vec3): void {
-    throw new Error("todo");
+  public updatedSelection(): void {
+    const selection: Set<ObjectID> = INSTANCE.getSelector().getSelection();
+    if (selection.size === 0) {
+      console.log("disabling");
+      this.enabled = false;
+      this.surfaces.hide();
+    } else {
+      console.log("enabling");
+      this.enabled = true;
+      this.surfaces.show();
+      const selectionBB: BoundingBox = new BoundingBox();
+      for (const id of selection) {
+        const geo: Geometry = INSTANCE.getScene().getGeometry(id);
+        selectionBB.addBoundingBox(geo.getBoundingBox());
+      }
+      this.originalModel = mat4.translate(mat4.identity(), selectionBB.getCenter());
+      this.currentModel = mat4.clone(this.originalModel);
+      this.surfaces.setModel(this.originalModel);
+    }
   }
 
   public mouseDown(id: number): void {
-    throw new Error("todo");
+    this.enabled = true;
   }
 
   public mouseUp(): void {
-    throw new Error("todo");
+    this.enabled = false;
   }
 
-  public mouseMove(): void {
+  public tick(): void {
+    if (!this.enabled) return;
     const cameraPos: Vec3 = INSTANCE.getScene().getCamera().getPosition();
+
   }
 
   public show(): void {
@@ -108,8 +125,12 @@ export class Mover {
 
   }
 
-  public getTransform(): Mat4 {
+  private getTransform(): Mat4 {
     return mat4.mul(this.currentModel, mat4.inverse(this.originalModel));
+  }
+
+  public getSelectionTransformBuffer(): GPUBuffer {
+    return this.transformBuffer;
   }
 
 

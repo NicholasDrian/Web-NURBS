@@ -50,7 +50,7 @@ export class Curve extends Geometry {
   }
 
   public intersect(ray: Ray): Intersection | null {
-    console.log("intersecting curve id:", this.getID());
+    if (this.isHidden()) return null;
     return this.polyline!.intersect(ray);
   }
 
@@ -169,6 +169,7 @@ export class Curve extends Geometry {
   }
 
   public isWithinFrustum(frustum: Frustum, inclusive: boolean): boolean {
+    if (this.isHidden()) return false;
     return this.polyline!.isWithinFrustum(frustum, inclusive);
   }
 

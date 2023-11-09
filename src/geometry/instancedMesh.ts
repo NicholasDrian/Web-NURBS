@@ -50,6 +50,7 @@ export class InstancedMesh extends Geometry {
   }
 
   public isWithinFrustum(frustum: Frustum, inclusive: boolean): boolean {
+    if (this.isHidden()) return false;
     throw new Error("Method not implemented.");
   }
 
@@ -75,6 +76,7 @@ export class InstancedMesh extends Geometry {
   }
 
   public intersect(ray: Ray): Intersection | null {
+    if (this.isHidden()) return null;
     return this.boundingBoxHeirarchy.intersect(ray, this.verts);
   }
 

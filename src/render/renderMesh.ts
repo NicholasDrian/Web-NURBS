@@ -81,6 +81,7 @@ export class RenderMesh {
   }
 
   public draw(pass: GPURenderPassEncoder): void {
+    if (this.parent.isHidden()) return;
     pass.setBindGroup(0, this.bindGroup);
     pass.setVertexBuffer(0, this.vertexBuffer);
     pass.setIndexBuffer(this.indexBuffer, "uint32");
@@ -109,7 +110,6 @@ export class RenderMesh {
   }
 
   protected updateBindGroup(): void {
-    console.log(this.parent.getTypeName(), this.parent.getColor());
     this.bindGroup = INSTANCE.getRenderer().getDevice().createBindGroup({
       label: "render mesh bind group",
       layout: INSTANCE.getRenderer().getBindGroupLayout(),
