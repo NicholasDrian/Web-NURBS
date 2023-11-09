@@ -16,6 +16,7 @@ export class Scene {
   private camera: Camera;
   private constructionPlane!: ConstructionPlane;
 
+
   private renderLines: Map<RenderID, RenderLines> = new Map<RenderID, RenderLines>();
   private renderMeshes: Map<RenderID, RenderMesh> = new Map<RenderID, RenderMesh>();
   private renderPoints: Map<RenderID, RenderPoints> = new Map<RenderID, RenderPoints>();
@@ -75,57 +76,25 @@ export class Scene {
     return this.renderIDGenerator++;
   }
 
-  public addRenderMesh(mesh: RenderMesh): void {
-    this.renderMeshes.set(mesh.getID(), mesh);
-  }
-  public addRenderMeshInstanced(mesh: RenderMeshInstanced): void {
-    this.renderMeshesInstanced.set(mesh.getID(), mesh);
-  }
-  public addRenderLines(lines: RenderLines): void {
-    this.renderLines.set(lines.getID(), lines);
-  }
-  public addRenderPoints(points: RenderPoints): void {
-    this.renderPoints.set(points.getID(), points);
-  }
+  public addRenderMesh(mesh: RenderMesh): void { this.renderMeshes.set(mesh.getID(), mesh); }
+  public addRenderMeshInstanced(mesh: RenderMeshInstanced): void { this.renderMeshesInstanced.set(mesh.getID(), mesh); }
+  public addRenderLines(lines: RenderLines): void { this.renderLines.set(lines.getID(), lines); }
+  public addRenderPoints(points: RenderPoints): void { this.renderPoints.set(points.getID(), points); }
 
-  public getLines(id: RenderID): RenderLines {
-    return <RenderLines>this.renderLines.get(id);
-  }
-  public getMesh(id: RenderID): RenderMesh {
-    return <RenderMesh>this.renderMeshes.get(id);
-  }
-  public getPoints(id: RenderID): RenderPoints {
-    return <RenderPoints>this.renderPoints.get(id);
-  }
-  public getMeshInstanced(id: RenderID): RenderMeshInstanced {
-    return <RenderMeshInstanced>this.renderMeshes.get(id);
-  }
+  public getLines(id: RenderID): RenderLines { return this.renderLines.get(id)!; }
+  public getMesh(id: RenderID): RenderMesh { return this.renderMeshes.get(id)!; }
+  public getPoints(id: RenderID): RenderPoints { return this.renderPoints.get(id)!; }
+  public getMeshInstanced(id: RenderID): RenderMeshInstanced { return this.renderMeshesInstanced.get(id)!; }
 
-  public getAllLines(): IterableIterator<RenderLines> {
-    return this.renderLines.values();
-  }
-  public getAllMeshes(): IterableIterator<RenderMesh> {
-    return this.renderMeshes.values();
-  }
-  public getAllPoints(): IterableIterator<RenderPoints> {
-    return this.renderPoints.values();
-  }
-  public getAllMeshesInstanced(): IterableIterator<RenderMeshInstanced> {
-    return this.renderMeshesInstanced.values();
-  }
+  public getAllLines(): IterableIterator<RenderLines> { return this.renderLines.values(); }
+  public getAllMeshes(): IterableIterator<RenderMesh> { return this.renderMeshes.values(); }
+  public getAllPoints(): IterableIterator<RenderPoints> { return this.renderPoints.values(); }
+  public getAllMeshesInstanced(): IterableIterator<RenderMeshInstanced> { return this.renderMeshesInstanced.values(); }
 
-  public removeMesh(id: RenderID): void {
-    this.renderMeshes.delete(id);
-  }
-  public removeLines(id: RenderID): void {
-    this.renderLines.delete(id);
-  }
-  public removePoints(id: RenderID): void {
-    this.renderPoints.delete(id);
-  }
-  public removeMeshInstanced(id: RenderID): void {
-    this.renderMeshesInstanced.delete(id);
-  }
+  public removeMesh(id: RenderID): void { this.renderMeshes.delete(id); }
+  public removeLines(id: RenderID): void { this.renderLines.delete(id); }
+  public removePoints(id: RenderID): void { this.renderPoints.delete(id); }
+  public removeMeshInstanced(id: RenderID): void { this.renderMeshesInstanced.delete(id); }
 
   public tick(): void {
 

@@ -72,6 +72,7 @@ export class Mover {
     this.xSpinner.setMaterial("red");
     this.surfaces = new Group([this.xyPlaneMover, this.xzPlaneMover, this.yzPlaneMover, this.xSpinner, this.ySpinner, this.zSpinner]);
     this.surfaces.hide();
+    this.surfaces.setOverlay(true);
     INSTANCE.getScene().addGeometry(this.surfaces);
 
     // cleanup
@@ -114,14 +115,21 @@ export class Mover {
   public tick(): void {
     if (!this.enabled) return;
     const cameraPos: Vec3 = INSTANCE.getScene().getCamera().getPosition();
-
-  }
-
-  public show(): void {
-
-  }
-
-  public hide(): void {
+    const thisPos: Vec3 = mat4.getTranslation(this.originalModel);
+    const dx: number = thisPos[0] - cameraPos[0];
+    const dy: number = thisPos[1] - cameraPos[1];
+    const dz: number = thisPos[2] - cameraPos[2];
+    var flipper: Mat4 = mat4.scale(mat4.identity(), vec3.create(
+      dx > 0 ? -1 : 1,
+      dy > 0 ? -1 : 1,
+      dz > 0 ? -1 : 1,
+    ));
+    this.xyPlaneMover.setModel(flipper);
+    this.zSpinner.setModel(flipper);
+    this.xzPlaneMover.setModel(mat4.mul(flipper, Mover.toXZPlane));
+    this.ySpinner.setModel(mat4.mul(flipper, Mover.toXZPlane));
+    this.yzPlaneMover.setModel(mat4.mul(flipper, Mover.toYZPlane));
+    this.xSpinner.setModel(mat4.mul(flipper, Mover.toYZPlane));
 
   }
 

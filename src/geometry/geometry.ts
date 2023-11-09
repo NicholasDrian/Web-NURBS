@@ -13,8 +13,8 @@ export abstract class Geometry {
   private selected: boolean = false;
   private hovered: boolean = false;
   private showing: boolean = true;
+  private overlay: boolean = false;
   private id: ObjectID;
-
 
   constructor(
     private parent: Geometry | null = null,
@@ -29,8 +29,16 @@ export abstract class Geometry {
   public abstract intersect(ray: Ray): Intersection | null;
   public abstract isWithinFrustum(frustum: Frustum, inclusive: boolean): boolean;
 
+  public isOverlay(): boolean {
+    return this.overlay || (this.parent && this.parent.isOverlay()) || false;
+  }
+
+  public setOverlay(option: boolean) {
+    this.overlay = option;
+  }
+
   public setModel(model: Mat4): void {
-    this.model = model;
+    this.model = mat4.clone(model);
   }
 
   public setParent(parent: Geometry): void {

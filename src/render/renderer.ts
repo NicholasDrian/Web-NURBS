@@ -3,6 +3,7 @@ import triangleShader from "./shaders/triangleShader.wgsl";
 import lineShader from "./shaders/lineShader.wgsl";
 import pointShader from "./shaders/pointShader.wgsl";
 import instancedTriangleShader from "./shaders/instancedTriangleShader.wgsl"
+import overlayMeshShader from "./shaders/overlayMeshShader.wgsl"
 import { Scene } from "../scene/scene"
 import { Pipeline, PipelinePrimitive } from "./pipeline"
 import { INSTANCE } from "../cad";
@@ -21,6 +22,7 @@ export class Renderer {
   private lineShaderModule!: GPUShaderModule;
   private pointShaderModule!: GPUShaderModule;
   private instancedTriangleShaderModule!: GPUShaderModule;
+  private overlayMeshShaderModule!: GPUShaderModule;
 
   private depthTexture!: GPUTexture;
   private renderTarget!: GPUTexture;
@@ -34,6 +36,7 @@ export class Renderer {
   private linePipeline!: Pipeline;
   private pointPipeline!: Pipeline;
   private instancedTrianglePipeline!: Pipeline;
+  private overlayMeshPipeline!: Pipeline;
 
   private clearColor: [number, number, number, number];
 
@@ -108,12 +111,10 @@ export class Renderer {
       label: "triangle shader module",
       code: triangleShader,
     });
-
     this.lineShaderModule = this.device.createShaderModule({
       label: "line shader module",
       code: lineShader,
     });
-
     this.pointShaderModule = this.device.createShaderModule({
       label: "point shader module",
       code: pointShader,
@@ -121,6 +122,10 @@ export class Renderer {
     this.instancedTriangleShaderModule = this.device.createShaderModule({
       label: "instanced triangle shader module",
       code: instancedTriangleShader,
+    });
+    this.overlayMeshShaderModule = this.device.createShaderModule({
+      label: "overlay mesh shader module",
+      code: overlayMeshShader,
     })
 
     this.bindGroupLayout = this.device.createBindGroupLayout({
@@ -194,6 +199,12 @@ export class Renderer {
       [this.bindGroupLayoutInstanced, this.globalUniforms.getLayout()],
       this.instancedTriangleShaderModule,
       PipelinePrimitive.Triangle);
+    this.overlayMeshPipeline = new Pipeline(
+      this.device,
+      this.canvasFormat,
+      [this.bindGroupLayout, this.globalUniforms.getLayout()],
+      this.overlayMeshShaderModule,
+      PipelinePrimitive.Triangle);
   }
 
   public updateScreenSize(): void {
@@ -217,8 +228,14 @@ export class Renderer {
   async render(scene: Scene) {
 
     // TODO: Factor this stuff out of main loop
+
+    this.globalUniforms.tick();
+
+    var drawCallCounter: number = 0;
+
     const encoder: GPUCommandEncoder = this.device.createCommandEncoder();
-    const pass: GPURenderPassEncoder = encoder.beginRenderPass({
+
+    const mainPass: GPURenderPassEncoder = encoder.beginRenderPass({
       colorAttachments: [
         {
           view: this.renderTarget.createView(),
@@ -235,41 +252,68 @@ export class Renderer {
         depthStoreOp: "store"
       }
     });
+    this.globalUniforms.bind(mainPass);
 
-    this.globalUniforms.tick();
-    this.globalUniforms.bind(pass);
-
-    var drawCalls: number = 0;
-
-    pass.setPipeline(this.trianglePipeline.get());
+    mainPass.setPipeline(this.trianglePipeline.get());
     for (let mesh of scene.getAllMeshes()) {
-      mesh.draw(pass);
-      drawCalls++;
+      if (!mesh.isOverlay()) {
+        mesh.draw(mainPass);
+        drawCallCounter++;
+      }
     };
 
-    pass.setPipeline(this.linePipeline.get());
+    mainPass.setPipeline(this.linePipeline.get());
     for (let lines of scene.getAllLines()) {
-      lines.draw(pass);
-      drawCalls++;
+      lines.draw(mainPass);
+      drawCallCounter++;
     };
 
-    pass.setPipeline(this.pointPipeline.get());
+    mainPass.setPipeline(this.pointPipeline.get());
     for (let points of scene.getAllPoints()) {
-      points.draw(pass);
-      drawCalls++;
+      points.draw(mainPass);
+      drawCallCounter++;
     }
 
-    pass.setPipeline(this.instancedTrianglePipeline.get());
+    mainPass.setPipeline(this.instancedTrianglePipeline.get());
     for (let mesh of scene.getAllMeshesInstanced()) {
-      mesh.draw(pass);
-      drawCalls++;
+      mesh.draw(mainPass);
+      drawCallCounter++;
     }
 
-    INSTANCE.getStats().setDrawCalls(drawCalls);
+    mainPass.end();
 
-    pass.end();
+    const overlayPass = encoder.beginRenderPass({
+      colorAttachments: [
+        {
+          view: this.renderTarget.createView(),
+          resolveTarget: this.context.getCurrentTexture().createView(),
+          loadOp: "load",
+          clearValue: this.clearColor,
+          storeOp: "store",
+        },
+      ],
+      depthStencilAttachment: {
+        view: this.depthTexture.createView(),
+        depthClearValue: 1.0,
+        depthLoadOp: "clear",
+        depthStoreOp: "store"
+      }
+    })
+    overlayPass.setPipeline(this.overlayMeshPipeline.get());
+
+    this.globalUniforms.bind(overlayPass);
+    for (let mesh of scene.getAllMeshes()) {
+      if (mesh.isOverlay()) {
+        mesh.draw(overlayPass);
+        drawCallCounter++;
+      }
+    }
+    overlayPass.end();
+
     const commandBuffer = encoder.finish();
     this.device.queue.submit([commandBuffer]);
+
+    INSTANCE.getStats().setDrawCalls(drawCallCounter);
 
     await this.device.queue.onSubmittedWorkDone();
 

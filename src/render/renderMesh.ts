@@ -76,6 +76,10 @@ export class RenderMesh {
 
   }
 
+  public isOverlay(): boolean {
+    return this.parent.isOverlay();
+  }
+
   public getID(): RenderID {
     return this.id;
   }
