@@ -143,9 +143,15 @@ export class Renderer {
           binding: 2, // flags
           visibility: GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT,
           buffer: {},
+        }, {
+          binding: 3, // id
+          visibility: GPUShaderStage.FRAGMENT,
+          buffer: {},
         }
       ]
     });
+
+    // TODO: factor
     this.bindGroupLayoutInstanced = this.device.createBindGroupLayout({
       label: "bind group layout instanced",
       entries: [
@@ -162,7 +168,11 @@ export class Renderer {
           visibility: GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT,
           buffer: {},
         }, {
-          binding: 3, // transform buffer
+          binding: 3, // id
+          visibility: GPUShaderStage.FRAGMENT,
+          buffer: {},
+        }, {
+          binding: 4, // transform buffer
           visibility: GPUShaderStage.VERTEX,
           buffer: { type: "read-only-storage" },
         }

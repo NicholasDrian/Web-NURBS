@@ -66,7 +66,7 @@ export class Lines extends Geometry {
       new Int32Array(this.indices),
     );
     INSTANCE.getScene().addRenderLines(renderLinesObj);
-    this.renderLines = renderLinesObj.getID();
+    this.renderLines = renderLinesObj.getRenderID();
     this.updateBoundingBox();
     this.boundingBoxHeirarchy = new LineBoundingBoxHeirarchy(this, this.points, this.indices);
   }

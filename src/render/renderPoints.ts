@@ -4,8 +4,9 @@ import { Geometry } from "../geometry/geometry";
 import { RenderID } from "../scene/scene";
 import { swizzleYZ } from "../utils/math";
 import { CONSTANT_SCREEN_SIZE_BIT, HOVER_BIT, SELECTED_BIT } from "./flags";
+import { Renderable } from "./renderable";
 
-export class RenderPoints {
+export class RenderPoints extends Renderable {
 
   private static readonly vertexBufferLayout: GPUVertexBufferLayout = {
     arrayStride: 16,
@@ -27,14 +28,15 @@ export class RenderPoints {
 
   private vertexBuffer: GPUBuffer;
   private vertexCount: number;
-  private id: RenderID;
+  private objectIDBuffer: GPUBuffer;
 
   constructor(
     private parent: Geometry,
     points: Vec3[],
   ) {
 
-    this.id = INSTANCE.getScene().generateNewRenderID();
+    super();
+
 
     // vertex
     const verts: number[] = [];
@@ -63,12 +65,18 @@ export class RenderPoints {
     });
     this.flags = new Int32Array([0]);
 
+    //id
+    this.objectIDBuffer = INSTANCE.getRenderer().getDevice().createBuffer({
+      label: "id buffer",
+      size: 4,
+      usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+    })
+    const objectIDArray: Int32Array = new Int32Array([this.parent.getID()]);
+    INSTANCE.getRenderer().getDevice().queue.writeBuffer(this.objectIDBuffer, 0, objectIDArray);
+
     this.update();
   }
 
-  public getID(): RenderID {
-    return this.id;
-  }
 
   public draw(pass: GPURenderPassEncoder): void {
     if (this.parent.isHidden()) return;
@@ -113,6 +121,9 @@ export class RenderPoints {
         }, {
           binding: 2,
           resource: { buffer: this.flagsBuffer }
+        }, {
+          binding: 3,
+          resource: { buffer: this.objectIDBuffer }
         }
       ]
     });

@@ -76,10 +76,10 @@ export class Scene {
     return this.renderIDGenerator++;
   }
 
-  public addRenderMesh(mesh: RenderMesh): void { this.renderMeshes.set(mesh.getID(), mesh); }
-  public addRenderMeshInstanced(mesh: RenderMeshInstanced): void { this.renderMeshesInstanced.set(mesh.getID(), mesh); }
-  public addRenderLines(lines: RenderLines): void { this.renderLines.set(lines.getID(), lines); }
-  public addRenderPoints(points: RenderPoints): void { this.renderPoints.set(points.getID(), points); }
+  public addRenderMesh(mesh: RenderMesh): void { this.renderMeshes.set(mesh.getRenderID(), mesh); }
+  public addRenderMeshInstanced(mesh: RenderMeshInstanced): void { this.renderMeshesInstanced.set(mesh.getRenderID(), mesh); }
+  public addRenderLines(lines: RenderLines): void { this.renderLines.set(lines.getRenderID(), lines); }
+  public addRenderPoints(points: RenderPoints): void { this.renderPoints.set(points.getRenderID(), points); }
 
   public getLines(id: RenderID): RenderLines { return this.renderLines.get(id)!; }
   public getMesh(id: RenderID): RenderMesh { return this.renderMeshes.get(id)!; }

@@ -85,7 +85,7 @@ export class PolyLine extends Geometry {
       new Float32Array(verts),
       new Int32Array(indices),
     )
-    this.renderLines = renderLinesObj.getID();
+    this.renderLines = renderLinesObj.getRenderID();
     INSTANCE.getScene().addRenderLines(renderLinesObj);
 
     this.updateBoundingBox();

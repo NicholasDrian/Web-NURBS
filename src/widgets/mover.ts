@@ -13,7 +13,7 @@ export class Mover {
 
   private static readonly toXZPlane: Mat4 = mat4.uniformScale(mat4.rotateX(mat4.identity(), Math.PI / 2), 0.02);
   private static readonly toYZPlane: Mat4 = mat4.uniformScale(mat4.rotateY(mat4.identity(), Math.PI / -2), 0.02);
-  private static readonly toXYPlane: Mat4 = mat4.uniformScale(mat4.identity(), 0.05);
+  private static readonly toXYPlane: Mat4 = mat4.uniformScale(mat4.identity(), 0.02);
 
   private originalModel!: Mat4;
   private currentModel!: Mat4;
@@ -104,14 +104,6 @@ export class Mover {
       this.currentModel = mat4.clone(this.originalModel);
       this.surfaces.setModel(this.originalModel);
     }
-  }
-
-  public mouseDown(id: number): void {
-    this.enabled = true;
-  }
-
-  public mouseUp(): void {
-    this.enabled = false;
   }
 
   public tick(): void {

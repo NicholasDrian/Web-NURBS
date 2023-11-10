@@ -9,8 +9,8 @@ export class Material {
   private diffuseColorBuffer: GPUBuffer | null = null;
 
   constructor(
-    public name: string,
-    public color: Vec4 | null,
+    private name: string,
+    private color: Vec4 | null,
   ) {
     this.updateColor();
   }
@@ -30,6 +30,14 @@ export class Material {
 
   public getColorBuffer(): GPUBuffer | null {
     return this.diffuseColorBuffer;
+  }
+
+  public getName(): MaterialName {
+    return this.name;
+  }
+
+  public getColor(): Vec4 | null {
+    return this.color;
   }
 
 

@@ -12,15 +12,15 @@ export class MaterialsWindow extends CADWindow {
     var html: string = "<u>MATERIALS</u><br>";
     materials.forEach((mat: Material) => {
       html +=
-        "name:" + mat.name +
-        ", color:" + (mat.color !== null ? vec4ToString(mat.color!) : "none") +
+        "name:" + mat.getName() +
+        ", color:" + (mat.getColor() !== null ? vec4ToString(mat.getColor()!) : "none") +
         "<br>";
     });
     this.element.innerHTML = html;
   }
 
   public tick(): void {
-
+    this.populate();
   }
 
 }

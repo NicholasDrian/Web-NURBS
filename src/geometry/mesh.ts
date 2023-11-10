@@ -37,7 +37,7 @@ export class Mesh extends Geometry {
       new Int32Array(this.indices),
     )
     INSTANCE.getScene().addRenderMesh(renderMeshObj);
-    this.renderMesh = renderMeshObj.getID();
+    this.renderMesh = renderMeshObj.getRenderID();
     this.boundingBoxHeirarchy = new MeshBoundingBoxHeirarchy(this, this.verts, this.indices);
   }
 

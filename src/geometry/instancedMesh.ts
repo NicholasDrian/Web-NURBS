@@ -40,7 +40,7 @@ export class InstancedMesh extends Geometry {
       transforms
     );
     INSTANCE.getScene().addRenderMeshInstanced(renderMeshObj);
-    this.renderMesh = renderMeshObj.getID();
+    this.renderMesh = renderMeshObj.getRenderID();
 
     this.boundingBoxHeirarchy = new InstancedMeshBoundingBoxHeirarchy(this);
   }

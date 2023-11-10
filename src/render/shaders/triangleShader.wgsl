@@ -3,9 +3,11 @@ struct VertexOutput {
     @location(0) @interpolate(linear) normal : vec4<f32>
 }
 
+// local uniforms;
 @group(0) @binding(0) var<uniform> model : mat4x4<f32>;
 @group(0) @binding(1) var<uniform> color : vec4<f32>;
 @group(0) @binding(2) var<uniform> flags: i32;
+@group(0) @binding(3) var<uniform> id: i32;
 
 // global uniforms:
 @group(1) @binding(0) var<uniform> cameraPos: vec3<f32>;
@@ -26,9 +28,16 @@ fn vertexMain(
     @location(1) normal : vec4<f32>
     ) -> VertexOutput
 {
+  var worldSpacePosition = model * position.xzyw;
+
+  if ((flags & CONSTANT_SCREEN_SIZE_BIT) != 0) {
+    var dist: f32 = distance(worldSpacePosition.xyz, cameraPos.xzy);
+    worldSpacePosition = model * vec4<f32>(position.xzy * dist, position.w);
+  } 
+
   var output: VertexOutput;
   output.normal = normal.xzyw;
-  output.position = cameraViewProj * model * position.xzyw;
+  output.position = cameraViewProj * worldSpacePosition;
   return output;
 }
 

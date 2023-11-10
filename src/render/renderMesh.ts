@@ -4,8 +4,9 @@ import { Geometry } from "../geometry/geometry";
 import { RenderID } from "../scene/scene";
 import { CONSTANT_SCREEN_SIZE_BIT, HOVER_BIT, SELECTED_BIT } from "./flags";
 import { swizzleYZ } from "../utils/math";
+import { Renderable } from "./renderable";
 
-export class RenderMesh {
+export class RenderMesh extends Renderable {
 
   private static readonly vertexBufferLayout: GPUVertexBufferLayout = {
     arrayStride: 32,
@@ -33,14 +34,14 @@ export class RenderMesh {
 
   protected indexCount: number;
 
-  protected id: RenderID;
+  protected objectIDBuffer: GPUBuffer;
 
   constructor(
     protected parent: Geometry,
     vertices: Float32Array,
     indices: Int32Array,
   ) {
-    this.id = INSTANCE.getScene().generateNewRenderID();
+    super();
 
     //vertex
     this.vertexBuffer = INSTANCE.getRenderer().getDevice().createBuffer({
@@ -74,15 +75,21 @@ export class RenderMesh {
     })
     this.flags = new Int32Array([0]);
 
+    //vertex
+    this.objectIDBuffer = INSTANCE.getRenderer().getDevice().createBuffer({
+      label: "objectIDBuffer",
+      size: 4,
+      usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+    });
+    const objectIDArray: Int32Array = new Int32Array([this.parent.getID()])
+    INSTANCE.getRenderer().getDevice().queue.writeBuffer(this.objectIDBuffer, 0, objectIDArray);
+
   }
 
   public isOverlay(): boolean {
     return this.parent.isOverlay();
   }
 
-  public getID(): RenderID {
-    return this.id;
-  }
 
   public draw(pass: GPURenderPassEncoder): void {
     if (this.parent.isHidden()) return;
@@ -130,6 +137,9 @@ export class RenderMesh {
         }, {
           binding: 2,
           resource: { buffer: this.flagsBuffer },
+        }, {
+          binding: 3,
+          resource: { buffer: this.objectIDBuffer }
         }
       ]
     });

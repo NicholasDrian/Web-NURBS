@@ -48,6 +48,9 @@ export class RenderMeshInstanced extends RenderMesh {
           resource: { buffer: this.flagsBuffer }
         }, {
           binding: 3,
+          resource: { buffer: this.objectIDBuffer }
+        }, {
+          binding: 4,
           resource: { buffer: this.transformBuffer }
         }
       ]

@@ -5,8 +5,9 @@ import { Material, MaterialName } from "../materials/material";
 import { RenderID } from "../scene/scene";
 import { swizzleYZ } from "../utils/math";
 import { CONSTANT_SCREEN_SIZE_BIT, HOVER_BIT, SELECTED_BIT } from "./flags";
+import { Renderable } from "./renderable";
 
-export class RenderLines {
+export class RenderLines extends Renderable {
 
   private static readonly vertexBufferLayout: GPUVertexBufferLayout = {
     arrayStride: 16,
@@ -30,7 +31,8 @@ export class RenderLines {
   private flagsBuffer: GPUBuffer;
 
   private indexCount: number;
-  private id: RenderID;
+
+  private objectIDBuffer: GPUBuffer;
 
   constructor(
     private parent: Geometry,
@@ -38,7 +40,7 @@ export class RenderLines {
     indices: Int32Array,
   ) {
 
-    this.id = INSTANCE.getScene().generateNewRenderID();
+    super();
 
     // vertex
     this.vertexBuffer = INSTANCE.getRenderer().getDevice().createBuffer({
@@ -47,6 +49,15 @@ export class RenderLines {
       usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST,
     });
     INSTANCE.getRenderer().getDevice().queue.writeBuffer(this.vertexBuffer, 0, vertices);
+
+    // id
+    this.objectIDBuffer = INSTANCE.getRenderer().getDevice().createBuffer({
+      label: "id buffer",
+      size: 4,
+      usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+    });
+    const objectIDArray: Int32Array = new Int32Array([this.parent.getID()])
+    INSTANCE.getRenderer().getDevice().queue.writeBuffer(this.objectIDBuffer, 0, objectIDArray);
 
     //index
     this.indexBuffer = INSTANCE.getRenderer().getDevice().createBuffer({
@@ -71,10 +82,6 @@ export class RenderLines {
     })
     this.flags = new Int32Array([0]);
 
-  }
-
-  public getID(): RenderID {
-    return this.id;
   }
 
   public draw(pass: GPURenderPassEncoder): void {
@@ -122,6 +129,9 @@ export class RenderLines {
         }, {
           binding: 2,
           resource: { buffer: this.flagsBuffer }
+        }, {
+          binding: 3,
+          resource: { buffer: this.objectIDBuffer }
         }
       ]
     });

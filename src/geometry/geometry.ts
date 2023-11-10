@@ -124,7 +124,7 @@ export abstract class Geometry {
 
     if (this.materialName) {
       const mat: Material | undefined = INSTANCE.getMaterialManager().getMaterial(this.materialName);
-      if (mat && mat.color) {
+      if (mat && mat.getColor()) {
         return mat.getColorBuffer()!;
       }
     }
@@ -137,14 +137,14 @@ export abstract class Geometry {
   public getColor(): Vec4 {
     if (this.materialName) {
       const mat: Material | undefined = INSTANCE.getMaterialManager().getMaterial(this.materialName);
-      if (mat && mat.color) {
-        return mat.color;
+      if (mat && mat.getColor()) {
+        return mat.getColor()!;
       }
     }
     if (this.parent) {
       return this.parent.getColor();
     }
-    return INSTANCE.getMaterialManager().getDefaultMaterial().color!;
+    return INSTANCE.getMaterialManager().getDefaultMaterial().getColor()!;
   }
 
 }
