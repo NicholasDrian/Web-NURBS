@@ -26,22 +26,15 @@ export class RenderMesh extends Renderable {
   protected vertexBuffer: GPUBuffer;
   protected indexBuffer: GPUBuffer;
   protected bindGroup!: GPUBindGroup;
-
-  protected modelBuffer: GPUBuffer;
-
-  protected flags: Int32Array;
-  protected flagsBuffer: GPUBuffer;
-
   protected indexCount: number;
 
-  protected objectIDBuffer: GPUBuffer;
 
   constructor(
-    protected parent: Geometry,
+    parent: Geometry,
     vertices: Float32Array,
     indices: Int32Array,
   ) {
-    super();
+    super(parent);
 
     //vertex
     this.vertexBuffer = INSTANCE.getRenderer().getDevice().createBuffer({
@@ -59,30 +52,6 @@ export class RenderMesh extends Renderable {
     });
     INSTANCE.getRenderer().getDevice().queue.writeBuffer(this.indexBuffer, 0, indices);
     this.indexCount = indices.length;
-
-    //mvp
-    this.modelBuffer = INSTANCE.getRenderer().getDevice().createBuffer({
-      label: "mvp",
-      size: 64,
-      usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
-    });
-
-    //flags 
-    this.flagsBuffer = INSTANCE.getRenderer().getDevice().createBuffer({
-      label: "render mesh flags buffer",
-      size: 4,
-      usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST
-    })
-    this.flags = new Int32Array([0]);
-
-    //vertex
-    this.objectIDBuffer = INSTANCE.getRenderer().getDevice().createBuffer({
-      label: "objectIDBuffer",
-      size: 4,
-      usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
-    });
-    const objectIDArray: Int32Array = new Int32Array([this.parent.getID()])
-    INSTANCE.getRenderer().getDevice().queue.writeBuffer(this.objectIDBuffer, 0, objectIDArray);
 
   }
 

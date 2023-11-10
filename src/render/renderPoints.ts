@@ -20,23 +20,15 @@ export class RenderPoints extends Renderable {
   };
 
   private bindGroup!: GPUBindGroup;
-
-  private modelBuffer: GPUBuffer;
-
-  private flags: Int32Array;
-  private flagsBuffer: GPUBuffer;
-
   private vertexBuffer: GPUBuffer;
   private vertexCount: number;
-  private objectIDBuffer: GPUBuffer;
 
   constructor(
-    private parent: Geometry,
+    parent: Geometry,
     points: Vec3[],
   ) {
 
-    super();
-
+    super(parent);
 
     // vertex
     const verts: number[] = [];
@@ -49,30 +41,6 @@ export class RenderPoints extends Renderable {
     });
     INSTANCE.getRenderer().getDevice().queue.writeBuffer(this.vertexBuffer, 0, vertexArray);
     this.vertexCount = vertexArray.length / 4;
-
-    //mvp
-    this.modelBuffer = INSTANCE.getRenderer().getDevice().createBuffer({
-      label: "mvp",
-      size: 64,
-      usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
-    });
-
-    //flags
-    this.flagsBuffer = INSTANCE.getRenderer().getDevice().createBuffer({
-      label: "render points flags buffer",
-      size: 4,
-      usage: GPUBufferUsage.UNIFORM
-    });
-    this.flags = new Int32Array([0]);
-
-    //id
-    this.objectIDBuffer = INSTANCE.getRenderer().getDevice().createBuffer({
-      label: "id buffer",
-      size: 4,
-      usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
-    })
-    const objectIDArray: Int32Array = new Int32Array([this.parent.getID()]);
-    INSTANCE.getRenderer().getDevice().queue.writeBuffer(this.objectIDBuffer, 0, objectIDArray);
 
     this.update();
   }

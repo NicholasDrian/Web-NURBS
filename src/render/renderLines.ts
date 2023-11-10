@@ -1,8 +1,6 @@
-import { Mat4, mat4, vec4, Vec4 } from "wgpu-matrix"
+import { Mat4 } from "wgpu-matrix"
 import { INSTANCE } from "../cad"
 import { Geometry } from "../geometry/geometry";
-import { Material, MaterialName } from "../materials/material";
-import { RenderID } from "../scene/scene";
 import { swizzleYZ } from "../utils/math";
 import { CONSTANT_SCREEN_SIZE_BIT, HOVER_BIT, SELECTED_BIT } from "./flags";
 import { Renderable } from "./renderable";
@@ -24,23 +22,16 @@ export class RenderLines extends Renderable {
   private vertexBuffer: GPUBuffer;
   private indexBuffer: GPUBuffer;
   private bindGroup!: GPUBindGroup;
-
-  private modelBuffer: GPUBuffer;
-
-  private flags: Int32Array;
-  private flagsBuffer: GPUBuffer;
-
   private indexCount: number;
 
-  private objectIDBuffer: GPUBuffer;
 
   constructor(
-    private parent: Geometry,
+    parent: Geometry,
     vertices: Float32Array,
     indices: Int32Array,
   ) {
 
-    super();
+    super(parent);
 
     // vertex
     this.vertexBuffer = INSTANCE.getRenderer().getDevice().createBuffer({
@@ -50,14 +41,6 @@ export class RenderLines extends Renderable {
     });
     INSTANCE.getRenderer().getDevice().queue.writeBuffer(this.vertexBuffer, 0, vertices);
 
-    // id
-    this.objectIDBuffer = INSTANCE.getRenderer().getDevice().createBuffer({
-      label: "id buffer",
-      size: 4,
-      usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
-    });
-    const objectIDArray: Int32Array = new Int32Array([this.parent.getID()])
-    INSTANCE.getRenderer().getDevice().queue.writeBuffer(this.objectIDBuffer, 0, objectIDArray);
 
     //index
     this.indexBuffer = INSTANCE.getRenderer().getDevice().createBuffer({
@@ -67,21 +50,6 @@ export class RenderLines extends Renderable {
     });
     INSTANCE.getRenderer().getDevice().queue.writeBuffer(this.indexBuffer, 0, indices);
     this.indexCount = indices.length;
-
-    //model
-    this.modelBuffer = INSTANCE.getRenderer().getDevice().createBuffer({
-      label: "mvp",
-      size: 64,
-      usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
-    });
-
-    this.flagsBuffer = INSTANCE.getRenderer().getDevice().createBuffer({
-      label: "render lines flags buffer",
-      size: 4,
-      usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
-    })
-    this.flags = new Int32Array([0]);
-
   }
 
   public draw(pass: GPURenderPassEncoder): void {

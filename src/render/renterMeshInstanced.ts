@@ -3,7 +3,6 @@ import { INSTANCE } from "../cad"
 import { mat4, Mat4 } from "wgpu-matrix"
 import { Geometry } from "../geometry/geometry";
 import { RenderMesh } from "./renderMesh";
-import { CONSTANT_SCREEN_SIZE_BIT } from "./flags";
 
 export class RenderMeshInstanced extends RenderMesh {
 
