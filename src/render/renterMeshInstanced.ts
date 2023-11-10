@@ -8,6 +8,7 @@ export class RenderMeshInstanced extends RenderMesh {
 
   private instanceCount: number;
   private transformBuffer!: GPUBuffer;
+  private instanceBindGroup!: GPUBindGroup;
 
   constructor(
     parent: Geometry,
@@ -32,24 +33,16 @@ export class RenderMeshInstanced extends RenderMesh {
   }
 
   protected override updateBindGroup(): void {
-    this.bindGroup = INSTANCE.getRenderer().getDevice().createBindGroup({
+
+    super.updateBindGroup();
+    console.log("here");
+
+    this.instanceBindGroup = INSTANCE.getRenderer().getDevice().createBindGroup({
       label: "bind group instanced mesh",
       layout: INSTANCE.getRenderer().getBindGroupLayoutInstanced(),
       entries: [
         {
           binding: 0,
-          resource: { buffer: this.modelBuffer },
-        }, {
-          binding: 1,
-          resource: { buffer: this.parent.getColorBuffer() },
-        }, {
-          binding: 2,
-          resource: { buffer: this.flagsBuffer }
-        }, {
-          binding: 3,
-          resource: { buffer: this.objectIDBuffer }
-        }, {
-          binding: 4,
           resource: { buffer: this.transformBuffer }
         }
       ]
@@ -59,6 +52,7 @@ export class RenderMeshInstanced extends RenderMesh {
   public override draw(pass: GPURenderPassEncoder): void {
     if (this.parent.isHidden()) return;
     pass.setBindGroup(0, this.bindGroup);
+    pass.setBindGroup(2, this.instanceBindGroup);
     pass.setVertexBuffer(0, this.vertexBuffer);
     pass.setIndexBuffer(this.indexBuffer, "uint32");
     pass.drawIndexed(this.indexCount, this.instanceCount);

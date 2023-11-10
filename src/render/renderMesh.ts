@@ -25,7 +25,6 @@ export class RenderMesh extends Renderable {
 
   protected vertexBuffer: GPUBuffer;
   protected indexBuffer: GPUBuffer;
-  protected bindGroup!: GPUBindGroup;
   protected indexCount: number;
 
 
@@ -67,53 +66,6 @@ export class RenderMesh extends Renderable {
     pass.setIndexBuffer(this.indexBuffer, "uint32");
     pass.drawIndexed(this.indexCount);
   }
-
-
-  public update(): void {
-    this.updateFlags();
-    this.updateModel();
-    this.updateBindGroup();
-  }
-
-  private updateModel(): void {
-    const model: Mat4 = this.parent.getModelRecursive();
-    swizzleYZ(model);
-    INSTANCE.getRenderer().getDevice().queue.writeBuffer(this.modelBuffer, 0, <Float32Array>model);
-  }
-
-  private updateFlags(): void {
-    if (this.parent.isSelected()) this.flags[0] |= SELECTED_BIT;
-    else this.flags[0] &= ~SELECTED_BIT;
-    if (this.parent.isHovered()) this.flags[0] |= HOVER_BIT;
-    else this.flags[0] &= ~HOVER_BIT;
-    if (this.parent.isConstantScreenSize()) this.flags[0] |= CONSTANT_SCREEN_SIZE_BIT;
-    else this.flags[0] &= ~CONSTANT_SCREEN_SIZE_BIT;
-
-    INSTANCE.getRenderer().getDevice().queue.writeBuffer(this.flagsBuffer, 0, this.flags);
-  }
-
-  protected updateBindGroup(): void {
-    this.bindGroup = INSTANCE.getRenderer().getDevice().createBindGroup({
-      label: "render mesh bind group",
-      layout: INSTANCE.getRenderer().getBindGroupLayout(),
-      entries: [
-        {
-          binding: 0,
-          resource: { buffer: this.modelBuffer },
-        }, {
-          binding: 1,
-          resource: { buffer: this.parent.getColorBuffer() },
-        }, {
-          binding: 2,
-          resource: { buffer: this.flagsBuffer },
-        }, {
-          binding: 3,
-          resource: { buffer: this.objectIDBuffer }
-        }
-      ]
-    });
-  }
-
 
   static getVertexBufferLayout(): GPUVertexBufferLayout {
     return this.vertexBufferLayout;

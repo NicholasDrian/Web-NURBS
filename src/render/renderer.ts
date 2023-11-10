@@ -156,28 +156,13 @@ export class Renderer {
       label: "bind group layout instanced",
       entries: [
         {
-          binding: 0, // mvp
-          visibility: GPUShaderStage.VERTEX,
-          buffer: {}
-        }, {
-          binding: 1, // color
-          visibility: GPUShaderStage.FRAGMENT,
-          buffer: {},
-        }, {
-          binding: 2, // flags
-          visibility: GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT,
-          buffer: {},
-        }, {
-          binding: 3, // id
-          visibility: GPUShaderStage.FRAGMENT,
-          buffer: {},
-        }, {
-          binding: 4, // transform buffer
+          binding: 0, // transform buffer
           visibility: GPUShaderStage.VERTEX,
           buffer: { type: "read-only-storage" },
         }
       ]
     });
+
     this.globalUniforms = new GlobalUniforms(this.device);
 
     this.updateScreenSize();
@@ -206,7 +191,7 @@ export class Renderer {
     this.instancedTrianglePipeline = new Pipeline(
       this.device,
       this.canvasFormat,
-      [this.bindGroupLayoutInstanced, this.globalUniforms.getLayout()],
+      [this.bindGroupLayout, this.globalUniforms.getLayout(), this.bindGroupLayoutInstanced],
       this.instancedTriangleShaderModule,
       PipelinePrimitive.Triangle);
     this.overlayMeshPipeline = new Pipeline(
