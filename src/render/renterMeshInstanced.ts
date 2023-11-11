@@ -35,7 +35,6 @@ export class RenderMeshInstanced extends RenderMesh {
   protected override updateBindGroup(): void {
 
     super.updateBindGroup();
-    console.log("here");
 
     this.instanceBindGroup = INSTANCE.getRenderer().getDevice().createBindGroup({
       label: "bind group instanced mesh",

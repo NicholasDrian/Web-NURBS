@@ -123,6 +123,7 @@ export class InstancedMeshBoundingBoxHeirarchy {
   private meshBBH: MeshBoundingBoxHeirarchy;
 
   constructor(private mesh: InstancedMesh) {
+
     this.meshBBH = new MeshBoundingBoxHeirarchy(mesh, mesh.getVerts(), mesh.getIndices());
 
     const instances: number[] = [];

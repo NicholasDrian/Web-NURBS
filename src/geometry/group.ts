@@ -27,6 +27,7 @@ export class Group extends Geometry {
     }
     return boundingBox;
   }
+
   public override getTypeName(): string {
     return "Group";
   }
@@ -47,7 +48,9 @@ export class Group extends Geometry {
   }
 
   public override intersect(ray: Ray): Intersection | null {
+
     if (this.isHidden()) return null;
+
     var res: Intersection | null = null;
     for (const child of this.children) {
       const intersection: Intersection | null = child.intersect(ray);
@@ -56,6 +59,7 @@ export class Group extends Geometry {
         else if (intersection.time < res.time) res = intersection;
       }
     }
+    console.log(res);
     return res;
   }
 

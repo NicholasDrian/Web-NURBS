@@ -77,7 +77,7 @@ export class Mover {
     this.surfaces.setConstantScreenSize(true);
     INSTANCE.getScene().addGeometry(this.surfaces);
 
-    // cleanup
+    // cleanup construction curves
     spinnerInner.destroy();
     spinnerOuter.destroy();
     planeMoverInner.destroy();
@@ -88,11 +88,9 @@ export class Mover {
   public updatedSelection(): void {
     const selection: Set<ObjectID> = INSTANCE.getSelector().getSelection();
     if (selection.size === 0) {
-      console.log("disabling");
       this.enabled = false;
       this.surfaces.hide();
     } else {
-      console.log("enabling");
       this.enabled = true;
       this.surfaces.show();
       const selectionBB: BoundingBox = new BoundingBox();

@@ -1,7 +1,6 @@
 import { mat4, Mat4, vec3, Vec3 } from "wgpu-matrix";
 import { INSTANCE } from "../cad";
 import { MaterialName } from "../materials/material";
-import { RenderMesh } from "../render/renderMesh";
 import { RenderMeshInstanced } from "../render/renterMeshInstanced";
 import { RenderID } from "../scene/scene";
 import { BoundingBox } from "./boundingBox";

@@ -46,7 +46,6 @@ export class Selector {
 
   public addToSelection(...geometry: Geometry[]): void {
     for (let geo of geometry) {
-      console.log("selected", geo.getID(), geo.getTypeName());
       this.selection.add(geo.getID());
       geo.select();
     }

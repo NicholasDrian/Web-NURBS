@@ -41,9 +41,19 @@ export class Mesh extends Geometry {
     this.boundingBoxHeirarchy = new MeshBoundingBoxHeirarchy(this, this.verts, this.indices);
   }
 
+  public getVerts(): Vec3[] {
+    return this.verts;
+  }
+
+  public getIndices(): number[] {
+    return this.indices;
+  }
+
   public intersect(ray: Ray): Intersection | null {
+
     if (this.isHidden()) return null;
     return this.boundingBoxHeirarchy.firstIntersection(ray);
+
   }
 
   public override getTypeName(): string {
