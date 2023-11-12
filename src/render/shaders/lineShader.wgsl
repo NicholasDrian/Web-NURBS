@@ -78,7 +78,7 @@ fn fragmentMain(inputs: FragInputs) -> FragOutputs {
 
   var output: FragOutputs;
   output.color = fragColor;
-  output.depth = inputs.fragCoords.z * 0.99999;
+  output.depth = inputs.fragCoords.z * 0.99999999;
   return output;
 }
 

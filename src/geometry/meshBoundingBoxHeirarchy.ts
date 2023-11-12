@@ -181,7 +181,7 @@ export class MeshBoundingBoxHeirarchy {
   private root: MeshBoundingBoxHeirarchyNode;
 
   constructor(private mesh: Geometry, verts: Vec3[], indices: number[]) {
-    // degenerated break the bbh
+    // degenerates breaks the bbh
     const reducedIndices: number[] = [];
     for (let i = 0; i < indices.length; i += 3) {
       const d1: number = vec3.distance(verts[indices[i]], verts[indices[i + 1]]);
@@ -198,6 +198,9 @@ export class MeshBoundingBoxHeirarchy {
   }
   public firstIntersection(ray: Ray): Intersection | null {
     if (this.mesh.isConstantScreenSize()) throw new Error("Fuuuuuuuuuuu......");
+
+
+
     const model: Mat4 = this.mesh.getModelRecursive();
     const objectSpaceRay: Ray = Ray.transform(ray, mat4.inverse(model));
     const res: Intersection | null = this.root.intersect(objectSpaceRay);
