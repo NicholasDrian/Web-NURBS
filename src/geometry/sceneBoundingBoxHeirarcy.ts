@@ -111,7 +111,7 @@ class BBHNode {
 
   public firstPositiveIntersection(ray: Ray): Intersection | null {
 
-    if (ray.intersectBoundingBox(this.boundingBox) === null) return null;
+    if (ray.almostIntersectBoundingBox(this.boundingBox, 10) === null) return null;
 
     if (this.isLeaf()) {
       var res: Intersection | null = null;

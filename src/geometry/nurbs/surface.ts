@@ -52,7 +52,6 @@ export class Surface extends Geometry {
   }
 
   public intersect(ray: Ray): Intersection | null {
-    // TODO: come back to this...
     if (this.isHidden()) return null;
     return this.mesh!.intersect(ray);
   }

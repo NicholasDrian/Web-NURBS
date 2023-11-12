@@ -59,7 +59,6 @@ export class Group extends Geometry {
         else if (intersection.time < res.time) res = intersection;
       }
     }
-    console.log(res);
     return res;
   }
 

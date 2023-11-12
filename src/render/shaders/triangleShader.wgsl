@@ -53,6 +53,7 @@ fn fragmentMain(inputs: FragInputs) -> @location(0) vec4f {
   var normalizedNormal: vec3<f32> = normalize(inputs.normal.xyz);
   //var fragColor: vec4<f32> = vec4<f32>(normalizedNormal/2.0 + vec3<f32>(0.5, 0.5, 0.5), 1.0);
   var fragColor: vec4<f32> = color;
+  fragColor = (fragColor * 0.5) + (inputs.normal * 0.5);
 
   var scaledFragCoords: vec2<f32> = inputs.fragCoords.xy / STRIPE_WIDTH;
   if ((flags & SELECTED_BIT) == SELECTED_BIT) {

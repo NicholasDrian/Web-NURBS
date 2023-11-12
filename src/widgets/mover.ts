@@ -122,7 +122,6 @@ export class Mover {
     this.ySpinner.setModel(mat4.mul(flipper, Mover.toXZPlane));
     this.yzPlaneMover.setModel(mat4.mul(flipper, Mover.toYZPlane));
     this.xSpinner.setModel(mat4.mul(flipper, Mover.toYZPlane));
-
   }
 
   private getTransform(): Mat4 {

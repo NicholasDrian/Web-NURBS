@@ -62,22 +62,16 @@ export abstract class Geometry {
     }
   }
 
-  public getModel(): Mat4 {
-    return this.model;
-  }
-
   getParent(): Geometry | null {
     return this.parent;
   }
 
-  // an object is selected if its parent is selected
   public isSelected(): boolean {
     if (this.selected) return true;
     if (this.parent && this.parent.isSelected()) return true;
     return false;
   }
 
-  // find parent and select it. return id of selected object
   public select(): void {
     this.selected = true;
   }

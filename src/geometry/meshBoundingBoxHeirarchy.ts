@@ -4,7 +4,6 @@ import { BoundingBox } from "./boundingBox";
 import { Frustum } from "./frustum";
 import { Geometry } from "./geometry";
 import { Intersection } from "./intersection";
-import { Mesh } from "./mesh";
 import { Ray } from "./ray";
 
 enum Axis {
@@ -129,7 +128,12 @@ class MeshBoundingBoxHeirarchyNode {
 
   public intersect(ray: Ray): Intersection | null {
 
+    ray.print()
+    this.boundingBox.print();
+
+
     if (ray.intersectBoundingBox(this.boundingBox) === null) return null;
+
 
     if (this.isLeaf()) {
       var res: number | null = null;
@@ -193,6 +197,7 @@ export class MeshBoundingBoxHeirarchy {
     this.root.print();
   }
   public firstIntersection(ray: Ray): Intersection | null {
+    if (this.mesh.isConstantScreenSize()) throw new Error("Fuuuuuuuuuuu......");
     const model: Mat4 = this.mesh.getModelRecursive();
     const objectSpaceRay: Ray = Ray.transform(ray, mat4.inverse(model));
     const res: Intersection | null = this.root.intersect(objectSpaceRay);
