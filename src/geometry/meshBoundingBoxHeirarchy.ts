@@ -1,4 +1,5 @@
 import { Mat4, mat4, vec3, Vec3 } from "wgpu-matrix";
+import { INSTANCE } from "../cad";
 import { ObjectID } from "../scene/scene";
 import { BoundingBox } from "./boundingBox";
 import { Frustum } from "./frustum";
@@ -128,9 +129,6 @@ class MeshBoundingBoxHeirarchyNode {
 
   public intersect(ray: Ray): Intersection | null {
 
-    ray.print()
-    this.boundingBox.print();
-
 
     if (ray.intersectBoundingBox(this.boundingBox) === null) return null;
 
@@ -197,18 +195,17 @@ export class MeshBoundingBoxHeirarchy {
     this.root.print();
   }
   public firstIntersection(ray: Ray): Intersection | null {
-    if (this.mesh.isConstantScreenSize()) throw new Error("Fuuuuuuuuuuu......");
-
-
-
-    const model: Mat4 = this.mesh.getModelRecursive();
+    var model: Mat4 = this.mesh.getModelRecursive();
     const objectSpaceRay: Ray = Ray.transform(ray, mat4.inverse(model));
+    console.log(objectSpaceRay);
     const res: Intersection | null = this.root.intersect(objectSpaceRay);
     res?.transform(model);
+    console.log(res);
     return res;
   }
 
   public isWithinFrustum(frustum: Frustum, inclusive: boolean): boolean {
+
     frustum.transform(mat4.inverse(this.mesh.getModelRecursive()));
     const res: boolean = this.root.isWithinFrustum(frustum, inclusive);
     frustum.transform(this.mesh.getModelRecursive());

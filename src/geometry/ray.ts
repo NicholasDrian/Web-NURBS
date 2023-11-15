@@ -112,7 +112,6 @@ export class Ray {
     const start = Math.max(xMin, Math.max(yMin, zMin));
 
 
-    console.log("start, end", start, end);
     if (end < 0 || start > end) return null;
     return Math.max(start, 0.00001); // so its truthy
 
