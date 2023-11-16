@@ -10,7 +10,7 @@ import { Surface } from "../geometry/nurbs/surface";
 import { Plane } from "../geometry/plane";
 import { Ray } from "../geometry/ray";
 import { ObjectID, RenderID } from "../scene/scene";
-import { angleBetween } from "../utils/math";
+import { angleBetween, swizzleYZ } from "../utils/math";
 
 export class Mover {
 
@@ -18,13 +18,12 @@ export class Mover {
   private static readonly toYZPlane: Mat4 = mat4.uniformScale(mat4.rotateY(mat4.identity(), Math.PI / -2), 0.02);
   private static readonly toXYPlane: Mat4 = mat4.uniformScale(mat4.identity(), 0.02);
 
-  private originalModel!: Mat4;
-  private currentModel!: Mat4;
-  private enabled: boolean; // can be clicked TODO:
+  private originalModel: Mat4;
+  private currentModel: Mat4;
   private active: boolean; // currently getting dragged
   private componentClicked: ObjectID | null;
   private originalIntersectionPoint: Vec3 | null;
-  private transformBuffer: GPUBuffer;
+
   private surfaces!: Group;
   private xyPlaneMover!: Surface;
   private xzPlaneMover!: Surface;
@@ -34,16 +33,11 @@ export class Mover {
   private zSpinner!: Surface;
 
   constructor() {
-    this.enabled = true;
     this.active = false;
     this.componentClicked = null;
     this.originalIntersectionPoint = null;
-    this.transformBuffer = INSTANCE.getRenderer().getDevice().createBuffer({
-      label: "selection transform buffer",
-      size: 64,
-      usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST
-    });
-    INSTANCE.getRenderer().getDevice().queue.writeBuffer(this.transformBuffer, 0, <Float32Array>mat4.identity());
+    this.originalModel = mat4.identity();
+    this.currentModel = mat4.identity();
     this.build();
   }
 
@@ -202,7 +196,6 @@ export class Mover {
         }
         break;
       }
-        break
       default:
         throw new Error("case not implemented");
     }
@@ -231,11 +224,8 @@ export class Mover {
   public updatedSelection(): void {
     const selection: Set<ObjectID> = INSTANCE.getSelector().getSelection();
     if (selection.size === 0) {
-      this.enabled = false;
       this.surfaces.hide();
     } else {
-      this.enabled = true;
-      this.surfaces.show();
       const selectionBB: BoundingBox = new BoundingBox();
       for (const id of selection) {
         const geo: Geometry = INSTANCE.getScene().getGeometry(id);
@@ -261,16 +251,13 @@ export class Mover {
       this.ySpinner.setModel(mat4.mul(flipper, Mover.toXZPlane));
       this.yzPlaneMover.setModel(mat4.mul(flipper, Mover.toYZPlane));
       this.xSpinner.setModel(mat4.mul(flipper, Mover.toYZPlane));
+      this.surfaces.show();
     }
   }
 
 
-  private getTransform(): Mat4 {
-    return mat4.mul(this.currentModel, mat4.inverse(this.originalModel));
-  }
-
-  public getSelectionTransformBuffer(): GPUBuffer {
-    return this.transformBuffer;
+  public getTransform(): Mat4 {
+    return swizzleYZ(mat4.mul(this.currentModel, mat4.inverse(this.originalModel)));
   }
 
 

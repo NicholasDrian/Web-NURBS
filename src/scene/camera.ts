@@ -3,6 +3,7 @@ import { INSTANCE } from "../cad"
 import { Plane } from "../geometry/plane";
 import { Ray } from "../geometry/ray";
 import { OperatingMode } from "../mode"
+import { swizzleYZ } from "../utils/math";
 
 export class Camera {
 

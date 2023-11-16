@@ -10,7 +10,7 @@ export class GlobalUniforms {
 
   private cameraPositionBuffer: GPUBuffer;
   private cameraViewProjBuffer: GPUBuffer;
-  private selectionBuffer: GPUBuffer;
+  private selectionTransformBuffer: GPUBuffer;
   private resolutionBuffer: GPUBuffer;
 
   private layout: GPUBindGroupLayout;
@@ -29,7 +29,7 @@ export class GlobalUniforms {
       size: 64,
       usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
     });
-    this.selectionBuffer = this.device.createBuffer({
+    this.selectionTransformBuffer = this.device.createBuffer({
       label: "selection buffer",
       size: 64,
       usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
@@ -74,7 +74,7 @@ export class GlobalUniforms {
           resource: { buffer: this.cameraViewProjBuffer },
         }, {
           binding: 2,
-          resource: { buffer: this.selectionBuffer }
+          resource: { buffer: this.selectionTransformBuffer }
         }, {
           binding: 3,
           resource: { buffer: this.resolutionBuffer }
@@ -91,7 +91,7 @@ export class GlobalUniforms {
   public tick(): void {
     this.device.queue.writeBuffer(this.cameraPositionBuffer, 0, <Float32Array>INSTANCE.getScene().getCamera().getPosition());
     this.device.queue.writeBuffer(this.cameraViewProjBuffer, 0, INSTANCE.getScene().getCamera().getViewProj());
-    this.device.queue.writeBuffer(this.selectionBuffer, 0, <Float32Array>INSTANCE.getSelector().getTransform())
+    this.device.queue.writeBuffer(this.selectionTransformBuffer, 0, <Float32Array>INSTANCE.getMover().getTransform())
 
     const resolutionArray: Float32Array = new Float32Array([window.innerWidth, window.innerHeight]);
     this.device.queue.writeBuffer(this.resolutionBuffer, 0, resolutionArray);

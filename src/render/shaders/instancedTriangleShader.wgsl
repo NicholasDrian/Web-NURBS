@@ -25,6 +25,18 @@ const SELECTED_BIT: i32 = 1 << 2;
 
 const STRIPE_WIDTH: f32 = 10.0;
 
+fn toWorldSpace(p: vec4<f32>, instanceID: u32) -> vec4<f32> {
+  return model * transforms[instanceID] * p.xzyw;
+}
+
+fn applySelectionTransform(p: vec4<f32>) -> vec4<f32> {
+  if ((flags & SELECTED_BIT) == SELECTED_BIT) {
+    return selectionTransform * p;
+  } else {
+    return p;
+  }
+}
+
 @vertex
 fn vertexMain(
     @location(0) objectSpacePosition: vec4<f32>,
@@ -32,12 +44,13 @@ fn vertexMain(
     @builtin(instance_index) instanceID: u32) -> VertexOutput 
 {
 
-  var toWorldSpace = model * transforms[instanceID];
-  var worldSpacePosition = toWorldSpace * objectSpacePosition.xzyw;
+  var worldSpacePosition = applySelectionTransform(toWorldSpace(objectSpacePosition, instanceID));
 
   if ((flags & CONSTANT_SCREEN_SIZE_BIT) != 0) {
     var dist: f32 = distance(worldSpacePosition.xyz, cameraPos.xzy);
-    worldSpacePosition = toWorldSpace * vec4<f32>(objectSpacePosition.xzy * dist, objectSpacePosition.w);
+    // TODO: dist should actually be dist in forward direction
+    var scaledObjectSpacePosition: vec4<f32> = vec4<f32>(objectSpacePosition.xzy * dist, objectSpacePosition.w);
+    worldSpacePosition = applySelectionTransform(toWorldSpace(scaledObjectSpacePosition, instanceID));
   } 
 
   var output: VertexOutput;

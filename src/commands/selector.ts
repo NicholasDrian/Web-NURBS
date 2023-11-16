@@ -11,13 +11,11 @@ import { ObjectID } from "../scene/scene";
 export class Selector {
 
   private selection: Set<ObjectID> = new Set<ObjectID>;
-  private transform!: Mat4;
   private element: HTMLElement;
   private selecting: boolean;
 
   constructor() {
     this.selecting = false;
-    this.updateTransform(mat4.identity());
     this.element = document.createElement("div");
     this.element.id = "clicker";
     this.element.className = "floating-window";
@@ -32,16 +30,7 @@ export class Selector {
       geo.unSelect();
     }
     this.selection.clear();
-    this.transform = mat4.identity();
     INSTANCE.getMover().updatedSelection();
-  }
-
-  public updateTransform(mat: Mat4): void {
-    this.transform = mat;
-  }
-
-  public getTransform(): Mat4 {
-    return this.transform;
   }
 
   public addToSelection(...geometry: Geometry[]): void {
