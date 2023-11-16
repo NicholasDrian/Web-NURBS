@@ -75,7 +75,6 @@ export class Mover {
     this.surfaces.hide();
     this.surfaces.setOverlay(true);
     this.surfaces.setConstantScreenSize(true);
-    INSTANCE.getScene().addGeometry(this.surfaces);
 
     // cleanup construction curves
     spinnerInner.destroy();

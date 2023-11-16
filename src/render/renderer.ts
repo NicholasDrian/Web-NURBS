@@ -111,30 +111,28 @@ export class Renderer {
 
   public async getIdAtPixel(x: number, y: number): Promise<number> {
 
-    //    return 69;
+    // window is mirrored
+    x = window.innerWidth - x;
 
     // TODO: factor buffer out
     const idBuffer = this.device.createBuffer({
       label: "id dst buffer",
-      size: 256,
+      size: 4,
       usage: GPUBufferUsage.COPY_DST | GPUBufferUsage.MAP_READ
     });
 
     const encoder = this.device.createCommandEncoder();
-    //const test: GPUImageCopyTexture = {};
     encoder.copyTextureToBuffer(
-      { texture: this.idTexture, origin: [x, y, 0] },
-      { buffer: idBuffer, bytesPerRow: 256 },
-      [16, 16, 0]
+      { texture: this.idTexture, mipLevel: 0, origin: [x, y, 0] },
+      { buffer: idBuffer, bytesPerRow: 256, rowsPerImage: 1 },
+      [1, 1, 1]
     );
-
     this.device.queue.submit([encoder.finish()]);
 
     await this.device.queue.onSubmittedWorkDone();
     await idBuffer.mapAsync(GPUMapMode.READ);
     const data: Int32Array = new Int32Array(idBuffer.getMappedRange());
-    console.log(data);
-    return 69;
+    return data[0];
   }
 
   private createResources() {
@@ -346,7 +344,7 @@ export class Renderer {
       label: "overlay pass",
       colorAttachments: [
         {
-          view: this.renderTarget.createView(),
+          view: this.renderTarget.createView(), // could maybe factor craete view out?
           resolveTarget: this.context.getCurrentTexture().createView(),
           loadOp: "load",
           clearValue: this.clearColor,
@@ -381,7 +379,7 @@ export class Renderer {
         {
           view: this.idTexture.createView(),
           loadOp: "clear",
-          clearValue: [1, 1, 1, 1], // TODO: delete after debug
+          clearValue: [0, 0, 0, 0], // TODO: delete after debug
           storeOp: "store",
         },
       ],
@@ -397,10 +395,10 @@ export class Renderer {
     this.globalUniforms.bind(idPass);
 
     for (let mesh of scene.getAllMeshes()) {
-      if (mesh.isOverlay()) {
-        mesh.draw(idPass);
-        drawCallCounter++;
-      }
+      //if (mesh.isOverlay()) {
+      mesh.draw(idPass);
+      drawCallCounter++;
+      //}
     }
 
     idPass.end();

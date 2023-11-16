@@ -33,11 +33,10 @@ fn vertexMain(
 {
 
   var toWorldSpace = model * transforms[instanceID];
-  var worldSpacePosition = toWorldSpace * vec4<f32>(0,0,0,1);
+  var worldSpacePosition = toWorldSpace * objectSpacePosition.xzyw;
 
   if ((flags & CONSTANT_SCREEN_SIZE_BIT) != 0) {
     var dist: f32 = distance(worldSpacePosition.xyz, cameraPos.xzy);
-    // TODO: Magic number should prolly be factored out...
     worldSpacePosition = toWorldSpace * vec4<f32>(objectSpacePosition.xzy * dist, objectSpacePosition.w);
   } 
 

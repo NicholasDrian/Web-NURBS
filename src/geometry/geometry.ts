@@ -38,6 +38,7 @@ export abstract class Geometry {
     this.overlay = option;
   }
 
+
   public isConstantScreenSize(): boolean {
     return this.constantScreenSize || (this.parent && this.parent.isConstantScreenSize()) || false;
   }
@@ -62,7 +63,7 @@ export abstract class Geometry {
     }
   }
 
-  getParent(): Geometry | null {
+  public getParent(): Geometry | null {
     return this.parent;
   }
 
