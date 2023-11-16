@@ -32,6 +32,7 @@ fn vertexMain(
 
   if ((flags & CONSTANT_SCREEN_SIZE_BIT) != 0) {
     var dist: f32 = distance(worldSpacePosition.xyz, cameraPos.xzy);
+    // TODO: dist should actually be dist in forward direction
     worldSpacePosition = model * vec4<f32>(objectSpacePosition.xzy * dist, objectSpacePosition.w);
   } 
 

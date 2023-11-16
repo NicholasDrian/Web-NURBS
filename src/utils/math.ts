@@ -1,4 +1,4 @@
-import { Mat4 } from "wgpu-matrix";
+import { Mat4, Vec3, vec3 } from "wgpu-matrix";
 
 
 export const swizzleYZ = function(mat: Mat4): Mat4 {
@@ -17,3 +17,7 @@ export const bin = function(a: number, b: number): number {
   return res;
 };
 
+export const angleBetween = function(a: Vec3, b: Vec3): number {
+
+  return Math.acos(vec3.dot(vec3.normalize(a), vec3.normalize(b)));
+}

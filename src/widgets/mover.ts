@@ -10,6 +10,7 @@ import { Surface } from "../geometry/nurbs/surface";
 import { Plane } from "../geometry/plane";
 import { Ray } from "../geometry/ray";
 import { ObjectID, RenderID } from "../scene/scene";
+import { angleBetween } from "../utils/math";
 
 export class Mover {
 
@@ -92,13 +93,13 @@ export class Mover {
 
   }
 
+
   public onMouseMove(): void {
     if (!this.active) return;
     const [x, y] = INSTANCE.getEventManager().getMouseHandler().getMousePos();
     const ray: Ray = INSTANCE.getScene().getCamera().getRayAtPixel(x, y);
     switch (this.componentClicked) {
-      case this.xyPlaneMover.getMesh().getID():
-        console.log("here");
+      case this.xyPlaneMover.getMesh().getID(): {
         const xyPlane: Plane = new Plane(mat4.getTranslation(this.originalModel), vec3.create(0, 0, 1));
         const intersectionTime: number | null = ray.intersectPlane(xyPlane);
         if (intersectionTime) {
@@ -110,16 +111,97 @@ export class Mover {
             this.currentModel = mat4.translate(this.originalModel, delta);
           }
         }
+        break;
+      }
+      case this.yzPlaneMover.getMesh().getID(): {
+        const yzPlane: Plane = new Plane(mat4.getTranslation(this.originalModel), vec3.create(1, 0, 0));
+        const intersectionTime: number | null = ray.intersectPlane(yzPlane);
+        if (intersectionTime) {
+          const intersectionPoint: Vec3 = ray.at(intersectionTime);
+          if (!this.originalIntersectionPoint) {
+            this.originalIntersectionPoint = intersectionPoint;
+          } else {
+            const delta: Vec3 = vec3.sub(intersectionPoint, this.originalIntersectionPoint);
+            this.currentModel = mat4.translate(this.originalModel, delta);
+          }
+        }
+        break;
+      }
+      case this.xzPlaneMover.getMesh().getID(): {
+        const xzPlane: Plane = new Plane(mat4.getTranslation(this.originalModel), vec3.create(0, 1, 0));
+        const intersectionTime: number | null = ray.intersectPlane(xzPlane);
+        if (intersectionTime) {
+          const intersectionPoint: Vec3 = ray.at(intersectionTime);
+          if (!this.originalIntersectionPoint) {
+            this.originalIntersectionPoint = intersectionPoint;
+          } else {
+            const delta: Vec3 = vec3.sub(intersectionPoint, this.originalIntersectionPoint);
+            this.currentModel = mat4.translate(this.originalModel, delta);
+          }
+        }
+        break;
+      }
+      case this.xSpinner.getMesh().getID(): {
+        const yzPlane: Plane = new Plane(mat4.getTranslation(this.originalModel), vec3.create(1, 0, 0));
+        const intersectionTime: number | null = ray.intersectPlane(yzPlane);
+        if (intersectionTime) {
+          const intersectionPoint: Vec3 = ray.at(intersectionTime);
+          if (!this.originalIntersectionPoint) {
+            this.originalIntersectionPoint = intersectionPoint;
+          } else {
+            const pos: Vec3 = mat4.getTranslation(this.originalModel);
+            const v1: Vec3 = vec3.sub(this.originalIntersectionPoint, pos);
+            const v2: Vec3 = vec3.sub(intersectionPoint, pos);
+            var angle: number = angleBetween(v1, v2);
+            if (vec3.dot(vec3.create(1, 0, 0), vec3.cross(v1, v2)) < 0) {
+              angle *= -1;
+            }
+            this.currentModel = mat4.rotateX(this.originalModel, angle);
+          }
+        }
         break
-      case this.yzPlaneMover.getMesh().getID():
-        break
-      case this.xzPlaneMover.getMesh().getID():
-        break
-      case this.xSpinner.getMesh().getID():
-        break
-      case this.ySpinner.getMesh().getID():
-        break
-      case this.zSpinner.getMesh().getID():
+      }
+      case this.ySpinner.getMesh().getID(): {
+        const xzPlane: Plane = new Plane(mat4.getTranslation(this.originalModel), vec3.create(0, 1, 0));
+        const intersectionTime: number | null = ray.intersectPlane(xzPlane);
+        if (intersectionTime) {
+          const intersectionPoint: Vec3 = ray.at(intersectionTime);
+          if (!this.originalIntersectionPoint) {
+            this.originalIntersectionPoint = intersectionPoint;
+          } else {
+            const pos: Vec3 = mat4.getTranslation(this.originalModel);
+            const v1: Vec3 = vec3.sub(this.originalIntersectionPoint, pos);
+            const v2: Vec3 = vec3.sub(intersectionPoint, pos);
+            var angle: number = angleBetween(v1, v2);
+            if (vec3.dot(vec3.create(0, 1, 0), vec3.cross(v1, v2)) < 0) {
+              angle *= -1;
+            }
+            this.currentModel = mat4.rotateY(this.originalModel, angle);
+          }
+        }
+        break;
+      }
+      case this.zSpinner.getMesh().getID(): {
+
+        const xyPlane: Plane = new Plane(mat4.getTranslation(this.originalModel), vec3.create(0, 0, 1));
+        const intersectionTime: number | null = ray.intersectPlane(xyPlane);
+        if (intersectionTime) {
+          const intersectionPoint: Vec3 = ray.at(intersectionTime);
+          if (!this.originalIntersectionPoint) {
+            this.originalIntersectionPoint = intersectionPoint;
+          } else {
+            const pos: Vec3 = mat4.getTranslation(this.originalModel);
+            const v1: Vec3 = vec3.sub(this.originalIntersectionPoint, pos);
+            const v2: Vec3 = vec3.sub(intersectionPoint, pos);
+            var angle: number = angleBetween(v1, v2);
+            if (vec3.dot(vec3.create(0, 0, 1), vec3.cross(v1, v2)) < 0) {
+              angle *= -1;
+            }
+            this.currentModel = mat4.rotateZ(this.originalModel, angle);
+          }
+        }
+        break;
+      }
         break
       default:
         throw new Error("case not implemented");
@@ -132,6 +214,7 @@ export class Mover {
       this.active = false;
       this.originalIntersectionPoint = null;
       // TODO: bake
+      this.updatedSelection();
       this.originalModel = this.currentModel;
     }
   }
