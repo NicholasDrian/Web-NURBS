@@ -7,7 +7,9 @@ import { createArc } from "../geometry/nurbs/arc";
 import { Curve } from "../geometry/nurbs/curve";
 import { loft } from "../geometry/nurbs/loft";
 import { Surface } from "../geometry/nurbs/surface";
-import { ObjectID } from "../scene/scene";
+import { Plane } from "../geometry/plane";
+import { Ray } from "../geometry/ray";
+import { ObjectID, RenderID } from "../scene/scene";
 
 export class Mover {
 
@@ -17,7 +19,10 @@ export class Mover {
 
   private originalModel!: Mat4;
   private currentModel!: Mat4;
-  private enabled: boolean;
+  private enabled: boolean; // can be clicked TODO:
+  private active: boolean; // currently getting dragged
+  private componentClicked: ObjectID | null;
+  private originalIntersectionPoint: Vec3 | null;
   private transformBuffer: GPUBuffer;
   private surfaces!: Group;
   private xyPlaneMover!: Surface;
@@ -28,7 +33,10 @@ export class Mover {
   private zSpinner!: Surface;
 
   constructor() {
-    this.enabled = false;
+    this.enabled = true;
+    this.active = false;
+    this.componentClicked = null;
+    this.originalIntersectionPoint = null;
     this.transformBuffer = INSTANCE.getRenderer().getDevice().createBuffer({
       label: "selection transform buffer",
       size: 64,
@@ -84,6 +92,59 @@ export class Mover {
 
   }
 
+  public onMouseMove(): void {
+    if (!this.active) return;
+    const [x, y] = INSTANCE.getEventManager().getMouseHandler().getMousePos();
+    const ray: Ray = INSTANCE.getScene().getCamera().getRayAtPixel(x, y);
+    switch (this.componentClicked) {
+      case this.xyPlaneMover.getMesh().getID():
+        console.log("here");
+        const xyPlane: Plane = new Plane(mat4.getTranslation(this.originalModel), vec3.create(0, 0, 1));
+        const intersectionTime: number | null = ray.intersectPlane(xyPlane);
+        if (intersectionTime) {
+          const intersectionPoint: Vec3 = ray.at(intersectionTime);
+          if (!this.originalIntersectionPoint) {
+            this.originalIntersectionPoint = intersectionPoint;
+          } else {
+            const delta: Vec3 = vec3.sub(intersectionPoint, this.originalIntersectionPoint);
+            this.currentModel = mat4.translate(this.originalModel, delta);
+          }
+        }
+        break
+      case this.yzPlaneMover.getMesh().getID():
+        break
+      case this.xzPlaneMover.getMesh().getID():
+        break
+      case this.xSpinner.getMesh().getID():
+        break
+      case this.ySpinner.getMesh().getID():
+        break
+      case this.zSpinner.getMesh().getID():
+        break
+      default:
+        throw new Error("case not implemented");
+    }
+    this.surfaces.setModel(this.currentModel);
+  }
+
+  public onMouseUp(): void {
+    if (this.active) {
+      this.active = false;
+      this.originalIntersectionPoint = null;
+      // TODO: bake
+      this.originalModel = this.currentModel;
+    }
+  }
+
+  public isActive(): boolean {
+    return this.active;
+  }
+
+  public idClicked(id: ObjectID): void {
+    this.active = true;
+    this.componentClicked = id;
+  }
+
   public updatedSelection(): void {
     const selection: Set<ObjectID> = INSTANCE.getSelector().getSelection();
     if (selection.size === 0) {
@@ -100,28 +161,26 @@ export class Mover {
       this.originalModel = mat4.translate(mat4.identity(), selectionBB.getCenter());
       this.currentModel = mat4.clone(this.originalModel);
       this.surfaces.setModel(this.originalModel);
+
+      const cameraPos: Vec3 = INSTANCE.getScene().getCamera().getPosition();
+      const thisPos: Vec3 = mat4.getTranslation(this.currentModel);
+      const dx: number = thisPos[0] - cameraPos[0];
+      const dy: number = thisPos[1] - cameraPos[1];
+      const dz: number = thisPos[2] - cameraPos[2];
+      var flipper: Mat4 = mat4.scale(mat4.identity(), vec3.create(
+        dx > 0 ? -1 : 1,
+        dy > 0 ? -1 : 1,
+        dz > 0 ? -1 : 1,
+      ));
+      this.xyPlaneMover.setModel(mat4.mul(flipper, Mover.toXYPlane));
+      this.zSpinner.setModel(mat4.mul(flipper, Mover.toXYPlane));
+      this.xzPlaneMover.setModel(mat4.mul(flipper, Mover.toXZPlane));
+      this.ySpinner.setModel(mat4.mul(flipper, Mover.toXZPlane));
+      this.yzPlaneMover.setModel(mat4.mul(flipper, Mover.toYZPlane));
+      this.xSpinner.setModel(mat4.mul(flipper, Mover.toYZPlane));
     }
   }
 
-  public tick(): void {
-    if (!this.enabled) return;
-    const cameraPos: Vec3 = INSTANCE.getScene().getCamera().getPosition();
-    const thisPos: Vec3 = mat4.getTranslation(this.originalModel);
-    const dx: number = thisPos[0] - cameraPos[0];
-    const dy: number = thisPos[1] - cameraPos[1];
-    const dz: number = thisPos[2] - cameraPos[2];
-    var flipper: Mat4 = mat4.scale(mat4.identity(), vec3.create(
-      dx > 0 ? -1 : 1,
-      dy > 0 ? -1 : 1,
-      dz > 0 ? -1 : 1,
-    ));
-    this.xyPlaneMover.setModel(mat4.mul(flipper, Mover.toXYPlane));
-    this.zSpinner.setModel(mat4.mul(flipper, Mover.toXYPlane));
-    this.xzPlaneMover.setModel(mat4.mul(flipper, Mover.toXZPlane));
-    this.ySpinner.setModel(mat4.mul(flipper, Mover.toXZPlane));
-    this.yzPlaneMover.setModel(mat4.mul(flipper, Mover.toYZPlane));
-    this.xSpinner.setModel(mat4.mul(flipper, Mover.toYZPlane));
-  }
 
   private getTransform(): Mat4 {
     return mat4.mul(this.currentModel, mat4.inverse(this.originalModel));

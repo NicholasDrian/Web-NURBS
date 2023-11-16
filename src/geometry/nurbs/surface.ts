@@ -47,6 +47,10 @@ export class Surface extends Geometry {
     this.edgeHighV?.destroy();
   }
 
+  public getMesh(): Mesh {
+    return this.mesh!;
+  }
+
   public getBoundingBox(): BoundingBox {
     return this.mesh!.getBoundingBox();
   }

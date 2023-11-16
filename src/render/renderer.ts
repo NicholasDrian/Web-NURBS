@@ -5,7 +5,7 @@ import pointShader from "./shaders/pointShader.wgsl";
 import instancedTriangleShader from "./shaders/instancedTriangleShader.wgsl"
 import overlayMeshShader from "./shaders/overlayMeshShader.wgsl"
 import idShader from "./shaders/idShader.wgsl";
-import { Scene } from "../scene/scene"
+import { ObjectID, Scene } from "../scene/scene"
 import { Pipeline, PipelinePrimitive } from "./pipeline"
 import { INSTANCE } from "../cad";
 import { GlobalUniforms } from "./globalUniforms";
@@ -109,7 +109,7 @@ export class Renderer {
 
   }
 
-  public async getIdAtPixel(x: number, y: number): Promise<number> {
+  public async getIdAtPixel(x: number, y: number): Promise<ObjectID> {
 
     // window is mirrored
     x = window.innerWidth - x;
@@ -395,10 +395,10 @@ export class Renderer {
     this.globalUniforms.bind(idPass);
 
     for (let mesh of scene.getAllMeshes()) {
-      //if (mesh.isOverlay()) {
-      mesh.draw(idPass);
-      drawCallCounter++;
-      //}
+      if (mesh.isOverlay()) {
+        mesh.draw(idPass);
+        drawCallCounter++;
+      }
     }
 
     idPass.end();

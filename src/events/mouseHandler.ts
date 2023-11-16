@@ -1,5 +1,6 @@
 import { INSTANCE } from "../cad";
 import { Renderer } from "../render/renderer";
+import { ObjectID } from "../scene/scene";
 
 
 
@@ -23,45 +24,58 @@ export class MouseHandler {
     this.mousePos = [event.clientX, event.clientY];
     this.drag?.update(event.clientX, event.clientY);
     INSTANCE.getCommandManager().handleMouseMove();
+    INSTANCE.getMover().onMouseMove();
   }
 
   public onMouseDown(event: MouseEvent): void {
     if (event.button == 0) { // left click
-      this.drag = new Drag(event.clientX, event.clientY);
-      this.mouseDown = true;
-      this.shiftDown = event.shiftKey;
-      this.controlDown = event.ctrlKey;
+
+      if (!INSTANCE.getCommandManager().hasActiveCommand()) {
+        // forward clicked id to mover incase mover was clicked
+        INSTANCE.getRenderer().getIdAtPixel(event.clientX, event.clientY).then((id: ObjectID) => {
+          if (id === 0) {
+            this.drag = new Drag(event.clientX, event.clientY);
+            this.mouseDown = true;
+            this.shiftDown = event.shiftKey;
+            this.controlDown = event.ctrlKey;
+          } else {
+            INSTANCE.getMover().idClicked(id);
+          }
+        });
+      } else {
+        this.drag = new Drag(event.clientX, event.clientY);
+        this.mouseDown = true;
+        this.shiftDown = event.shiftKey;
+        this.controlDown = event.ctrlKey;
+      }
+
     }
   }
 
   public onMouseUp(event: MouseEvent): void {
-    if (event.button == 0) { // left click
-      if (!this.drag!.isDrag()) { // not drag
+    if (event.button == 0) { // left button
+      if (this.drag && !this.drag.isDrag()) { // click
         if (INSTANCE.getCommandManager().hasActiveCommand()) { // forward click to active command
           INSTANCE.getCommandManager().handleClickInput();
           INSTANCE.getCli().render();
         } else {
-          if (this.shiftDown) console.log("shift click");
-          if (!this.shiftDown) INSTANCE.getSelector().reset();
-          INSTANCE.getSelector().toggleSelectionAtPixel(event.clientX, event.clientY, this.controlDown);
-
-          // read id at pix
-          INSTANCE.getRenderer().getIdAtPixel(event.clientX, event.clientY).then((id: number) => {
-            console.log("ID", id);
-          }).catch(() => {
-            console.log("read fail");
-          });
-
+          if (!INSTANCE.getMover().isActive()) {
+            if (!this.shiftDown) INSTANCE.getSelector().reset();
+            INSTANCE.getSelector().toggleSelectionAtPixel(event.clientX, event.clientY, this.controlDown);
+          }
         }
       } else { // drag
-        if (!this.shiftDown) INSTANCE.getSelector().reset();
-        const inclusive: boolean = this.drag!.isLeftward();
-        INSTANCE.getSelector().selectInRectangle(...this.drag!.getBounds(), inclusive, false);
+        if (!INSTANCE.getMover().isActive()) {
+          if (!this.shiftDown) INSTANCE.getSelector().reset();
+          const inclusive: boolean = this.drag!.isLeftward();
+          INSTANCE.getSelector().selectInRectangle(...this.drag!.getBounds(), inclusive, false);
+        }
       }
-      this.drag!.destroy();
+      this.drag?.destroy();
       this.drag = null;
       this.mouseDown = false;
     }
+    INSTANCE.getMover().onMouseUp();
   }
 
   public getMousePos(): [number, number] {
