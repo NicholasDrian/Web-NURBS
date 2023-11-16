@@ -1,6 +1,5 @@
 struct VertexOutput {
   @builtin(position) position : vec4<f32>,
-    @location(0) @interpolate(linear) normal : vec4<f32>
 }
 
 // local uniforms;
@@ -37,45 +36,22 @@ fn vertexMain(
   } 
 
   var output: VertexOutput;
-  output.normal = normal.xzyw;
   output.position = cameraViewProj * worldSpacePosition;
   return output;
 }
 
 
 struct FragInputs {
-  @location(0) @interpolate(linear) normal : vec4f,
   @builtin(position) fragCoords: vec4<f32>,
 }
 
 @fragment
-fn fragmentMain(inputs: FragInputs) -> @location(0) vec4f {
+fn fragmentMain(inputs: FragInputs) -> @location(0) i32 {
 
-  var normalizedNormal: vec3<f32> = normalize(inputs.normal.xyz);
-  var fragColor: vec4<f32> = color;
-  fragColor = (fragColor * 0.5) + (inputs.normal * 0.5);
-
-  var scaledFragCoords: vec2<f32> = inputs.fragCoords.xy / STRIPE_WIDTH;
-  if ((flags & SELECTED_BIT) == SELECTED_BIT) {
-      var evenX: bool = modf(scaledFragCoords.x).fract < 0.5;
-      var evenY: bool = modf(scaledFragCoords.y).fract < 0.5;
-      if ((evenX && !evenY) || (evenY && !evenX)) {
-        fragColor = vec4<f32>(1.0, 1.0, 0.0, 1.0);
-      }
-  }
-
-  if ((flags & HOVER_BIT) == HOVER_BIT) {
-
-      var evenX: bool = modf(scaledFragCoords.x).fract < 0.5;
-      var evenY: bool = modf(scaledFragCoords.y).fract < 0.5;
-      if ((evenX && !evenY) || (evenY && !evenX)) {
-        fragColor = vec4<f32>(0.0, 0.0, 1.0, 1.0);
-      }
-
-  }
-  return fragColor;
+  return id;
 
 }
+
 
 
 

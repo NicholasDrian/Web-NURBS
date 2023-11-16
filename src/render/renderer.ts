@@ -4,6 +4,7 @@ import lineShader from "./shaders/lineShader.wgsl";
 import pointShader from "./shaders/pointShader.wgsl";
 import instancedTriangleShader from "./shaders/instancedTriangleShader.wgsl"
 import overlayMeshShader from "./shaders/overlayMeshShader.wgsl"
+import idShader from "./shaders/idShader.wgsl";
 import { Scene } from "../scene/scene"
 import { Pipeline, PipelinePrimitive } from "./pipeline"
 import { INSTANCE } from "../cad";
@@ -23,9 +24,12 @@ export class Renderer {
   private pointShaderModule!: GPUShaderModule;
   private instancedTriangleShaderModule!: GPUShaderModule;
   private overlayMeshShaderModule!: GPUShaderModule;
+  private idShaderModule!: GPUShaderModule;
 
+  private depthTextureSuperSample!: GPUTexture;
   private depthTexture!: GPUTexture;
   private renderTarget!: GPUTexture;
+  private idTexture!: GPUTexture; // rasterize id for mouse picking
 
   private bindGroupLayout!: GPUBindGroupLayout;
   private bindGroupLayoutInstanced!: GPUBindGroupLayout;
@@ -37,6 +41,7 @@ export class Renderer {
   private pointPipeline!: Pipeline;
   private instancedTrianglePipeline!: Pipeline;
   private overlayMeshPipeline!: Pipeline;
+  private idRasterPipeline!: Pipeline;
 
   private clearColor: [number, number, number, number];
 
@@ -104,8 +109,35 @@ export class Renderer {
 
   }
 
-  private createResources() {
+  public async getIdAtPixel(x: number, y: number): Promise<number> {
 
+    //    return 69;
+
+    // TODO: factor buffer out
+    const idBuffer = this.device.createBuffer({
+      label: "id dst buffer",
+      size: 256,
+      usage: GPUBufferUsage.COPY_DST | GPUBufferUsage.MAP_READ
+    });
+
+    const encoder = this.device.createCommandEncoder();
+    //const test: GPUImageCopyTexture = {};
+    encoder.copyTextureToBuffer(
+      { texture: this.idTexture, origin: [x, y, 0] },
+      { buffer: idBuffer, bytesPerRow: 256 },
+      [16, 16, 0]
+    );
+
+    this.device.queue.submit([encoder.finish()]);
+
+    await this.device.queue.onSubmittedWorkDone();
+    await idBuffer.mapAsync(GPUMapMode.READ);
+    const data: Int32Array = new Int32Array(idBuffer.getMappedRange());
+    console.log(data);
+    return 69;
+  }
+
+  private createResources() {
 
     this.triangleShaderModule = this.device.createShaderModule({
       label: "triangle shader module",
@@ -126,7 +158,11 @@ export class Renderer {
     this.overlayMeshShaderModule = this.device.createShaderModule({
       label: "overlay mesh shader module",
       code: overlayMeshShader,
-    })
+    });
+    this.idShaderModule = this.device.createShaderModule({
+      label: "id shader module",
+      code: idShader,
+    });
 
     this.bindGroupLayout = this.device.createBindGroupLayout({
       label: "bind group layout",
@@ -175,47 +211,70 @@ export class Renderer {
       this.canvasFormat,
       [this.bindGroupLayout, this.globalUniforms.getLayout()],
       this.triangleShaderModule,
-      PipelinePrimitive.Triangle);
+      PipelinePrimitive.Triangle,
+      4);
     this.linePipeline = new Pipeline(
       this.device,
       this.canvasFormat,
       [this.bindGroupLayout, this.globalUniforms.getLayout()],
       this.lineShaderModule,
-      PipelinePrimitive.Line);
+      PipelinePrimitive.Line,
+      4);
     this.pointPipeline = new Pipeline(
       this.device,
       this.canvasFormat,
       [this.bindGroupLayout, this.globalUniforms.getLayout()],
       this.pointShaderModule,
-      PipelinePrimitive.Point);
+      PipelinePrimitive.Point,
+      4);
     this.instancedTrianglePipeline = new Pipeline(
       this.device,
       this.canvasFormat,
       [this.bindGroupLayout, this.globalUniforms.getLayout(), this.bindGroupLayoutInstanced],
       this.instancedTriangleShaderModule,
-      PipelinePrimitive.Triangle);
+      PipelinePrimitive.Triangle,
+      4);
     this.overlayMeshPipeline = new Pipeline(
       this.device,
       this.canvasFormat,
       [this.bindGroupLayout, this.globalUniforms.getLayout()],
       this.overlayMeshShaderModule,
-      PipelinePrimitive.Triangle);
+      PipelinePrimitive.Triangle,
+      4);
+    this.idRasterPipeline = new Pipeline(
+      this.device,
+      "r32sint",
+      [this.bindGroupLayout, this.globalUniforms.getLayout()],
+      this.idShaderModule,
+      PipelinePrimitive.Triangle,
+      1);
   }
 
   public updateScreenSize(): void {
     this.canvas.width = window.innerWidth;
     this.canvas.height = window.innerHeight;
-    this.depthTexture = this.device.createTexture({
+    this.depthTextureSuperSample = this.device.createTexture({
       size: [this.canvas.width, this.canvas.height],
       sampleCount: 4,
       format: "depth24plus",
       usage: GPUTextureUsage.RENDER_ATTACHMENT
     });
-
     this.renderTarget = this.device.createTexture({
       size: [this.canvas.width, this.canvas.height],
       sampleCount: 4,
       format: this.canvasFormat,
+      usage: GPUTextureUsage.RENDER_ATTACHMENT
+    });
+    this.idTexture = this.device.createTexture({
+      size: [this.canvas.width, this.canvas.height],
+      sampleCount: 1,
+      format: "r32sint",
+      usage: GPUTextureUsage.RENDER_ATTACHMENT | GPUTextureUsage.COPY_SRC
+    });
+    this.depthTexture = this.device.createTexture({
+      size: [this.canvas.width, this.canvas.height],
+      sampleCount: 1,
+      format: "depth24plus",
       usage: GPUTextureUsage.RENDER_ATTACHMENT
     });
   }
@@ -230,7 +289,10 @@ export class Renderer {
 
     const encoder: GPUCommandEncoder = this.device.createCommandEncoder();
 
+    // mainPass  ================================
+
     const mainPass: GPURenderPassEncoder = encoder.beginRenderPass({
+      label: "main pass",
       colorAttachments: [
         {
           view: this.renderTarget.createView(),
@@ -241,12 +303,13 @@ export class Renderer {
         },
       ],
       depthStencilAttachment: {
-        view: this.depthTexture.createView(),
+        view: this.depthTextureSuperSample.createView(),
         depthClearValue: 1.0,
         depthLoadOp: "clear",
         depthStoreOp: "store"
       }
     });
+
     this.globalUniforms.bind(mainPass);
 
     mainPass.setPipeline(this.trianglePipeline.get());
@@ -277,7 +340,10 @@ export class Renderer {
 
     mainPass.end();
 
-    const overlayPass = encoder.beginRenderPass({
+    // Overlay Pass ================================
+
+    const overlayPass: GPURenderPassEncoder = encoder.beginRenderPass({
+      label: "overlay pass",
       colorAttachments: [
         {
           view: this.renderTarget.createView(),
@@ -288,13 +354,14 @@ export class Renderer {
         },
       ],
       depthStencilAttachment: {
-        view: this.depthTexture.createView(),
+        view: this.depthTextureSuperSample.createView(),
         depthClearValue: 1.0,
         depthLoadOp: "clear",
         depthStoreOp: "store"
       }
     })
     overlayPass.setPipeline(this.overlayMeshPipeline.get());
+
 
     this.globalUniforms.bind(overlayPass);
     for (let mesh of scene.getAllMeshes()) {
@@ -304,6 +371,39 @@ export class Renderer {
       }
     }
     overlayPass.end();
+
+    // ID Pass ================================
+    // rasterize ids for mouse picking
+
+    const idPass: GPURenderPassEncoder = encoder.beginRenderPass({
+      label: "id pass",
+      colorAttachments: [
+        {
+          view: this.idTexture.createView(),
+          loadOp: "clear",
+          clearValue: [1, 1, 1, 1], // TODO: delete after debug
+          storeOp: "store",
+        },
+      ],
+      depthStencilAttachment: {
+        view: this.depthTexture.createView(),
+        depthClearValue: 1.0,
+        depthLoadOp: "clear",
+        depthStoreOp: "store" // prolly dont need to store this TODO:
+      }
+    });
+    idPass.setPipeline(this.idRasterPipeline.get());
+
+    this.globalUniforms.bind(idPass);
+
+    for (let mesh of scene.getAllMeshes()) {
+      if (mesh.isOverlay()) {
+        mesh.draw(idPass);
+        drawCallCounter++;
+      }
+    }
+
+    idPass.end();
 
     const commandBuffer = encoder.finish();
     this.device.queue.submit([commandBuffer]);

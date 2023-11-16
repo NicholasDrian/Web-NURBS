@@ -1,4 +1,5 @@
 import { INSTANCE } from "../cad";
+import { Renderer } from "../render/renderer";
 
 
 
@@ -43,6 +44,14 @@ export class MouseHandler {
           if (this.shiftDown) console.log("shift click");
           if (!this.shiftDown) INSTANCE.getSelector().reset();
           INSTANCE.getSelector().toggleSelectionAtPixel(event.clientX, event.clientY, this.controlDown);
+
+          // read id at pix
+          INSTANCE.getRenderer().getIdAtPixel(event.clientX, event.clientY).then((id: number) => {
+            console.log("ID", id);
+          }).catch(() => {
+            console.log("read fail");
+          });
+
         }
       } else { // drag
         if (!this.shiftDown) INSTANCE.getSelector().reset();

@@ -32,6 +32,7 @@ export class LineCommand extends Command {
   }
 
   public override handleClickResult(input: Intersection): void {
+    throw new Error("not implemented");
   }
 
   public override handleMouseMove(): void {
@@ -57,9 +58,9 @@ export class LineCommand extends Command {
 
   public override getInstructions(): string {
     if (this.line) {
-      return "Exit:0  Click or type end point.  $";
+      return "0:Exit  Click or type end point.  $";
     } else {
-      return "Exit:0  Click or type start point.  $";
+      return "0:Exit  Click or type start point.  $";
     }
   }
 

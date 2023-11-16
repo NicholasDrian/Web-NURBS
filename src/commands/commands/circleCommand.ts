@@ -131,7 +131,6 @@ export class CircleCommand extends Command {
           )
         );
         const radius: number = vec3.distance(this.v1, this.v2);
-        if (this.curve) this.curve.destroy();
         this.curve = createCircleCenterNormalRadius(this.v1, normal, radius);
         this.done();
       }
@@ -185,9 +184,9 @@ export class CircleCommand extends Command {
   }
 
   private getInstructionsThreePoints(): string {
-    if (this.v1 == null) return "Exit:0 Click first point";
-    else if (this.v2 == null) return "Exit:0 Click second point";
-    return "Exit:0 Click third point";
+    if (this.v1 == null) return "0:Exit Click first point";
+    else if (this.v2 == null) return "0:Exit Click second point";
+    return "0:Exit Click third point";
   }
 
   private handleClickCenterNormalRadius(point: Vec3): void {

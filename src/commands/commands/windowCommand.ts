@@ -108,9 +108,9 @@ export class WindowCommand extends Command {
         }
         return res + "$";
       case WindowCommandMode.PlaceWindowStart:
-        return "Exit:0  Click first corner for window.";
+        return "0:Exit  Click first corner for window.";
       case WindowCommandMode.PlaceWindowEnd:
-        return "Exit:0  Click second corner for window.";
+        return "0:Exit  Click second corner for window.";
       default:
         throw new Error("Not implemented");
     }

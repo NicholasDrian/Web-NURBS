@@ -62,9 +62,9 @@ export class PolyLineCommand extends Command {
 
   public override getInstructions(): string {
     if (this.polyline) {
-      return "Exit:0  click or type next point  $";
+      return "0:Exit  click or type next point  $";
     } else {
-      return "Exit:0  click or type start point  $";
+      return "0:Exit  click or type start point  $";
     }
   }
 

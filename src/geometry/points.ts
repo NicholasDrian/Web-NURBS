@@ -54,7 +54,7 @@ export class Points extends Geometry {
       const pointXZY: Vec3 = vec3.create(points[i][0], points[i][2], points[i][1]);
       var translation: Mat4 = mat4.translate(mat4.identity(), pointXZY);
 
-      var scale: Mat4 = mat4.scale(mat4.identity(), vec3.create(0.3, 0.3, 0.3));
+      var scale: Mat4 = mat4.scale(mat4.identity(), vec3.create(0.01, 0.01, 0.01));
 
       // make sure point scale is not affected by model scale
       var modelScale: Mat4 = mat4.scaling(mat4.getScaling(this.getModelRecursive()));

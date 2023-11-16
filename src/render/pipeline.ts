@@ -13,7 +13,7 @@ export class Pipeline {
 
   private gpuPipeline: GPURenderPipeline;
 
-  constructor(device: GPUDevice, format: GPUTextureFormat, layouts: GPUBindGroupLayout[], shaderModule: GPUShaderModule, primitive: PipelinePrimitive) {
+  constructor(device: GPUDevice, format: GPUTextureFormat, layouts: GPUBindGroupLayout[], shaderModule: GPUShaderModule, primitive: PipelinePrimitive, samples: number) {
 
 
     const pipelineLayout: GPUPipelineLayout = device.createPipelineLayout({
@@ -48,7 +48,7 @@ export class Pipeline {
         ]
       },
       multisample: {
-        count: 4
+        count: samples
       }
     });
   }

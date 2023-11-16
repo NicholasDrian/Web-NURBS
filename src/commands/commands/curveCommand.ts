@@ -62,7 +62,7 @@ export class CurveCommand extends Command {
           const degree: number | undefined = parseInt(input);
           if (degree) {
             this.degree = degree;
-            this.curve?.elevateDegree(Math.min(this.curve.getControlPointCount() - 1, this.degree));
+            this.curve?.changeDegree(Math.min(this.curve.getControlPointCount() - 1, this.degree));
           }
           break;
       }
@@ -85,12 +85,12 @@ export class CurveCommand extends Command {
     switch (this.mode) {
       case CurveCommandMode.AddPoints:
         if (this.curve == null)
-          return `Exit:0  Degree(${this.degree}):1  Click start point.  $`;
-        return `Exit:0  Degree(${this.degree}):1  Click next point.  $`;
+          return `0:Exit  1:Degree(${this.degree})  Click start point.  $`;
+        return `0:Exit  1:Degree(${this.degree})  Click next point.  $`;
       case CurveCommandMode.ChangeDegree:
-        return `Exit:0  Enter New Degree(${this.degree})  $`;
+        return `0:Exit  Enter New Degree(${this.degree})  $`;
       default:
-        return "";
+        throw new Error("case not implemented");
     }
   }
 

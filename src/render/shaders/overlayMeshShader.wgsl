@@ -25,19 +25,20 @@ const STRIPE_WIDTH: f32 = 10.0;
 
 @vertex
 fn vertexMain(
-    @location(0) position : vec4<f32>,
-    @location(1) normal : vec4<f32>
+    @location(0) objectSpacePosition : vec4<f32>,
+    @location(1) objectSpaceNormal : vec4<f32>
     ) -> VertexOutput
 {
-  var worldSpacePosition = model * position.xzyw;
+  var worldSpacePosition = model * objectSpacePosition.xzyw;
 
   if ((flags & CONSTANT_SCREEN_SIZE_BIT) != 0) {
     var dist: f32 = distance(worldSpacePosition.xyz, cameraPos.xzy);
-    worldSpacePosition = model * vec4<f32>(position.xzy * dist, position.w);
+    // TODO: Magic number should prolly be factored out...
+    worldSpacePosition = model * vec4<f32>(objectSpacePosition.xzy * dist, objectSpacePosition.w);
   } 
 
   var output: VertexOutput;
-  output.normal = normal.xzyw;
+  output.normal = objectSpaceNormal.xzyw;
   output.position = cameraViewProj * worldSpacePosition;
   return output;
 

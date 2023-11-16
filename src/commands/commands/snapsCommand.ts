@@ -55,7 +55,7 @@ export class SnapsCommand extends Command {
     const grid: string = snapSettings.snapGrid ? "on" : "off";
     const point: string = snapSettings.snapPoint ? "on" : "off";
     const line: string = snapSettings.snapLine ? "on" : "off";
-    return `Exit:0  Grid(${grid}):1  Line(${line}):2  Point(${point}):3  $`;
+    return `0:Exit  1:Grid(${grid})  2:Line(${line})  3:Point(${point})  $`;
   }
 
   public override isFinished(): boolean {
