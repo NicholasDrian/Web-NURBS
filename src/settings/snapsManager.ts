@@ -2,10 +2,14 @@
 
 export class SnapSettings {
 
-  snapGrid: boolean = true;
-  snapLine: boolean = true;
-  snapPoint: boolean = true;
-  snapScreenPercent: boolean = false;
+  constructor(
+    public snapGrid: boolean = true,
+    public snapLine: boolean = true,
+    public snapPoint: boolean = true,
+    public snapScreenPercent: boolean = false,
+  ) {
+
+  }
 
 }
 
@@ -18,8 +22,8 @@ export class SnapSettingsManager {
     this.stack = [new SnapSettings()];
   }
 
-  public push(): void {
-    this.stack.push(new SnapSettings());
+  public push(settings: SnapSettings): void {
+    this.stack.push(settings);
   }
 
   public pop(): void {

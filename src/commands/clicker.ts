@@ -41,13 +41,22 @@ export class Clicker {
 
   }
 
-  public click(): void {
+  public click(types?: string[]): void {
     if (this.clicked) return;
-    this.element.hidden = false;
     this.clicked = true;
+    this.element.hidden = false;
     const mousePos: [number, number] = INSTANCE.getEventManager().getMouseHandler().getMousePos();
     const ray: Ray = INSTANCE.getScene().getCamera().getRayAtPixel(mousePos[0], mousePos[1]);
-    const intersections: Intersection[] = INSTANCE.getScene().getBoundingBoxHeirarchy().firstIntersectionsWithinMargin(ray, 5);
+    var intersections: Intersection[] = INSTANCE.getScene().getBoundingBoxHeirarchy().firstIntersectionsWithinMargin(ray, 5);
+    console.log(intersections);
+    if (types) {
+      intersections = intersections.filter((intersection: Intersection) => {
+        for (const type of types) {
+          if (intersection.description == type) return true;
+        }
+        return false;
+      });
+    }
     if (intersections.length === 0) this.reset();
     if (intersections.length === 1) {
       INSTANCE.getCommandManager().handleClickResult(intersections[0]);

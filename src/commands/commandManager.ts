@@ -8,6 +8,7 @@ import { CircleCommand } from "./commands/circleCommand";
 import { ConstructionPlaneCommand } from "./commands/constructionPlaneCommand";
 import { CurveCommand } from "./commands/curveCommand";
 import { LineCommand } from "./commands/lineCommand";
+import { LoftCommand } from "./commands/loftCommand";
 import { PolyLineCommand } from "./commands/polylineCommand";
 import { SnapsCommand } from "./commands/snapsCommand";
 import { WindowCommand } from "./commands/windowCommand";
@@ -65,6 +66,9 @@ export class CommandManager {
           break;
         case "arc": case "a":
           this.currentCommand = new ArcCommand();
+          break;
+        case "loft": case "l":
+          this.currentCommand = new LoftCommand();
           break;
         default: INSTANCE.getLog().log("Invalid Command");
       }
