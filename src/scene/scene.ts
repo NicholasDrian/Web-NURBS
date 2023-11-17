@@ -97,8 +97,12 @@ export class Scene {
   public removeMeshInstanced(id: RenderID): void { this.renderMeshesInstanced.delete(id); }
 
   public transformSelected(transform: Mat4): void {
-    for (const geo of this.geometry) {
-      geo[1].transformSelected(transform);
+    for (const geo of this.rootGeometry.values()) {
+      if (geo.isSelected()) {
+        this.boundingBoxHeirarchy.remove(geo);
+        geo.transform(transform);
+        this.boundingBoxHeirarchy.add(geo);
+      }
     }
   }
 

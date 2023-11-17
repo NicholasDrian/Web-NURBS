@@ -3,6 +3,7 @@ import { INSTANCE } from "../cad";
 import { BoundingBox } from "../geometry/boundingBox";
 import { Geometry } from "../geometry/geometry";
 import { Group } from "../geometry/group";
+import { Mesh } from "../geometry/mesh";
 import { createArc } from "../geometry/nurbs/arc";
 import { Curve } from "../geometry/nurbs/curve";
 import { loft } from "../geometry/nurbs/loft";
@@ -32,6 +33,10 @@ export class Mover {
   private ySpinner!: Surface;
   private zSpinner!: Surface;
 
+  private xAxisMover!: Mesh;
+  private yAxisMover!: Mesh;
+  private zAxisMover!: Mesh;
+
   constructor() {
     this.active = false;
     this.componentClicked = null;
@@ -49,17 +54,17 @@ export class Mover {
 
     // create construction lines
     const planeMoverInner: Curve = new Curve(null, [
-      vec4.create(1, 0, 0, 1),
-      vec4.create(1, 1, 0, 1),
-      vec4.create(0, 1, 0, 1)],
+      vec4.create(3, 4, 0, 1),
+      vec4.create(4, 4, 0, 1),
+      vec4.create(4, 3, 0, 1)],
       1);
     const planeMoverOuter: Curve = new Curve(null, [
-      vec4.create(2, 0, 0, 1),
-      vec4.create(2, 2, 0, 1),
-      vec4.create(0, 2, 0, 1)],
+      vec4.create(3, 5, 0, 1),
+      vec4.create(5, 5, 0, 1),
+      vec4.create(5, 3, 0, 1)],
       1);
-    const spinnerInner: Curve = createArc(origin, xAxis, yAxis, Math.sqrt(8), 0, Math.PI / 2);
-    const spinnerOuter: Curve = createArc(origin, xAxis, yAxis, Math.sqrt(8) + 1, 0, Math.PI / 2);
+    const spinnerInner: Curve = createArc(origin, xAxis, yAxis, 3, 0, Math.PI / 2);
+    const spinnerOuter: Curve = createArc(origin, xAxis, yAxis, 4, 0, Math.PI / 2);
 
     // create surfaces
     this.xyPlaneMover = loft([planeMoverInner, planeMoverOuter], 1);
@@ -74,7 +79,38 @@ export class Mover {
     this.yzPlaneMover.setMaterial("red");
     this.xSpinner = loft([spinnerInner, spinnerOuter], 1);
     this.xSpinner.setMaterial("red");
-    this.surfaces = new Group([this.xyPlaneMover, this.xzPlaneMover, this.yzPlaneMover, this.xSpinner, this.ySpinner, this.zSpinner]);
+
+
+    this.xAxisMover = new Mesh(null,
+      [vec3.create(0, 4, 0), vec3.create(3, 4, 0), vec3.create(3, 5, 0), vec3.create(0, 5, 0),
+      vec3.create(0, 0, 4), vec3.create(3, 0, 4), vec3.create(3, 0, 5), vec3.create(0, 0, 5)],
+      [vec3.create(0, 0, 1), vec3.create(0, 0, 1), vec3.create(0, 0, 1), vec3.create(0, 0, 1),
+      vec3.create(0, 0, 1), vec3.create(0, 0, 1), vec3.create(0, 0, 1), vec3.create(0, 0, 1)],
+      [0, 1, 2, 2, 3, 0, 4, 5, 6, 6, 7, 4]);
+    this.xAxisMover.setMaterial("red");
+
+    this.yAxisMover = new Mesh(null,
+      [vec3.create(4, 0, 0), vec3.create(4, 3, 0), vec3.create(5, 3, 0), vec3.create(5, 0, 0),
+      vec3.create(0, 0, 4), vec3.create(0, 3, 4), vec3.create(0, 3, 5), vec3.create(0, 0, 5)],
+      [vec3.create(0, 0, 1), vec3.create(0, 0, 1), vec3.create(0, 0, 1), vec3.create(0, 0, 1),
+      vec3.create(0, 0, 1), vec3.create(0, 0, 1), vec3.create(0, 0, 1), vec3.create(0, 0, 1)],
+      [0, 1, 2, 2, 3, 0, 4, 5, 6, 6, 7, 4]);
+    this.yAxisMover.setMaterial("green");
+
+    this.zAxisMover = new Mesh(null,
+      [vec3.create(0, 4, 0), vec3.create(0, 4, 3), vec3.create(0, 5, 3), vec3.create(0, 5, 0),
+      vec3.create(4, 0, 0), vec3.create(4, 0, 3), vec3.create(5, 0, 3), vec3.create(5, 0, 0)],
+      [vec3.create(0, 0, 1), vec3.create(0, 0, 1), vec3.create(0, 0, 1), vec3.create(0, 0, 1),
+      vec3.create(0, 0, 1), vec3.create(0, 0, 1), vec3.create(0, 0, 1), vec3.create(0, 0, 1)],
+      [0, 1, 2, 2, 3, 0, 4, 5, 6, 6, 7, 4]);
+    this.zAxisMover.setMaterial("blue");
+
+
+    this.surfaces = new Group([
+      this.xyPlaneMover, this.xzPlaneMover, this.yzPlaneMover,
+      this.xSpinner, this.ySpinner, this.zSpinner,
+      this.xAxisMover, this.yAxisMover, this.zAxisMover]);
+
     this.surfaces.hide();
     this.surfaces.setOverlay(true);
     this.surfaces.setConstantScreenSize(true);
@@ -196,6 +232,18 @@ export class Mover {
         }
         break;
       }
+      case this.xAxisMover.getID(): {
+        //TODO:
+        break;
+      }
+      case this.yAxisMover.getID(): {
+        //TODO:
+        break;
+      }
+      case this.zAxisMover.getID(): {
+        //TODO:
+        break;
+      }
       default:
         throw new Error("case not implemented");
     }
@@ -221,6 +269,10 @@ export class Mover {
     this.componentClicked = id;
   }
 
+  public tick(): void {
+    this.flip();
+  }
+
   public updatedSelection(): void {
     const selection: Set<ObjectID> = INSTANCE.getSelector().getSelection();
     if (selection.size === 0) {
@@ -235,24 +287,39 @@ export class Mover {
       this.currentModel = mat4.clone(this.originalModel);
       this.surfaces.setModel(this.originalModel);
 
-      const cameraPos: Vec3 = INSTANCE.getScene().getCamera().getPosition();
-      const thisPos: Vec3 = mat4.getTranslation(this.currentModel);
-      const dx: number = thisPos[0] - cameraPos[0];
-      const dy: number = thisPos[1] - cameraPos[1];
-      const dz: number = thisPos[2] - cameraPos[2];
-      var flipper: Mat4 = mat4.scale(mat4.identity(), vec3.create(
-        dx > 0 ? -1 : 1,
-        dy > 0 ? -1 : 1,
-        dz > 0 ? -1 : 1,
-      ));
-      this.xyPlaneMover.setModel(mat4.mul(flipper, Mover.toXYPlane));
-      this.zSpinner.setModel(mat4.mul(flipper, Mover.toXYPlane));
-      this.xzPlaneMover.setModel(mat4.mul(flipper, Mover.toXZPlane));
-      this.ySpinner.setModel(mat4.mul(flipper, Mover.toXZPlane));
-      this.yzPlaneMover.setModel(mat4.mul(flipper, Mover.toYZPlane));
-      this.xSpinner.setModel(mat4.mul(flipper, Mover.toYZPlane));
+
+      this.flip();
       this.surfaces.show();
+
     }
+  }
+
+  public flip(): void {
+
+    const cameraPos: Vec3 = INSTANCE.getScene().getCamera().getPosition();
+    const thisPos: Vec3 = mat4.getTranslation(this.currentModel);
+    const dx: number = thisPos[0] - cameraPos[0];
+    const dy: number = thisPos[1] - cameraPos[1];
+    const dz: number = thisPos[2] - cameraPos[2];
+    var flipper: Mat4 = mat4.scale(mat4.identity(), vec3.create(
+      dx > 0 ? -1 : 1,
+      dy > 0 ? -1 : 1,
+      dz > 0 ? -1 : 1,
+    ));
+
+    this.xyPlaneMover.setModel(mat4.mul(flipper, Mover.toXYPlane));
+    this.yzPlaneMover.setModel(mat4.mul(flipper, Mover.toYZPlane));
+    this.xzPlaneMover.setModel(mat4.mul(flipper, Mover.toXZPlane));
+
+    this.xSpinner.setModel(mat4.mul(flipper, Mover.toYZPlane));
+    this.ySpinner.setModel(mat4.mul(flipper, Mover.toXZPlane));
+    this.zSpinner.setModel(mat4.mul(flipper, Mover.toXYPlane));
+
+    this.xAxisMover.setModel(mat4.mul(flipper, Mover.toXYPlane));
+    this.yAxisMover.setModel(mat4.mul(flipper, Mover.toXYPlane));
+    this.zAxisMover.setModel(mat4.mul(flipper, Mover.toXYPlane));
+
+
   }
 
 

@@ -86,6 +86,7 @@ class CAD {
         // update scene
         var sceneTimer = new Timer();
         this.scene.tick();
+        this.mover.tick();
         this.renderStats.setSceneTime(sceneTimer.getTime());
 
         // render

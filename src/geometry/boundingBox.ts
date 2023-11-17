@@ -54,4 +54,13 @@ export class BoundingBox {
     return res;
   }
 
+  public contains(bb: BoundingBox): boolean {
+    return this.xMin <= bb.xMin &&
+      this.yMin <= bb.yMin &&
+      this.zMin <= bb.zMin &&
+      this.xMax >= bb.xMax &&
+      this.yMax >= bb.yMax &&
+      this.zMax >= bb.zMax;
+  }
+
 }

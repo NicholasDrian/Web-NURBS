@@ -143,12 +143,8 @@ export abstract class Geometry {
     return INSTANCE.getMaterialManager().getDefaultMaterial().getColor()!;
   }
 
-  transformSelected(transform: Mat4): void {
-    // TODO: subselect
-    if (this.selected) {
-      this.model = mat4.mul(transform, this.model);
-      console.log(this.getTypeName(), this.model);
-    }
+  public transform(transform: Mat4): void {
+    this.model = mat4.mul(transform, this.model);
   }
 
 }

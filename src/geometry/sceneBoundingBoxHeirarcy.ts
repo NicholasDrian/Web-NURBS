@@ -55,6 +55,7 @@ class BBHNode {
       this.child2 = new BBHNode(child2Geometry, depth + 1);
     }
   }
+
   public firstIntersectionsWithinMargin(ray: Ray, margin: number): Intersection[] {
     const intersections: Intersection[] = [];
     if (ray.almostIntersectBoundingBox(this.boundingBox, 10) === null) return intersections;
@@ -143,6 +144,26 @@ class BBHNode {
     this.child2?.print();
   }
 
+  public remove(geo: Geometry): void {
+    // TODO: after a few removals, should rebalance
+
+    if (!this.boundingBox.contains(geo.getBoundingBox())) return;
+
+    if (this.isLeaf()) {
+      for (let i = 0; i < this.geometry!.length; i++) {
+        if (this.geometry![i] === geo) this.geometry!.splice(i, 1);
+      }
+    } else {
+      this.child1!.remove(geo);
+      this.child2!.remove(geo);
+    }
+  }
+
+  public tighten(): void {
+    // tighten up bbs after removals
+    throw new Error("not implemented");
+  }
+
   public add(geo: Geometry): void {
     if (this.isLeaf()) {
       if (this.geometry!.length < SceneBoundingBoxHeirarchy.MAX_GEOMETRY_PER_LEAF) {
@@ -194,6 +215,10 @@ export class SceneBoundingBoxHeirarchy {
 
   public add(geo: Geometry): void {
     this.root.add(geo);
+  }
+
+  public remove(geo: Geometry): void {
+    this.root.remove(geo);
   }
 
   public getRoot(): BBHNode {
