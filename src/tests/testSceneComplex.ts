@@ -13,6 +13,7 @@ export const addTestSceneComplex = function() {
     [vec3.create(0, 0, 1), vec3.create(0, 0, 1), vec3.create(0, 0, 1), vec3.create(0, 0, 1)],
     [0, 1, 2, 2, 3, 0]
   );
+
   const curve1: Curve = new Curve(
     null, [
     vec4.create(-50, -50, 0, 1),

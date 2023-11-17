@@ -15,7 +15,6 @@ import { Ray } from "./ray";
 export class PolyLine extends Geometry {
 
   private renderLines!: RenderID;
-  private boundingBox!: BoundingBox;
   private boundingBoxHeirarchy!: LineBoundingBoxHeirarchy;
 
   constructor(
@@ -35,7 +34,12 @@ export class PolyLine extends Geometry {
   }
 
   public getBoundingBox(): BoundingBox {
-    return this.boundingBox;
+    const res = new BoundingBox();
+    const model: Mat4 = this.getModelRecursive();
+    this.points.forEach((point: Vec3) => {
+      res.addVec3(vec3.transformMat4(point, model));
+    });
+    return res;
   }
 
   public getSegmentCount(): number {
@@ -88,16 +92,8 @@ export class PolyLine extends Geometry {
     this.renderLines = renderLinesObj.getRenderID();
     INSTANCE.getScene().addRenderLines(renderLinesObj);
 
-    this.updateBoundingBox();
     this.boundingBoxHeirarchy = new LineBoundingBoxHeirarchy(this, this.points, indices);
   }
 
-  private updateBoundingBox(): void {
-    this.boundingBox = new BoundingBox();
-    const model: Mat4 = this.getModelRecursive();
-    this.points.forEach((point: Vec3) => {
-      this.boundingBox.addVec3(vec3.transformMat4(point, model));
-    });
-  }
 
 }

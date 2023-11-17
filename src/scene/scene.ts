@@ -1,5 +1,5 @@
 import { Camera } from "./camera"
-import { vec3 } from "wgpu-matrix"
+import { Mat4, vec3 } from "wgpu-matrix"
 import { RenderMesh } from "../render/renderMesh"
 import { RenderLines } from "../render/renderLines"
 import { ConstructionPlane } from "./constructionPlane"
@@ -95,6 +95,12 @@ export class Scene {
   public removeLines(id: RenderID): void { this.renderLines.delete(id); }
   public removePoints(id: RenderID): void { this.renderPoints.delete(id); }
   public removeMeshInstanced(id: RenderID): void { this.renderMeshesInstanced.delete(id); }
+
+  public transformSelected(transform: Mat4): void {
+    for (const geo of this.geometry) {
+      geo[1].transformSelected(transform);
+    }
+  }
 
   public tick(): void {
 

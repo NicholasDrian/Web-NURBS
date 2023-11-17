@@ -1,9 +1,5 @@
 import { INSTANCE } from "../cad"
-import { mat4, Mat4 } from "wgpu-matrix"
 import { Geometry } from "../geometry/geometry";
-import { RenderID } from "../scene/scene";
-import { CONSTANT_SCREEN_SIZE_BIT, HOVER_BIT, SELECTED_BIT } from "./flags";
-import { swizzleYZ } from "../utils/math";
 import { Renderable } from "./renderable";
 
 export class RenderMesh extends Renderable {
@@ -57,7 +53,6 @@ export class RenderMesh extends Renderable {
   public isOverlay(): boolean {
     return this.parent.isOverlay();
   }
-
 
   public draw(pass: GPURenderPassEncoder): void {
     if (this.parent.isHidden()) return;

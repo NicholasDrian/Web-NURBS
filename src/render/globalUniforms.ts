@@ -1,5 +1,6 @@
 import { Vec3, Vec4 } from "wgpu-matrix";
 import { INSTANCE } from "../cad";
+import { swizzleYZ } from "../utils/math";
 
 enum ShadingMode {
   Default,
@@ -91,7 +92,7 @@ export class GlobalUniforms {
   public tick(): void {
     this.device.queue.writeBuffer(this.cameraPositionBuffer, 0, <Float32Array>INSTANCE.getScene().getCamera().getPosition());
     this.device.queue.writeBuffer(this.cameraViewProjBuffer, 0, INSTANCE.getScene().getCamera().getViewProj());
-    this.device.queue.writeBuffer(this.selectionTransformBuffer, 0, <Float32Array>INSTANCE.getMover().getTransform())
+    this.device.queue.writeBuffer(this.selectionTransformBuffer, 0, <Float32Array>swizzleYZ(INSTANCE.getMover().getTransform()));
 
     const resolutionArray: Float32Array = new Float32Array([window.innerWidth, window.innerHeight]);
     this.device.queue.writeBuffer(this.resolutionBuffer, 0, resolutionArray);

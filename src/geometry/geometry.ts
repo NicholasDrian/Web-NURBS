@@ -2,6 +2,7 @@ import { mat4, Mat4, Vec4 } from "wgpu-matrix";
 import { INSTANCE } from "../cad";
 import { Material, MaterialName } from "../materials/material";
 import { ObjectID } from "../scene/scene";
+import { swizzleYZ } from "../utils/math";
 import { BoundingBox } from "./boundingBox";
 import { Frustum } from "./frustum";
 import { Intersection } from "./intersection";
@@ -59,7 +60,7 @@ export abstract class Geometry {
     if (this.parent) {
       return mat4.mul(this.parent.getModelRecursive(), this.model);
     } else {
-      return this.model;
+      return mat4.clone(this.model);
     }
   }
 
@@ -140,6 +141,14 @@ export abstract class Geometry {
       return this.parent.getColor();
     }
     return INSTANCE.getMaterialManager().getDefaultMaterial().getColor()!;
+  }
+
+  transformSelected(transform: Mat4): void {
+    // TODO: subselect
+    if (this.selected) {
+      this.model = mat4.mul(transform, this.model);
+      console.log(this.getTypeName(), this.model);
+    }
   }
 
 }

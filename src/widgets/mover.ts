@@ -206,7 +206,7 @@ export class Mover {
     if (this.active) {
       this.active = false;
       this.originalIntersectionPoint = null;
-      // TODO: bake
+      INSTANCE.getScene().transformSelected(this.getTransform());
       this.updatedSelection();
       this.originalModel = this.currentModel;
     }
@@ -257,7 +257,7 @@ export class Mover {
 
 
   public getTransform(): Mat4 {
-    return swizzleYZ(mat4.mul(this.currentModel, mat4.inverse(this.originalModel)));
+    return mat4.mul(this.currentModel, mat4.inverse(this.originalModel));
   }
 
 

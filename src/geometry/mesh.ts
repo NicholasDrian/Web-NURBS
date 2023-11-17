@@ -22,7 +22,7 @@ export class Mesh extends Geometry {
     private verts: Vec3[],
     private normals: Vec3[],
     private indices: number[],
-    model?: Mat4,
+    model: Mat4 = mat4.identity(),
     material: MaterialName | null = null
   ) {
     super(parent, model, material);
