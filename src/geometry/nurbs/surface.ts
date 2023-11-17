@@ -1,4 +1,5 @@
 import { mat4, Mat4, vec3, Vec3, vec4, Vec4 } from "wgpu-matrix";
+import { INSTANCE } from "../../cad";
 import { MaterialName } from "../../materials/material";
 import { BoundingBox } from "../boundingBox";
 import { Frustum } from "../frustum";
@@ -45,6 +46,7 @@ export class Surface extends Geometry {
     this.edgeHighU?.destroy();
     this.edgeLowV?.destroy();
     this.edgeHighV?.destroy();
+    INSTANCE.getScene().removeGeometry(this);
   }
 
   public getMesh(): Mesh {
@@ -65,7 +67,11 @@ export class Surface extends Geometry {
   }
 
   private update(): void {
-    this.delete();
+    this.mesh?.destroy();
+    this.edgeLowU?.destroy();
+    this.edgeHighU?.destroy();
+    this.edgeLowV?.destroy();
+    this.edgeHighV?.destroy();
 
     const sampleCountU: number = Curve.SAMPLES_PER_EDGE * (this.weightedControlPoints.length - 1);
     const sampleCountV: number = Curve.SAMPLES_PER_EDGE * (this.weightedControlPoints[0].length - 1);

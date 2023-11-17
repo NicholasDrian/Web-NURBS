@@ -14,7 +14,7 @@ import { Ray } from "./ray";
 
 export class InstancedMesh extends Geometry {
 
-  private renderMesh: RenderID;
+  private renderMeshInstanced: RenderID;
   private boundingBoxHeirarchy: InstancedMeshBoundingBoxHeirarchy;
 
   constructor(
@@ -39,12 +39,17 @@ export class InstancedMesh extends Geometry {
       transforms
     );
     INSTANCE.getScene().addRenderMeshInstanced(renderMeshObj);
-    this.renderMesh = renderMeshObj.getRenderID();
+    this.renderMeshInstanced = renderMeshObj.getRenderID();
 
     this.boundingBoxHeirarchy = new InstancedMeshBoundingBoxHeirarchy(this);
   }
   public override getTypeName(): string {
     return "Instanced Mesh";
+  }
+
+  public delete(): void {
+    INSTANCE.getScene().removeMeshInstanced(this.renderMeshInstanced);
+    INSTANCE.getScene().removeGeometry(this);
   }
 
   public isWithinFrustum(frustum: Frustum, inclusive: boolean): boolean {
@@ -82,9 +87,6 @@ export class InstancedMesh extends Geometry {
     return this.transforms[intance];
   }
 
-  public destroy(): void {
-    INSTANCE.getScene().removeMeshInstanced(this.renderMesh);
-  }
 
   public getBoundingBox(): BoundingBox {
     const boundingBox: BoundingBox = new BoundingBox();

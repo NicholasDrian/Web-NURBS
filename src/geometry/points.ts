@@ -6,6 +6,7 @@ import { Ray } from "./ray";
 import { InstancedMesh } from "./instancedMesh";
 import { Intersection } from "./intersection";
 import { Frustum } from "./frustum";
+import { INSTANCE } from "../cad";
 
 
 const unitPointVerts: Vec3[] = [
@@ -46,7 +47,8 @@ export class Points extends Geometry {
   }
 
   private update(points: Vec3[]): void {
-    if (this.instancedMesh) this.instancedMesh.destroy();
+
+    this.instancedMesh?.delete();
 
     const transforms: Mat4[] = [];
     for (let i = 0; i < points.length; i++) {
@@ -73,8 +75,9 @@ export class Points extends Geometry {
     this.instancedMesh = new InstancedMesh(this, unitPointVerts, unitPointVerts, unitPointIndices, transforms);
   }
 
-  public delete(): void {
-    this.instancedMesh!.destroy();
+  public override delete(): void {
+    this.instancedMesh!.delete();
+    INSTANCE.getScene().removeGeometry(this);
   }
 
   public override getTypeName(): string {

@@ -50,8 +50,9 @@ export class Lines extends Geometry {
     return "Lines";
   }
 
-  public delete(): void {
+  public override delete(): void {
     INSTANCE.getScene().removeLines(this.renderLines);
+    INSTANCE.getScene().removeGeometry(this);
   }
 
   private update(): void {

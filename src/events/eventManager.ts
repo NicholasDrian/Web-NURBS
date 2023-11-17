@@ -31,6 +31,10 @@ export class EventManager {
         event.stopPropagation();
       } else {
         if (INSTANCE.getMode() == OperatingMode.Command) INSTANCE.getCli().processKeyDownEvent(event);
+        else if (event.code == "Delete" || event.code == "Backspace") {
+          INSTANCE.getScene().deleteSelected();
+        }
+
       }
     };
 

@@ -7,6 +7,7 @@ import { RenderPoints } from "../render/renderPoints"
 import { SceneBoundingBoxHeirarchy } from "../geometry/sceneBoundingBoxHeirarcy"
 import { Geometry } from "../geometry/geometry"
 import { RenderMeshInstanced } from "../render/renterMeshInstanced"
+import { INSTANCE } from "../cad"
 
 export type RenderID = number; // for gpu objects
 export type ObjectID = number; // for cpu objects
@@ -68,6 +69,11 @@ export class Scene {
     this.rootGeometry.set(geo.getID(), geo);
   }
 
+  public removeGeometry(geo: Geometry): void {
+    this.boundingBoxHeirarchy.remove(geo);
+    this.rootGeometry.delete(geo.getID());
+  }
+
   public getGeometry(id: ObjectID): Geometry {
     return this.geometry.get(id)!;
   }
@@ -104,6 +110,17 @@ export class Scene {
         this.boundingBoxHeirarchy.add(geo);
       }
     }
+  }
+  public deleteSelected(): void {
+    console.log("deleting selection");
+    for (const geo of this.rootGeometry.values()) {
+      if (geo.isSelected()) {
+        this.boundingBoxHeirarchy.remove(geo);
+        this.rootGeometry.delete(geo.getID());
+        geo.delete();
+      }
+    }
+    INSTANCE.getSelector().reset();
   }
 
   public tick(): void {

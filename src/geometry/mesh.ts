@@ -41,6 +41,11 @@ export class Mesh extends Geometry {
     this.boundingBoxHeirarchy = new MeshBoundingBoxHeirarchy(this, this.verts, this.indices);
   }
 
+  public delete(): void {
+    INSTANCE.getScene().removeMesh(this.renderMesh);
+    INSTANCE.getScene().removeGeometry(this);
+  }
+
   public getVerts(): Vec3[] {
     return this.verts;
   }

@@ -1,4 +1,5 @@
 import { Mat4, vec3, Vec3, vec4, Vec4 } from "wgpu-matrix";
+import { INSTANCE } from "../../cad";
 import { MaterialName } from "../../materials/material";
 import { BoundingBox } from "../boundingBox";
 import { Frustum } from "../frustum";
@@ -35,6 +36,13 @@ export class Curve extends Geometry {
     this.controlCage = null;
     this.polyline = null;
     this.updateSamples();
+  }
+
+  public delete(): void {
+    this.controlCage!.delete();
+    this.polyline!.delete();
+    this.controlPoints!.delete();
+    INSTANCE.getScene().removeGeometry(this);
   }
 
   public getKnots(): number[] {

@@ -58,8 +58,9 @@ export class Line extends Geometry {
     return frustum.containsLineFully(this.start, this.end);
   }
 
-  public delete(): void {
+  public override delete(): void {
     INSTANCE.getScene().removeLines(this.renderLines);
+    INSTANCE.getScene().removeGeometry(this);
   }
 
   public getStart(): Vec3 {

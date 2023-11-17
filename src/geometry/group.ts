@@ -1,4 +1,5 @@
 import { Mat4, mat4 } from "wgpu-matrix";
+import { INSTANCE } from "../cad";
 import { MaterialName } from "../materials/material";
 import { BoundingBox } from "./boundingBox";
 import { Frustum } from "./frustum";
@@ -30,6 +31,13 @@ export class Group extends Geometry {
 
   public override getTypeName(): string {
     return "Group";
+  }
+
+  public delete(): void {
+    for (const child of this.children) {
+      child.delete();
+    }
+    INSTANCE.getScene().removeGeometry(this);
   }
 
   public isWithinFrustum(frustum: Frustum, inclusive: boolean): boolean {
