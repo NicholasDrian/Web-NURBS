@@ -412,20 +412,16 @@ export class Mover {
       }
       case this.xyzScaler.getID(): {
         const intersection: Vec3 = ray.closestPointOnLine(originalPos, vec3.add(originalPos, vec3.create(0, 0, 1)));
-        if (this.originalIntersectionPoint === null) {
-          this.originalIntersectionPoint = intersection;
-        } else {
-          var dz: number = intersection[2] - this.originalIntersectionPoint[2];
-          if (dz > 0) dz += 1;
-          else dz = -1 / (dz - 1);
-          this.currentModel = mat4.scale(this.originalModel, vec3.create(dz, dz, dz));
-        }
+        var dz: number = intersection[2] - originalPos[2];
+        if (dz > 0) dz += 1;
+        else dz = -1 / (dz - 1);
+        this.currentModel = mat4.scale(this.originalModel, vec3.create(dz, dz, dz));
         break;
       }
       default:
         throw new Error("case not implemented");
     }
-    this.surfaces.setModel(mat4.scale(this.currentModel, vec3.inverse(mat4.getScaling(this.currentModel))));
+    this.surfaces.setModel(mat4.mul(mat4.inverse(mat4.getScaling(this.currentModel)), this.currentModel)));
   }
 
   public onMouseUp(): void {
@@ -489,6 +485,7 @@ export class Mover {
           height:auto;`
         );
         this.element.hidden = false;
+        this.updatedSelection();
       }
     }
   }
@@ -498,59 +495,51 @@ export class Mover {
       if (event.code == "Enter") {
         this.active = false;
         this.element.hidden = true;
-        this.originalIntersectionPoint = null;
-        INSTANCE.getScene().transformSelected(this.getTransform());
-        this.updatedSelection();
-        this.originalModel = this.currentModel;
-        return;
       }
-      if (event.code == "Delete" || event.code == "Backspace" && this.element.innerHTML.at(-1) != ":") {
-        this.element.innerHTML = this.element.innerHTML.slice(0, -1);
-      } else if (event.key.length === 1) {
-        this.element.innerHTML += event.key;
-      }
+      if (event.key.length > 1) return;
+      this.element.innerHTML += event.key;
       const input: string = this.element.innerHTML.split(":")[1];
       const parsedInput: number = parseFloat(input);
       if (!isNaN(parsedInput)) {
         switch (this.componentClicked) {
           case this.xSpinner.getMesh().getID():
-            this.currentModel = mat4.rotateX(this.originalModel, parsedInput / 180 * Math.PI);
+            INSTANCE.getScene().transformSelected(mat4.rotateX(mat4.identity(), parsedInput / 180 * Math.PI));
             break;
           case this.ySpinner.getMesh().getID():
-            this.currentModel = mat4.rotateY(this.originalModel, parsedInput / 180 * Math.PI);
+            INSTANCE.getScene().transformSelected(mat4.rotateY(mat4.identity(), parsedInput / 180 * Math.PI));
             break;
           case this.zSpinner.getMesh().getID():
-            this.currentModel = mat4.rotateZ(this.originalModel, parsedInput / 180 * Math.PI);
+            INSTANCE.getScene().transformSelected(mat4.rotateZ(mat4.identity(), parsedInput / 180 * Math.PI));
             break;
           case this.xAxisMover.getID():
-            this.currentModel = mat4.translate(this.originalModel, vec3.create(parsedInput, 0, 0));
+            INSTANCE.getScene().transformSelected(mat4.translate(mat4.identity(), vec3.create(parsedInput, 0, 0)));
             break;
           case this.yAxisMover.getID():
-            this.currentModel = mat4.translate(this.originalModel, vec3.create(0, parsedInput, 0));
+            INSTANCE.getScene().transformSelected(mat4.translate(mat4.identity(), vec3.create(0, parsedInput, 0)));
             break;
           case this.zAxisMover.getID():
-            this.currentModel = mat4.translate(this.originalModel, vec3.create(0, 0, parsedInput));
+            INSTANCE.getScene().transformSelected(mat4.translate(mat4.identity(), vec3.create(0, 0, parsedInput)));
             break;
           case this.xScaler.getID():
-            this.currentModel = mat4.scale(this.originalModel, vec3.create(parsedInput, 0, 0));
+            INSTANCE.getScene().transformSelected(mat4.scale(mat4.identity(), vec3.create(parsedInput, 0, 0)));
             break;
           case this.yScaler.getID():
-            this.currentModel = mat4.scale(this.originalModel, vec3.create(0, parsedInput, 0));
+            INSTANCE.getScene().transformSelected(mat4.scale(mat4.identity(), vec3.create(0, parsedInput, 0)));
             break;
           case this.zScaler.getID():
-            this.currentModel = mat4.scale(this.originalModel, vec3.create(0, 0, parsedInput));
+            INSTANCE.getScene().transformSelected(mat4.scale(mat4.identity(), vec3.create(0, 0, parsedInput)));
             break;
           case this.xyScaler.getID():
-            this.currentModel = mat4.scale(this.originalModel, vec3.create(parsedInput, parsedInput, 0));
+            INSTANCE.getScene().transformSelected(mat4.scale(mat4.identity(), vec3.create(parsedInput, parsedInput, 0)));
             break;
           case this.yzScaler.getID():
-            this.currentModel = mat4.scale(this.originalModel, vec3.create(0, parsedInput, parsedInput));
+            INSTANCE.getScene().transformSelected(mat4.scale(mat4.identity(), vec3.create(0, parsedInput, parsedInput)));
             break;
           case this.xzScaler.getID():
-            this.currentModel = mat4.scale(this.originalModel, vec3.create(parsedInput, 0, parsedInput));
+            INSTANCE.getScene().transformSelected(mat4.scale(mat4.identity(), vec3.create(parsedInput, 0, parsedInput)));
             break;
           case this.xyzScaler.getID():
-            this.currentModel = mat4.scale(this.originalModel, vec3.create(parsedInput, parsedInput, parsedInput));
+            INSTANCE.getScene().transformSelected(mat4.scale(mat4.identity(), vec3.create(parsedInput, parsedInput, parsedInput)));
             break;
         }
       }

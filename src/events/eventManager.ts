@@ -34,7 +34,7 @@ export class EventManager {
         else if (event.code == "Delete" || event.code == "Backspace") {
           INSTANCE.getScene().deleteSelected();
         }
-
+        INSTANCE.getMover().onkeydown(event);
       }
     };
 
