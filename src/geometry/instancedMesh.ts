@@ -3,6 +3,7 @@ import { INSTANCE } from "../cad";
 import { MaterialName } from "../materials/material";
 import { RenderMeshInstanced } from "../render/renterMeshInstanced";
 import { RenderID } from "../scene/scene";
+import { cloneMat4List, cloneVec3List } from "../utils/clone";
 import { BoundingBox } from "./boundingBox";
 import { Frustum } from "./frustum";
 import { Geometry } from "./geometry";
@@ -43,6 +44,18 @@ export class InstancedMesh extends Geometry {
 
     this.boundingBoxHeirarchy = new InstancedMeshBoundingBoxHeirarchy(this);
   }
+
+  public clone(): Geometry {
+    return new InstancedMesh(
+      this.parent,
+      cloneVec3List(this.verts),
+      cloneVec3List(this.normals),
+      [...this.indices],
+      cloneMat4List(this.transforms),
+      mat4.clone(this.model),
+      this.materialName);
+  }
+
   public override getTypeName(): string {
     return "Instanced Mesh";
   }

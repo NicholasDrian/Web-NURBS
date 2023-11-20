@@ -1,6 +1,7 @@
 import { mat4, Mat4, vec3, Vec3, vec4, Vec4 } from "wgpu-matrix";
 import { INSTANCE } from "../../cad";
 import { MaterialName } from "../../materials/material";
+import { cloneVec4ListList } from "../../utils/clone";
 import { BoundingBox } from "../boundingBox";
 import { Frustum } from "../frustum";
 import { Geometry } from "../geometry";
@@ -47,6 +48,15 @@ export class Surface extends Geometry {
     this.edgeLowV?.destroy();
     this.edgeHighV?.destroy();
     INSTANCE.getScene().removeGeometry(this);
+  }
+
+  public clone(): Geometry {
+    return new Surface(cloneVec4ListList(
+      this.weightedControlPoints),
+      [...this.uKnots], [...this.vKnots],
+      this.degreeU, this.degreeV,
+      this.parent, mat4.clone(this.model),
+      this.materialName);
   }
 
   public getMesh(): Mesh {

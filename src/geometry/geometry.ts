@@ -19,9 +19,9 @@ export abstract class Geometry {
   private id: ObjectID;
 
   constructor(
-    private parent: Geometry | null = null,
-    private model: Mat4 = mat4.identity(),
-    private materialName: MaterialName | null,
+    protected parent: Geometry | null = null,
+    protected model: Mat4 = mat4.identity(),
+    protected materialName: MaterialName | null,
   ) {
     this.id = INSTANCE.getScene().generateNewObjectID(this);
   }
@@ -31,8 +31,7 @@ export abstract class Geometry {
   public abstract intersect(ray: Ray): Intersection | null;
   public abstract isWithinFrustum(frustum: Frustum, inclusive: boolean): boolean;
   public abstract delete(): void;
-  // TODO:
-  // public abstract clone(): Geometry;
+  public abstract clone(): Geometry;
 
   public isOverlay(): boolean {
     return this.overlay || (this.parent && this.parent.isOverlay()) || false;

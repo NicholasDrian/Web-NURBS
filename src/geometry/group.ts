@@ -40,6 +40,10 @@ export class Group extends Geometry {
     INSTANCE.getScene().removeGeometry(this);
   }
 
+  public clone(): Geometry {
+    return new Group(this.children.map((geo: Geometry) => { return geo.clone(); }), this.parent, mat4.clone(this.model), this.materialName);
+  }
+
   public isWithinFrustum(frustum: Frustum, inclusive: boolean): boolean {
     if (this.isHidden()) return false;
     if (inclusive) {

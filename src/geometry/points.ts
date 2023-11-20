@@ -7,6 +7,7 @@ import { InstancedMesh } from "./instancedMesh";
 import { Intersection } from "./intersection";
 import { Frustum } from "./frustum";
 import { INSTANCE } from "../cad";
+import { cloneVec3List } from "../utils/clone";
 
 
 const unitPointVerts: Vec3[] = [
@@ -37,23 +38,23 @@ export class Points extends Geometry {
 
   constructor(
     parent: Geometry | null,
-    points: Vec3[],
+    private points: Vec3[],
     model: Mat4 = mat4.identity(),
     material: MaterialName | null = null
   ) {
     super(parent, model, material);
     this.instancedMesh = null;
-    this.update(points);
+    this.update();
   }
 
-  private update(points: Vec3[]): void {
+  private update(): void {
 
     this.instancedMesh?.delete();
 
     const transforms: Mat4[] = [];
-    for (let i = 0; i < points.length; i++) {
+    for (let i = 0; i < this.points.length; i++) {
 
-      const pointXZY: Vec3 = vec3.create(points[i][0], points[i][2], points[i][1]);
+      const pointXZY: Vec3 = vec3.create(this.points[i][0], this.points[i][2], this.points[i][1]);
       var translation: Mat4 = mat4.translate(mat4.identity(), pointXZY);
 
       var scale: Mat4 = mat4.scale(mat4.identity(), vec3.create(0.01, 0.01, 0.01));
@@ -73,6 +74,10 @@ export class Points extends Geometry {
     }
 
     this.instancedMesh = new InstancedMesh(this, unitPointVerts, unitPointVerts, unitPointIndices, transforms);
+  }
+
+  public clone(): Geometry {
+    return new Points(this.parent, cloneVec3List(this.points), mat4.clone(this.model), this.materialName);
   }
 
   public override delete(): void {

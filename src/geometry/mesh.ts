@@ -3,6 +3,7 @@ import { INSTANCE } from "../cad";
 import { MaterialName } from "../materials/material";
 import { RenderMesh } from "../render/renderMesh";
 import { RenderID } from "../scene/scene";
+import { cloneVec3List } from "../utils/clone";
 import { BoundingBox } from "./boundingBox";
 import { Frustum } from "./frustum";
 import { Geometry } from "./geometry";
@@ -39,6 +40,10 @@ export class Mesh extends Geometry {
     INSTANCE.getScene().addRenderMesh(renderMeshObj);
     this.renderMesh = renderMeshObj.getRenderID();
     this.boundingBoxHeirarchy = new MeshBoundingBoxHeirarchy(this, this.verts, this.indices);
+  }
+
+  public clone(): Geometry {
+    return new Mesh(this.parent, cloneVec3List(this.verts), cloneVec3List(this.normals), [...this.indices], mat4.clone(this.model), this.materialName);
   }
 
   public delete(): void {

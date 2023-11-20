@@ -45,7 +45,10 @@ export class Clicker {
   }
 
   public click(types?: string[]): void {
-    if (this.clicked) return;
+    if (this.clicked) {
+      // TODO: remove click dialog
+      return;
+    }
     this.clicked = true;
     this.element.hidden = false;
     const mousePos: [number, number] = INSTANCE.getEventManager().getMouseHandler().getMousePos();

@@ -3,7 +3,7 @@ import { INSTANCE } from "../cad";
 import { MaterialName } from "../materials/material";
 import { RenderLines } from "../render/renderLines";
 import { RenderID } from "../scene/scene";
-import { printMat4 } from "../utils/print";
+import { cloneVec3List } from "../utils/clone";
 import { BoundingBox } from "./boundingBox";
 import { Frustum } from "./frustum";
 import { Geometry } from "./geometry";
@@ -26,6 +26,10 @@ export class PolyLine extends Geometry {
     super(parent, model, material);
     this.renderLines = 0;
     this.update();
+  }
+
+  public clone(): Geometry {
+    return new PolyLine(this.parent, cloneVec3List(this.points), mat4.clone(this.model), this.materialName);
   }
 
   public intersect(ray: Ray): Intersection | null {

@@ -1,6 +1,7 @@
-import { Mat4, vec3, Vec3, vec4, Vec4 } from "wgpu-matrix";
+import { mat4, Mat4, vec3, Vec3, vec4, Vec4 } from "wgpu-matrix";
 import { INSTANCE } from "../../cad";
 import { MaterialName } from "../../materials/material";
+import { cloneVec4List } from "../../utils/clone";
 import { BoundingBox } from "../boundingBox";
 import { Frustum } from "../frustum";
 import { Geometry } from "../geometry";
@@ -36,6 +37,10 @@ export class Curve extends Geometry {
     this.controlCage = null;
     this.polyline = null;
     this.updateSamples();
+  }
+
+  public clone(): Geometry {
+    return new Curve(this.parent, cloneVec4List(this.weightedControlPoints), this.degree, [...this.knots], mat4.clone(this.model), this.materialName);
   }
 
   public delete(): void {

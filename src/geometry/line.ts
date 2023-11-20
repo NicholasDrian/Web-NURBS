@@ -28,6 +28,10 @@ export class Line extends Geometry {
     this.updateBoundingBox();
   }
 
+  public clone(): Geometry {
+    return new Line(this.parent, vec3.clone(this.start), vec3.clone(this.end), mat4.clone(this.model), this.materialName);
+  }
+
   public intersect(ray: Ray): Intersection | null {
     if (this.isHidden()) return null;
     return ray.almostIntersectLine(this.getID(), this.start, this.end, 10);
