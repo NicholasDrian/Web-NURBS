@@ -37,6 +37,9 @@ export class Clicker {
     if (i) {
       this.point = i.point;
       cursor.setPosition(INSTANCE.getScene().getCamera().getPixelAtPoint(this.point));
+      cursor.show();
+    } else {
+      cursor.hide();
     }
 
   }

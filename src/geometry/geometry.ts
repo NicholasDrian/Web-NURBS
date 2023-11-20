@@ -31,6 +31,8 @@ export abstract class Geometry {
   public abstract intersect(ray: Ray): Intersection | null;
   public abstract isWithinFrustum(frustum: Frustum, inclusive: boolean): boolean;
   public abstract delete(): void;
+  // TODO:
+  // public abstract clone(): Geometry;
 
   public isOverlay(): boolean {
     return this.overlay || (this.parent && this.parent.isOverlay()) || false;

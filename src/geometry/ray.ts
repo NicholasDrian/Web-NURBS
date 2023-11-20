@@ -1,10 +1,7 @@
-import { mat4, Mat4, vec3, Vec3, vec4, Vec4 } from "wgpu-matrix";
+import { Mat4, vec3, Vec3, vec4, Vec4 } from "wgpu-matrix";
 import { INSTANCE } from "../cad";
-import { ConstructionPlane } from "../scene/constructionPlane";
 import { ObjectID, Scene } from "../scene/scene";
-import { printVec3 } from "../utils/print";
 import { BoundingBox } from "./boundingBox";
-import { Geometry } from "./geometry";
 import { Intersection } from "./intersection";
 import { Plane } from "./plane";
 
@@ -43,6 +40,7 @@ export class Ray {
     const numerator: number = vec3.dot(vec3.sub(plane.getOrigin(), this.origin), plane.getNormal());
     const denominator: number = vec3.dot(this.direction, plane.getNormal());
     if (denominator === 0) { // parallel case
+      // NOTE: might need to look into this
       return null;
     }
     const t: number = numerator / denominator;

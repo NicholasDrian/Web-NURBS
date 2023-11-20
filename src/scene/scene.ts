@@ -112,7 +112,6 @@ export class Scene {
     }
   }
   public deleteSelected(): void {
-    console.log("deleting selection");
     for (const geo of this.rootGeometry.values()) {
       if (geo.isSelected()) {
         this.boundingBoxHeirarchy.remove(geo);

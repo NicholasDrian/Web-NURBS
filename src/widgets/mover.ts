@@ -198,6 +198,7 @@ export class Mover {
     const [x, y] = INSTANCE.getEventManager().getMouseHandler().getMousePos();
     const ray: Ray = INSTANCE.getScene().getCamera().getRayAtPixel(x, y);
     const originalPos: Vec3 = mat4.getTranslation(this.originalModel);
+
     switch (this.componentClicked) {
       case this.xyPlaneMover.getID(): {
         const xyPlane: Plane = new Plane(originalPos, vec3.create(0, 0, 1));
@@ -585,7 +586,6 @@ export class Mover {
       this.originalModel = mat4.translate(mat4.identity(), selectionBB.getCenter());
       this.currentModel = mat4.clone(this.originalModel);
       this.surfaces.setModel(this.originalModel);
-
 
       this.flip();
       this.surfaces.show();

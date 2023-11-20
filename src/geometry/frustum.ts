@@ -39,19 +39,18 @@ export class Frustum {
   }
 
   public transform(transform: Mat4): void {
-    this.origin = vec3.transformMat4(this.origin, transform);
-    const newUp: Vec4 = vec4.transformMat4(vec4.create(...this.up, 0), transform);
-    this.up = vec3.normalize(vec3.create(newUp[0], newUp[1], newUp[2]));
-    const newRight: Vec4 = vec4.transformMat4(vec4.create(...this.right, 0), transform);
-    this.right = vec3.normalize(vec3.create(newRight[0], newRight[1], newRight[2]));
-    const newDown: Vec4 = vec4.transformMat4(vec4.create(...this.down, 0), transform);
-    this.down = vec3.normalize(vec3.create(newDown[0], newDown[1], newDown[2]));
-    const newLeft: Vec4 = vec4.transformMat4(vec4.create(...this.left, 0), transform);
-    this.left = vec3.normalize(vec3.create(newLeft[0], newLeft[1], newLeft[2]));
+    // NOTE: seems to break when scaling non uniformly?
+    // normals are not scalable *face palm*
+    this.origin = vec4.transformMat4(vec4.create(...this.origin, 1), transform);
     this.topLeft = Ray.transform(this.topLeft, transform);
     this.topRight = Ray.transform(this.topRight, transform);
     this.bottomLeft = Ray.transform(this.bottomLeft, transform);
     this.bottomRight = Ray.transform(this.bottomRight, transform);
+    this.up = vec3.normalize(vec3.cross(this.topLeft.getDirection(), this.topRight.getDirection()));
+    this.right = vec3.normalize(vec3.cross(this.topRight.getDirection(), this.bottomRight.getDirection()));
+    this.down = vec3.normalize(vec3.cross(this.bottomRight.getDirection(), this.bottomLeft.getDirection()));
+    this.left = vec3.normalize(vec3.cross(this.bottomLeft.getDirection(), this.topLeft.getDirection()));
+
   }
 
   public containsLineFully(a: Vec3, b: Vec3): boolean {

@@ -70,9 +70,9 @@ class BBHNode {
       intersections.push(...this.child2!.firstIntersectionsWithinMargin(ray, margin));
     }
     intersections.sort((a: Intersection, b: Intersection) => {
+      // TODO: think about this
       return a.time - b.time;
     })
-    // TODO: filter out stuff thats too far away, the margin part
     const nearIntersections: Intersection[] = [];
     for (const intersection of intersections) {
       if (intersection.time <= intersections[0].time * (1 + margin / 100)) {
@@ -145,7 +145,7 @@ class BBHNode {
   }
 
   public remove(geo: Geometry): void {
-    // TODO: after a few removals, should rebalance
+    // TODO: after a few removals, should rebalance / shrink
 
     if (!this.boundingBox.contains(geo.getBoundingBox())) return;
 
@@ -165,6 +165,7 @@ class BBHNode {
   }
 
   public add(geo: Geometry): void {
+    this.boundingBox.addBoundingBox(geo.getBoundingBox());
     if (this.isLeaf()) {
       if (this.geometry!.length < SceneBoundingBoxHeirarchy.MAX_GEOMETRY_PER_LEAF) {
         // leaf node with space
@@ -183,7 +184,6 @@ class BBHNode {
         this.child2!.add(geo);
       }
     }
-    this.boundingBox.addBoundingBox(geo.getBoundingBox());
   }
 
   public getDepth(): number {
@@ -218,6 +218,8 @@ export class SceneBoundingBoxHeirarchy {
   }
 
   public remove(geo: Geometry): void {
+    //console.log("removing from bbh");
+    // BUG: shrink bbx
     this.root.remove(geo);
   }
 
