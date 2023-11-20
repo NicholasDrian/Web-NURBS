@@ -233,5 +233,10 @@ export class Ray {
     const b: number = vec3.length(op);
     return Math.sqrt(b * b + a * a);
   }
+  public closestPointToPoint(point: Vec3): Vec3 {
+    const op: Vec3 = vec3.sub(point, this.origin);
+    const a: number = vec3.dot(op, this.direction);
+    return this.at(a);
+  }
 
 }

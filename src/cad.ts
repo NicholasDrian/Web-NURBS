@@ -17,6 +17,7 @@ import { addTestSceneComplex } from "./tests/testSceneComplex";
 import { addTestSceneCurve } from "./tests/testSceneCurve"
 import { addTestSceneArc } from "./tests/testSceneArc";
 import { Mover } from "./widgets/mover";
+import { addTestSceneRevolve } from "./tests/testSceneRevolve";
 
 /*
   * Browser Based NURBS Modeling Software
@@ -68,7 +69,8 @@ class CAD {
     this.mover = new Mover();
 
 
-    addTestSceneComplex();
+    //addTestSceneComplex();
+    addTestSceneRevolve();
     // addTestSceneLine();
     // addTestSceneCurve();
     //    addTestSceneArc();
