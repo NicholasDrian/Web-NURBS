@@ -1,16 +1,14 @@
-import { win32 } from "path";
 import { vec3, Vec3, vec4, Vec4 } from "wgpu-matrix";
 import { Ray } from "../ray";
 import { Curve } from "./curve";
 import { Surface } from "./surface";
 
 export const revolve = function(axis: Ray, curve: Curve, theta: number): Surface {
-  var narcs: number;
+
+  // TODO: think about model
 
   const outKnots: number[] = [];
-  const outControls: Vec3[][] = [];
-  const outWeights: number[][] = [];
-
+  var narcs: number;
   if (theta <= Math.PI / 2) {
     narcs = 1;
     outKnots.push(0, 0, 0, 1, 1, 1);
@@ -25,13 +23,15 @@ export const revolve = function(axis: Ray, curve: Curve, theta: number): Surface
     outKnots.push(0, 0, 0, 1 / 4, 1 / 4, 2 / 4, 2 / 4, 3 / 4, 3 / 4, 1, 1, 1);
   }
 
+  const outControls: Vec3[][] = [];
+  const outWeights: number[][] = [];
   for (let i = 0; i <= 2 * narcs; i++) {
     outControls.push([]);
     outWeights.push([]);
   }
 
   const dTheta: number = theta / narcs;
-  const wm: number = Math.cos(dTheta / 2); // TODO: think about this
+  const wm: number = Math.cos(dTheta / 2);
   const cosCash: number[] = [];
   const sinCash: number[] = [];
   for (let i = 0, angle = 0; i < narcs; i++) {
@@ -59,23 +59,14 @@ export const revolve = function(axis: Ray, curve: Curve, theta: number): Surface
     var index: number = 0;
 
     for (let i = 0; i < narcs; i++) {
-      const P2: Vec3 = vec3.add(O,
-        vec3.add(
-          vec3.scale(X, r * cosCash[i]),
-          vec3.scale(Y, r * sinCash[i]),
-        )
-      );
-      outControls[index + 2].push(P2);
-      outWeights[index + 2].push(curve.getWeightedControlPoints()[j][3]);
-
-      const T2: Vec3 = vec3.sub(
-        vec3.scale(Y, cosCash[i]),
-        vec3.scale(X, sinCash[i])
-      );
-
+      const P2: Vec3 = vec3.add(O, vec3.add(vec3.scale(X, r * cosCash[i]), vec3.scale(Y, r * sinCash[i])));
+      const T2: Vec3 = vec3.sub(vec3.scale(Y, cosCash[i]), vec3.scale(X, sinCash[i]));
       const ray: Ray = new Ray(P0, T0);
+
       outControls[index + 1].push(ray.closestPointOnLine(P2, vec3.add(P2, T2)));
       outWeights[index + 1].push(wm * curve.getWeightedControlPoints()[j][3]);
+      outControls[index + 2].push(P2);
+      outWeights[index + 2].push(curve.getWeightedControlPoints()[j][3]);
 
       index += 2;
       if (i < narcs - 1) {
@@ -93,9 +84,6 @@ export const revolve = function(axis: Ray, curve: Curve, theta: number): Surface
     }
   }
 
-  console.log(outWeightedControls, curve.getKnots(), outKnots);
-
   return new Surface(outWeightedControls, outKnots, [...curve.getKnots()], curve.getDegree(), 2);
-
 
 }

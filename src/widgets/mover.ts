@@ -3,7 +3,6 @@ import { INSTANCE } from "../cad";
 import { BoundingBox } from "../geometry/boundingBox";
 import { Geometry } from "../geometry/geometry";
 import { Group } from "../geometry/group";
-import { Intersection } from "../geometry/intersection";
 import { Mesh } from "../geometry/mesh";
 import { createArc } from "../geometry/nurbs/arc";
 import { Curve } from "../geometry/nurbs/curve";
@@ -430,66 +429,73 @@ export class Mover {
   }
 
   public onMouseUp(): void {
-    if (this.active && this.element.hidden) {
-      if (this.moved) { // dragged
-        this.moved = false;
-        this.active = false;
-        this.originalIntersectionPoint = null;
-        INSTANCE.getScene().transformSelected(this.getTransform());
-        this.updatedSelection();
-        this.originalModel = this.currentModel;
-      } else { // clicked
-        this.originalIntersectionPoint = null;
+    if (this.active) {
+      if (this.element.hidden) {
+        if (this.moved) { // dragged
+          this.moved = false;
+          this.active = false;
+          this.originalIntersectionPoint = null;
+          INSTANCE.getScene().transformSelected(this.getTransform());
+          this.updatedSelection();
+          this.originalModel = this.currentModel;
+        } else { // clicked
+          this.originalIntersectionPoint = null;
 
-        switch (this.componentClicked) {
-          case this.xSpinner.getMesh().getID():
-            this.element.innerHTML = "X Rotation: ";
-            break;
-          case this.ySpinner.getMesh().getID():
-            this.element.innerHTML = "Y Rotation: ";
-            break;
-          case this.zSpinner.getMesh().getID():
-            this.element.innerHTML = "Z Rotation: ";
-            break;
-          case this.xAxisMover.getID():
-            this.element.innerHTML = "X Translation: ";
-            break;
-          case this.yAxisMover.getID():
-            this.element.innerHTML = "Y Translation: ";
-            break;
-          case this.zAxisMover.getID():
-            this.element.innerHTML = "Z Translation: ";
-            break;
-          case this.xScaler.getID():
-            this.element.innerHTML = "X Scale: ";
-            break;
-          case this.yScaler.getID():
-            this.element.innerHTML = "Y Scale: ";
-            break;
-          case this.zScaler.getID():
-            this.element.innerHTML = "Z Scale: ";
-            break;
-          case this.xyScaler.getID():
-            this.element.innerHTML = "XY Scale: ";
-            break;
-          case this.yzScaler.getID():
-            this.element.innerHTML = "YZ Scale: ";
-            break;
-          case this.xzScaler.getID():
-            this.element.innerHTML = "XZ Scale: ";
-            break;
-          case this.xyzScaler.getID():
-            this.element.innerHTML = "Scale: ";
-            break;
-        }
-        const mousePos: [number, number] = INSTANCE.getEventManager().getMouseHandler().getMousePos();
-        this.element.setAttribute("style", `
+          switch (this.componentClicked) {
+            case this.xSpinner.getMesh().getID():
+              this.element.innerHTML = "X Rotation: ";
+              break;
+            case this.ySpinner.getMesh().getID():
+              this.element.innerHTML = "Y Rotation: ";
+              break;
+            case this.zSpinner.getMesh().getID():
+              this.element.innerHTML = "Z Rotation: ";
+              break;
+            case this.xAxisMover.getID():
+              this.element.innerHTML = "X Translation: ";
+              break;
+            case this.yAxisMover.getID():
+              this.element.innerHTML = "Y Translation: ";
+              break;
+            case this.zAxisMover.getID():
+              this.element.innerHTML = "Z Translation: ";
+              break;
+            case this.xScaler.getID():
+              this.element.innerHTML = "X Scale: ";
+              break;
+            case this.yScaler.getID():
+              this.element.innerHTML = "Y Scale: ";
+              break;
+            case this.zScaler.getID():
+              this.element.innerHTML = "Z Scale: ";
+              break;
+            case this.xyScaler.getID():
+              this.element.innerHTML = "XY Scale: ";
+              break;
+            case this.yzScaler.getID():
+              this.element.innerHTML = "YZ Scale: ";
+              break;
+            case this.xzScaler.getID():
+              this.element.innerHTML = "XZ Scale: ";
+              break;
+            case this.xyzScaler.getID():
+              this.element.innerHTML = "Scale: ";
+              break;
+          }
+          const mousePos: [number, number] = INSTANCE.getEventManager().getMouseHandler().getMousePos();
+          this.element.setAttribute("style", `
           left:${mousePos[0] + 20}px;
           top:${mousePos[1] - 20}px;
           width:auto;
           height:auto;`
-        );
-        this.element.hidden = false;
+          );
+          this.element.hidden = false;
+        }
+      } else { // active with text dialog
+        this.active = false;
+        this.element.hidden = true;
+        this.originalIntersectionPoint = null;
+        this.currentModel = this.originalModel;
       }
     }
   }
@@ -511,49 +517,60 @@ export class Mover {
         this.element.innerHTML += event.key;
       }
       const input: string = this.element.innerHTML.split(":")[1];
-      const parsedInput: number = parseFloat(input);
-      if (!isNaN(parsedInput)) {
-        switch (this.componentClicked) {
-          case this.xSpinner.getMesh().getID():
-            this.currentModel = mat4.rotateX(this.originalModel, parsedInput / 180 * Math.PI);
-            break;
-          case this.ySpinner.getMesh().getID():
-            this.currentModel = mat4.rotateY(this.originalModel, parsedInput / 180 * Math.PI);
-            break;
-          case this.zSpinner.getMesh().getID():
-            this.currentModel = mat4.rotateZ(this.originalModel, parsedInput / 180 * Math.PI);
-            break;
-          case this.xAxisMover.getID():
-            this.currentModel = mat4.translate(this.originalModel, vec3.create(parsedInput, 0, 0));
-            break;
-          case this.yAxisMover.getID():
-            this.currentModel = mat4.translate(this.originalModel, vec3.create(0, parsedInput, 0));
-            break;
-          case this.zAxisMover.getID():
-            this.currentModel = mat4.translate(this.originalModel, vec3.create(0, 0, parsedInput));
-            break;
-          case this.xScaler.getID():
-            this.currentModel = mat4.scale(this.originalModel, vec3.create(parsedInput, 0, 0));
-            break;
-          case this.yScaler.getID():
-            this.currentModel = mat4.scale(this.originalModel, vec3.create(0, parsedInput, 0));
-            break;
-          case this.zScaler.getID():
-            this.currentModel = mat4.scale(this.originalModel, vec3.create(0, 0, parsedInput));
-            break;
-          case this.xyScaler.getID():
-            this.currentModel = mat4.scale(this.originalModel, vec3.create(parsedInput, parsedInput, 0));
-            break;
-          case this.yzScaler.getID():
-            this.currentModel = mat4.scale(this.originalModel, vec3.create(0, parsedInput, parsedInput));
-            break;
-          case this.xzScaler.getID():
-            this.currentModel = mat4.scale(this.originalModel, vec3.create(parsedInput, 0, parsedInput));
-            break;
-          case this.xyzScaler.getID():
-            this.currentModel = mat4.scale(this.originalModel, vec3.create(parsedInput, parsedInput, parsedInput));
-            break;
-        }
+      var parsedInput: number = parseFloat(input);
+      switch (this.componentClicked) {
+        case this.xSpinner.getMesh().getID():
+          if (isNaN(parsedInput)) parsedInput = 0;
+          this.currentModel = mat4.rotateX(this.originalModel, parsedInput / 180 * Math.PI);
+          break;
+        case this.ySpinner.getMesh().getID():
+          if (isNaN(parsedInput)) parsedInput = 0;
+          this.currentModel = mat4.rotateY(this.originalModel, parsedInput / 180 * Math.PI);
+          break;
+        case this.zSpinner.getMesh().getID():
+          if (isNaN(parsedInput)) parsedInput = 0;
+          this.currentModel = mat4.rotateZ(this.originalModel, parsedInput / 180 * Math.PI);
+          break;
+        case this.xAxisMover.getID():
+          if (isNaN(parsedInput)) parsedInput = 0;
+          this.currentModel = mat4.translate(this.originalModel, vec3.create(parsedInput, 0, 0));
+          break;
+        case this.yAxisMover.getID():
+          if (isNaN(parsedInput)) parsedInput = 0;
+          this.currentModel = mat4.translate(this.originalModel, vec3.create(0, parsedInput, 0));
+          break;
+        case this.zAxisMover.getID():
+          if (isNaN(parsedInput)) parsedInput = 0;
+          this.currentModel = mat4.translate(this.originalModel, vec3.create(0, 0, parsedInput));
+          break;
+        case this.xScaler.getID():
+          if (isNaN(parsedInput)) parsedInput = 1;
+          this.currentModel = mat4.scale(this.originalModel, vec3.create(parsedInput, 1, 1));
+          break;
+        case this.yScaler.getID():
+          if (isNaN(parsedInput)) parsedInput = 1;
+          this.currentModel = mat4.scale(this.originalModel, vec3.create(1, parsedInput, 1));
+          break;
+        case this.zScaler.getID():
+          if (isNaN(parsedInput)) parsedInput = 1;
+          this.currentModel = mat4.scale(this.originalModel, vec3.create(1, 1, parsedInput));
+          break;
+        case this.xyScaler.getID():
+          if (isNaN(parsedInput)) parsedInput = 1;
+          this.currentModel = mat4.scale(this.originalModel, vec3.create(parsedInput, parsedInput, 1));
+          break;
+        case this.yzScaler.getID():
+          if (isNaN(parsedInput)) parsedInput = 1;
+          this.currentModel = mat4.scale(this.originalModel, vec3.create(1, parsedInput, parsedInput));
+          break;
+        case this.xzScaler.getID():
+          if (isNaN(parsedInput)) parsedInput = 1;
+          this.currentModel = mat4.scale(this.originalModel, vec3.create(parsedInput, 1, parsedInput));
+          break;
+        case this.xyzScaler.getID():
+          if (isNaN(parsedInput)) parsedInput = 1;
+          this.currentModel = mat4.scale(this.originalModel, vec3.create(parsedInput, parsedInput, parsedInput));
+          break;
       }
     }
   }
@@ -563,9 +580,11 @@ export class Mover {
   }
 
   public idClicked(id: ObjectID): void {
-    if (!this.active && this.element.hidden) {
-      this.active = true;
-      this.componentClicked = id;
+    if (!this.active) {
+      if (this.element.hidden) {
+        this.active = true;
+        this.componentClicked = id;
+      }
     }
   }
 
