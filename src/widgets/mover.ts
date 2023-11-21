@@ -397,7 +397,6 @@ export class Mover {
       case this.xzScaler.getID(): {
         const xzPlane: Plane = new Plane(originalPos, vec3.create(0, 1, 0));
         const intersectionTime: number | null = ray.intersectPlane(xzPlane);
-        console.log(intersectionTime, ray, xzPlane);
         if (intersectionTime) {
           const intersectionPoint: Vec3 = ray.at(intersectionTime);
           if (!this.originalIntersectionPoint) {

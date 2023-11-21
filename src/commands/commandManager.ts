@@ -6,11 +6,17 @@ import { ArcCommand } from "./commands/arcCommand";
 import { CameraCommand } from "./commands/cameraCommand";
 import { CircleCommand } from "./commands/circleCommand";
 import { ConstructionPlaneCommand } from "./commands/constructionPlaneCommand";
+import { CopyCommand } from "./commands/copyCommand";
 import { CurveCommand } from "./commands/curveCommand";
 import { LineCommand } from "./commands/lineCommand";
 import { LoftCommand } from "./commands/loftCommand";
+import { MoveCommand } from "./commands/moveCommand";
 import { PolyLineCommand } from "./commands/polylineCommand";
 import { RevolveCommand } from "./commands/revolveCommand";
+import { Scale1Command } from "./commands/scale1Command";
+import { Scale2Command } from "./commands/scale2Command";
+import { ScaleCommand } from "./commands/scaleCommand";
+import { ShearCommand } from "./commands/shearCommand";
 import { SnapsCommand } from "./commands/snapsCommand";
 import { WindowCommand } from "./commands/windowCommand";
 import { toggleDarkMode } from "./oneTimeCommands/toggleDarkModeCommand";
@@ -59,7 +65,7 @@ export class CommandManager {
         case "window": case "w":
           this.currentCommand = new WindowCommand();
           break;
-        case "snaps": case "s":
+        case "snaps": case "sn":
           this.currentCommand = new SnapsCommand();
           break;
         case "circle": case "ci":
@@ -74,6 +80,24 @@ export class CommandManager {
         case "revolve": case "r":
           this.currentCommand = new RevolveCommand();
           break;
+        case "copy": case "cp":
+          this.currentCommand = new CopyCommand();
+          break;
+        case "move": case "m":
+          this.currentCommand = new MoveCommand();
+          break;
+        case "scale1": case "s1":
+          this.currentCommand = new Scale1Command();
+          break;
+        case "scale2": case "s2":
+          this.currentCommand = new Scale2Command();
+          break;
+        case "scale": case "s":
+          this.currentCommand = new ScaleCommand();
+          break;
+        case "shear": case "sh":
+          this.currentCommand = new ShearCommand();
+          break;
         default: INSTANCE.getLog().log("Invalid Command");
       }
       this.previousInput = input;
@@ -82,9 +106,8 @@ export class CommandManager {
     if (this.currentCommand?.isFinished()) {
       this.currentCommand = null;
     }
-
-
   }
+
   hasActiveCommand(): boolean {
     return this.currentCommand != null;
   }
