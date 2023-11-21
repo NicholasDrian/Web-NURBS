@@ -42,6 +42,10 @@ export class CopyCommand extends Command {
   }
 
   handleInputString(input: string): void {
+    if (input == "0") {
+      this.done();
+    }
+
     switch (this.mode) {
       case CopyCommandMode.SelectPointToCopyFrom:
         break;

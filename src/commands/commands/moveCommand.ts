@@ -1,9 +1,13 @@
+import { mat4, Mat4, vec3, Vec3 } from "wgpu-matrix";
+import { INSTANCE } from "../../cad";
+import { Geometry } from "../../geometry/geometry";
 import { Intersection } from "../../geometry/intersection";
+import { ObjectID } from "../../scene/scene";
+import { Clicker } from "../clicker";
 import { Command } from "../command";
 
 
 enum MoveCommandMode {
-  SelectGeometryToMove,
   SelectPointToMoveFrom,
   SelectPointToMoveTo,
 }
@@ -11,29 +15,89 @@ enum MoveCommandMode {
 export class MoveCommand extends Command {
 
   private finished: boolean;
+  private mode: MoveCommandMode;
+  private pointToMoveFrom: Vec3 | null;
+  private clicker: Clicker;
+  private objectsToMove: Map<Geometry, Mat4>;
 
   constructor() {
     super();
     this.finished = false;
+    this.mode = MoveCommandMode.SelectPointToMoveFrom;
+    this.pointToMoveFrom = null;
+    this.clicker = new Clicker();
+    this.objectsToMove = new Map<Geometry, Mat4>;
+
+    const selection: Set<ObjectID> = INSTANCE.getSelector().getSelection();
+    if (selection.size === 0) {
+      this.done();
+      return;
+    }
+    for (const id of selection) {
+      const geo: Geometry = INSTANCE.getScene().getGeometry(id);
+      this.objectsToMove.set(
+        geo, geo.getModel()
+      )
+    }
   }
 
   handleInputString(input: string): void {
-    throw new Error("Method not implemented.");
+    if (input == "0") {
+      this.done();
+    }
   }
-  handleClickResult(input: Intersection): void {
-    throw new Error("Method not implemented.");
+
+  handleClickResult(intersection: Intersection): void {
+    switch (this.mode) {
+      case MoveCommandMode.SelectPointToMoveFrom:
+        this.pointToMoveFrom = intersection.point;
+        this.mode = MoveCommandMode.SelectPointToMoveTo;
+        this.clicker.reset();
+      case MoveCommandMode.SelectPointToMoveTo:
+        const translation: Vec3 = vec3.sub(intersection.point, this.pointToMoveFrom!);
+        for (const [geo, model] of this.objectsToMove) {
+          geo.setModel(mat4.translate(model, translation));
+        }
+        this.done();
+      default:
+        throw new Error("case not implemented");
+    }
   }
+
   handleClick(): void {
-    throw new Error("Method not implemented.");
+    this.clicker.click();
   }
+
   handleMouseMove(): void {
-    throw new Error("Method not implemented.");
+    this.clicker.onMouseMove();
+    if (this.mode == MoveCommandMode.SelectPointToMoveTo) {
+      const point: Vec3 | null = this.clicker.getPoint();
+      if (point) {
+        const translation: Vec3 = vec3.sub(point, this.pointToMoveFrom!);
+        for (const [geo, model] of this.objectsToMove) {
+          geo.setModel(mat4.translate(model, translation));
+        }
+      }
+    }
   }
+
   getInstructions(): string {
-    throw new Error("Method not implemented.");
+    switch (this.mode) {
+      case MoveCommandMode.SelectPointToMoveFrom:
+        return "0:Exit  Click point to move from.  $";
+      case MoveCommandMode.SelectPointToMoveTo:
+        return "0:Exit  Click point to move to.  $";
+      default:
+        throw new Error("case not implemented");
+    }
   }
   isFinished(): boolean {
     return this.finished;
+  }
+
+  private done() {
+    this.finished = true;
+    this.clicker.destroy();
   }
 
 }
