@@ -47,7 +47,7 @@ export class CommandManager {
         case "darkmode": case "dm":
           toggleDarkMode();
           break;
-        case "constructionplane": case "cp":
+        case "constructionplane": case "cpl":
           this.currentCommand = new ConstructionPlaneCommand();
           break;
         case "camera": case "cam":

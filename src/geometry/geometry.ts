@@ -2,7 +2,6 @@ import { mat4, Mat4, Vec4 } from "wgpu-matrix";
 import { INSTANCE } from "../cad";
 import { Material, MaterialName } from "../materials/material";
 import { ObjectID } from "../scene/scene";
-import { swizzleYZ } from "../utils/math";
 import { BoundingBox } from "./boundingBox";
 import { Frustum } from "./frustum";
 import { Intersection } from "./intersection";
@@ -52,6 +51,10 @@ export abstract class Geometry {
 
   public setModel(model: Mat4): void {
     this.model = mat4.clone(model);
+  }
+
+  public getModel(): Mat4 {
+    return mat4.clone(this.model);
   }
 
   public setParent(parent: Geometry): void {
