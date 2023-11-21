@@ -7,6 +7,8 @@ export const revolve = function(axis: Ray, curve: Curve, theta: number): Surface
 
   // TODO: think about model
 
+  if (theta < 0 || theta > Math.PI * 2) throw new Error("Invalid params");
+
   const outKnots: number[] = [];
   var narcs: number;
   if (theta <= Math.PI / 2) {
@@ -15,7 +17,7 @@ export const revolve = function(axis: Ray, curve: Curve, theta: number): Surface
   } else if (theta <= Math.PI) {
     narcs = 2;
     outKnots.push(0, 0, 0, 0.5, 0.5, 1, 1, 1);
-  } else if (theta <= 3 * Math.PI / 4) {
+  } else if (theta <= 3 * Math.PI / 2) {
     narcs = 3;
     outKnots.push(0, 0, 0, 1 / 3, 1 / 3, 2 / 3, 2 / 3, 1, 1, 1);
   } else {

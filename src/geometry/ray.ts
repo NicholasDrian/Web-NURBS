@@ -227,6 +227,24 @@ export class Ray {
 
   }
 
+  public closestPointToLine(start: Vec3, end: Vec3): Vec3 {
+    const p: Vec3 = vec3.add(this.origin, this.direction);
+
+    const v13: Vec3 = vec3.sub(start, this.origin);
+    const v43: Vec3 = vec3.sub(p, this.origin);
+    const v21: Vec3 = vec3.sub(end, start);
+
+    const d1343: number = vec3.dot(v13, v43);
+    const d4321: number = vec3.dot(v43, v21);
+    const d1321: number = vec3.dot(v13, v21);
+    const d4343: number = vec3.dot(v43, v43);
+    const d2121: number = vec3.dot(v21, v21);
+
+    var mua: number = (d1343 * d4321 - d1321 * d4343) / (d2121 * d4343 - d4321 * d4321);
+    const mub: number = (d1343 + mua * d4321) / d4343;
+    return vec3.add(this.origin, vec3.scale(v43, mub));
+  }
+
   public closestDistanceToPoint(point: Vec3): number {
     const op: Vec3 = vec3.sub(point, this.origin);
     const a: number = vec3.dot(op, this.direction);

@@ -32,7 +32,6 @@ export class Clicker {
 
     const mousePos: [number, number] = INSTANCE.getEventManager().getMouseHandler().getMousePos();
     const ray: Ray = INSTANCE.getScene().getCamera().getRayAtPixel(mousePos[0], mousePos[1]);
-
     const i: Intersection | null = ray.intersectScene(INSTANCE.getScene());
     if (i) {
       this.point = i.point;
@@ -54,7 +53,6 @@ export class Clicker {
     const mousePos: [number, number] = INSTANCE.getEventManager().getMouseHandler().getMousePos();
     const ray: Ray = INSTANCE.getScene().getCamera().getRayAtPixel(mousePos[0], mousePos[1]);
     var intersections: Intersection[] = INSTANCE.getScene().getBoundingBoxHeirarchy().firstIntersectionsWithinMargin(ray, 5);
-    console.log(intersections);
     if (types) {
       intersections = intersections.filter((intersection: Intersection) => {
         for (const type of types) {

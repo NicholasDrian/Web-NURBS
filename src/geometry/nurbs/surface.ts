@@ -41,6 +41,10 @@ export class Surface extends Geometry {
     this.update();
   }
 
+  public getModel(): Mat4 {
+    return mat4.clone(this.model);
+  }
+
   public delete(): void {
     this.mesh?.destroy();
     this.edgeLowU?.destroy();

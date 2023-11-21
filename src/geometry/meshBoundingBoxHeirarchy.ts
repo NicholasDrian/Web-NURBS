@@ -51,7 +51,7 @@ class MeshBoundingBoxHeirarchyNode {
           this.verts[indices[i]],
           vec3.add(
             this.verts[indices[i + 1]],
-            this.verts[indices[i + 1]]
+            this.verts[indices[i + 2]]
           )
         ), 1 / 3);
         if (triCenter[this.axis] < this.boundingBox.getCenter()[this.axis]) {
@@ -184,7 +184,8 @@ export class MeshBoundingBoxHeirarchy {
     for (let i = 0; i < indices.length; i += 3) {
       const d1: number = vec3.distance(verts[indices[i]], verts[indices[i + 1]]);
       const d2: number = vec3.distance(verts[indices[i + 1]], verts[indices[i + 2]]);
-      if (d1 === 0 || d2 == 2) continue;
+      const d3: number = vec3.distance(verts[indices[i + 2]], verts[indices[i]]);
+      if (d1 === 0 || d2 === 0 || d3 === 0) continue;
       reducedIndices.push(indices[i], indices[i + 1], indices[i + 2]);
     }
     this.root = new MeshBoundingBoxHeirarchyNode(this.mesh.getID(), verts, reducedIndices);

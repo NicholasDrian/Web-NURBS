@@ -10,6 +10,7 @@ import { CurveCommand } from "./commands/curveCommand";
 import { LineCommand } from "./commands/lineCommand";
 import { LoftCommand } from "./commands/loftCommand";
 import { PolyLineCommand } from "./commands/polylineCommand";
+import { RevolveCommand } from "./commands/revolveCommand";
 import { SnapsCommand } from "./commands/snapsCommand";
 import { WindowCommand } from "./commands/windowCommand";
 import { toggleDarkMode } from "./oneTimeCommands/toggleDarkModeCommand";
@@ -69,6 +70,9 @@ export class CommandManager {
           break;
         case "loft": case "l":
           this.currentCommand = new LoftCommand();
+          break;
+        case "revolve": case "r":
+          this.currentCommand = new RevolveCommand();
           break;
         default: INSTANCE.getLog().log("Invalid Command");
       }

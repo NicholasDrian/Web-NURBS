@@ -33,6 +33,7 @@ export abstract class Geometry {
   public abstract delete(): void;
   public abstract clone(): Geometry;
 
+
   public isOverlay(): boolean {
     return this.overlay || (this.parent && this.parent.isOverlay()) || false;
   }
@@ -40,7 +41,6 @@ export abstract class Geometry {
   public setOverlay(option: boolean) {
     this.overlay = option;
   }
-
 
   public isConstantScreenSize(): boolean {
     return this.constantScreenSize || (this.parent && this.parent.isConstantScreenSize()) || false;

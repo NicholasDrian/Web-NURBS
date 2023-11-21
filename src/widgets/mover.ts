@@ -363,8 +363,8 @@ export class Mover {
         break;
       }
       case this.xyScaler.getID(): {
-        const yzPlane: Plane = new Plane(originalPos, vec3.create(1, 0, 0));
-        const intersectionTime: number | null = ray.intersectPlane(yzPlane);
+        const xyPlane: Plane = new Plane(originalPos, vec3.create(0, 0, 1));
+        const intersectionTime: number | null = ray.intersectPlane(xyPlane);
         if (intersectionTime) {
           const intersectionPoint: Vec3 = ray.at(intersectionTime);
           if (!this.originalIntersectionPoint) {
@@ -379,7 +379,7 @@ export class Mover {
         break;
       }
       case this.yzScaler.getID(): {
-        const yzPlane: Plane = new Plane(originalPos, vec3.create(0, 1, 0));
+        const yzPlane: Plane = new Plane(originalPos, vec3.create(1, 0, 0));
         const intersectionTime: number | null = ray.intersectPlane(yzPlane);
         if (intersectionTime) {
           const intersectionPoint: Vec3 = ray.at(intersectionTime);
@@ -395,8 +395,9 @@ export class Mover {
         break;
       }
       case this.xzScaler.getID(): {
-        const yzPlane: Plane = new Plane(originalPos, vec3.create(0, 0, 1));
-        const intersectionTime: number | null = ray.intersectPlane(yzPlane);
+        const xzPlane: Plane = new Plane(originalPos, vec3.create(0, 1, 0));
+        const intersectionTime: number | null = ray.intersectPlane(xzPlane);
+        console.log(intersectionTime, ray, xzPlane);
         if (intersectionTime) {
           const intersectionPoint: Vec3 = ray.at(intersectionTime);
           if (!this.originalIntersectionPoint) {
@@ -584,6 +585,7 @@ export class Mover {
       if (this.element.hidden) {
         this.active = true;
         this.componentClicked = id;
+        console.log(id);
       }
     }
   }
