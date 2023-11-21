@@ -13,7 +13,6 @@ import { Ray } from "./ray";
 export class Line extends Geometry {
 
   private renderLines!: RenderID;
-  private boundingBox!: BoundingBox;
 
   constructor(
     parent: Geometry | null,
@@ -25,7 +24,6 @@ export class Line extends Geometry {
     super(parent, model, material);
     this.renderLines = 0;
     this.updateRenderLines();
-    this.updateBoundingBox();
   }
 
   public clone(): Geometry {
@@ -38,7 +36,10 @@ export class Line extends Geometry {
   }
 
   public getBoundingBox(): BoundingBox {
-    return this.boundingBox;
+    const bb: BoundingBox = new BoundingBox();
+    bb.addVec3(vec3.transformMat4(this.start, this.getModelRecursive()));
+    bb.addVec3(vec3.transformMat4(this.end, this.getModelRecursive()));
+    return bb;
   }
 
   private updateRenderLines(): void {
@@ -78,7 +79,6 @@ export class Line extends Geometry {
   public updateEnd(point: Vec3): void {
     this.end = point;
     this.updateRenderLines();
-    this.updateBoundingBox();
   }
 
   public getLength(): number {
@@ -87,11 +87,6 @@ export class Line extends Geometry {
 
   public flip(): void {
     [this.start, this.end] = [this.end, this.start];
-  }
-  private updateBoundingBox(): void {
-    this.boundingBox = new BoundingBox();
-    this.boundingBox.addVec3(vec3.transformMat4(this.start, this.getModelRecursive()));
-    this.boundingBox.addVec3(vec3.transformMat4(this.end, this.getModelRecursive()));
   }
 
 }
