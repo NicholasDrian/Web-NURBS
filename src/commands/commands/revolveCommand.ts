@@ -221,6 +221,9 @@ export class RevolveCommand extends Command {
   }
 
   private fullRevolution(): void {
+    for (const surface of this.surfaces) {
+      surface.delete();
+    }
     for (const curve of this.curves) {
       const revolution: Surface = revolve(this.axis!, curve, Math.PI * 2);
       INSTANCE.getScene().addGeometry(revolution);
