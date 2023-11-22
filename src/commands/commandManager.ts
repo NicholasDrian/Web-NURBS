@@ -11,6 +11,7 @@ import { CurveCommand } from "./commands/curveCommand";
 import { LineCommand } from "./commands/lineCommand";
 import { LoftCommand } from "./commands/loftCommand";
 import { MoveCommand } from "./commands/moveCommand";
+import { PollarArrayCommand } from "./commands/polarArrayCommand";
 import { PolyLineCommand } from "./commands/polylineCommand";
 import { RevolveCommand } from "./commands/revolveCommand";
 import { Scale1Command } from "./commands/scale1Command";
@@ -97,6 +98,17 @@ export class CommandManager {
           break;
         case "shear": case "sh":
           this.currentCommand = new ShearCommand();
+          break;
+        case "polar array": case "pa":
+          this.currentCommand = new PollarArrayCommand();
+          break;
+        case "array1": case "a1":
+          break;
+        case "array2": case "a2":
+          break;
+        case "array3": case "a3":
+          break;
+        case "morror": case "m":
           break;
         default: INSTANCE.getLog().log("Invalid Command");
       }

@@ -1,4 +1,7 @@
-import { Mat4, Vec3, vec3 } from "wgpu-matrix";
+import { warn } from "console";
+import { walkUpBindingElementsAndPatterns } from "typescript";
+import { mat4, Mat4, Vec3, vec3 } from "wgpu-matrix";
+import { Plane } from "../geometry/plane";
 
 
 export const swizzleYZ = function(mat: Mat4): Mat4 {
@@ -18,6 +21,17 @@ export const bin = function(a: number, b: number): number {
 };
 
 export const angleBetween = function(a: Vec3, b: Vec3): number {
-
   return Math.acos(vec3.dot(vec3.normalize(a), vec3.normalize(b)));
+}
+
+export const mirror = function(m: Mat4, plane: Plane): Mat4 {
+  var res: Mat4 = mat4.clone(m);
+  res = mat4.translate(res, vec3.scale(plane.getOrigin(), -1));
+
+  // TODO:
+
+
+
+  res = mat4.translate(res, plane.getOrigin());
+  return res;
 }
