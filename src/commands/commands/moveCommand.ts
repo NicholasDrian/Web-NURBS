@@ -58,6 +58,7 @@ export class MoveCommand extends Command {
         this.pointToMoveFrom = intersection.point;
         this.mode = MoveCommandMode.SelectPointToMoveTo;
         this.clicker.reset();
+        break;
       case MoveCommandMode.SelectPointToMoveTo:
         const translation: Vec3 = vec3.sub(intersection.point, this.pointToMoveFrom!);
         const translationTransform: Mat4 = mat4.translation(translation);
@@ -65,6 +66,7 @@ export class MoveCommand extends Command {
           geo.setModel(mat4.mul(translationTransform, model));
         }
         this.done();
+        break;
       default:
         throw new Error("case not implemented");
     }
