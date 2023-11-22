@@ -3,6 +3,7 @@ import { INSTANCE } from "../cad";
 import { Intersection } from "../geometry/intersection";
 import { Command } from "./command";
 import { ArcCommand } from "./commands/arcCommand";
+import { Array3Command } from "./commands/array3Command";
 import { CameraCommand } from "./commands/cameraCommand";
 import { CircleCommand } from "./commands/circleCommand";
 import { ConstructionPlaneCommand } from "./commands/constructionPlaneCommand";
@@ -10,6 +11,7 @@ import { CopyCommand } from "./commands/copyCommand";
 import { CurveCommand } from "./commands/curveCommand";
 import { LineCommand } from "./commands/lineCommand";
 import { LoftCommand } from "./commands/loftCommand";
+import { MirrorCommand } from "./commands/mirrorCommand";
 import { MoveCommand } from "./commands/moveCommand";
 import { PollarArrayCommand } from "./commands/polarArrayCommand";
 import { PolyLineCommand } from "./commands/polylineCommand";
@@ -107,8 +109,10 @@ export class CommandManager {
         case "array2": case "a2":
           break;
         case "array3": case "a3":
+          this.currentCommand = new Array3Command();
           break;
-        case "morror": case "m":
+        case "mirror": case "mi":
+          this.currentCommand = new MirrorCommand();
           break;
         default: INSTANCE.getLog().log("Invalid Command");
       }

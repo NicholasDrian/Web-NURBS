@@ -24,14 +24,22 @@ export const angleBetween = function(a: Vec3, b: Vec3): number {
   return Math.acos(vec3.dot(vec3.normalize(a), vec3.normalize(b)));
 }
 
-export const mirror = function(m: Mat4, plane: Plane): Mat4 {
-  var res: Mat4 = mat4.clone(m);
-  res = mat4.translate(res, vec3.scale(plane.getOrigin(), -1));
+export const mirrorVector = function(v: Vec3, plane: Plane): Vec3 {
+  const d: number = vec3.dot(v, plane.getNormal());
+  return vec3.sub(v, vec3.scale(plane.getNormal(), 2 * d));
+}
 
-  // TODO:
-
-
-
-  res = mat4.translate(res, plane.getOrigin());
-  return res;
+export const getMirrorTransform = function(plane: Plane): Mat4 {
+  const newX: Vec3 = mirrorVector(vec3.create(1, 0, 0), plane);
+  const newY: Vec3 = mirrorVector(vec3.create(0, 1, 0), plane);
+  const newZ: Vec3 = mirrorVector(vec3.create(0, 0, 1), plane);
+  const mirrorTransform: Mat4 = mat4.create(
+    ...newX, 0,
+    ...newY, 0,
+    ...newZ, 0,
+    0, 0, 0, 1
+  );
+  const toOrigin = mat4.translation(vec3.scale(plane.getOrigin(), -1));
+  const toPos = mat4.translation(plane.getOrigin());
+  return mat4.mul(mat4.mul(toPos, mirrorTransform), toOrigin);
 }

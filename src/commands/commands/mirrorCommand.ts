@@ -1,8 +1,10 @@
-import { mat4, Vec3 } from "wgpu-matrix";
+import { Mat4, mat4, vec3, Vec3 } from "wgpu-matrix";
 import { INSTANCE } from "../../cad";
 import { Geometry } from "../../geometry/geometry";
 import { Intersection } from "../../geometry/intersection";
+import { Plane } from "../../geometry/plane";
 import { ObjectID } from "../../scene/scene";
+import { getMirrorTransform } from "../../utils/math";
 import { Clicker } from "../clicker";
 import { Command } from "../command";
 
@@ -45,7 +47,11 @@ export class MirrorCommand extends Command {
       case MirrorCommandMode.SelectSecondPoint:
         break;
       case MirrorCommandMode.SelectThirdPoint:
-        // todo
+        if (input == "") {
+          this.pointC = null;
+          this.applyMirror();
+          this.done();
+        }
         break;
       default:
         throw new Error("case not implemented");
@@ -68,13 +74,13 @@ export class MirrorCommand extends Command {
         this.clicker.reset();
         break;
       case MirrorCommandMode.SelectSecondPoint:
-
-
+        this.pointB = intersection.point;
+        this.applyMirror();
         this.mode = MirrorCommandMode.SelectThirdPoint;
         this.clicker.reset();
         break;
       case MirrorCommandMode.SelectThirdPoint:
-
+        this.applyMirror();
         this.done();
         break;
       default:
@@ -88,17 +94,11 @@ export class MirrorCommand extends Command {
 
   public handleMouseMove(): void {
     this.clicker.onMouseMove();
-    switch (this.mode) {
-      case MirrorCommandMode.SelectFirstPoint:
-        break;
-      case MirrorCommandMode.SelectSecondPoint:
-        const point: Vec3 | null = this.clicker.getPoint();
-
-        break;
-      case MirrorCommandMode.SelectThirdPoint:
-        break;
-      default:
-        throw new Error("case not implemented");
+    const point: Vec3 | null = this.clicker.getPoint();
+    if (point) {
+      if (this.mode === MirrorCommandMode.SelectSecondPoint) this.pointB = point;
+      else if (this.mode === MirrorCommandMode.SelectThirdPoint) this.pointC = point;
+      this.applyMirror();
     }
   }
 
@@ -127,4 +127,26 @@ export class MirrorCommand extends Command {
     }
   }
 
+  private applyMirror(): void {
+    if (this.pointC) {
+      const v1: Vec3 = vec3.sub(this.pointA!, this.pointB!);
+      const v2: Vec3 = vec3.sub(this.pointA!, this.pointC!);
+      const mirrorPlane: Plane = new Plane(this.pointA!, vec3.cross(v1, v2));
+      const mirrorTransform: Mat4 = getMirrorTransform(mirrorPlane);
+      for (const [oldGeo, newGeo] of this.oldToNew) {
+        newGeo.setModel(mat4.mul(mirrorTransform, oldGeo.getModel()));
+      }
+    } else if (this.pointB) {
+      const dir: Vec3 = vec3.sub(this.pointA!, this.pointB!);
+      if (dir[0] === 0 && dir[1] === 0) return;
+      dir[2] = 0;
+      const mirrorPlane: Plane = new Plane(this.pointA!, vec3.cross(vec3.create(0, 0, 1), dir));
+      const mirrorTransform: Mat4 = getMirrorTransform(mirrorPlane);
+      for (const [oldGeo, newGeo] of this.oldToNew) {
+        newGeo.setModel(mat4.mul(mirrorTransform, oldGeo.getModel()));
+      }
+    }
+  }
+
 }
+

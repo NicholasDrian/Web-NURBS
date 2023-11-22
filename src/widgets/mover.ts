@@ -584,7 +584,6 @@ export class Mover {
       if (this.element.hidden) {
         this.active = true;
         this.componentClicked = id;
-        console.log(id);
       }
     }
   }
