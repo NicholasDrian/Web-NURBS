@@ -37,12 +37,17 @@ export class MoveCommand extends Command {
       const geo: Geometry = INSTANCE.getScene().getGeometry(id);
       this.objectsToMove.set(
         geo, geo.getModel()
-      )
+      );
+      INSTANCE.getScene().removeGeometry(geo);
     }
   }
 
   handleInputString(input: string): void {
+    //TODO:
     if (input == "0") {
+      for (const [geo, transform] of this.objectsToMove) {
+        geo.setModel(transform);
+      }
       this.done();
     }
   }
@@ -55,8 +60,9 @@ export class MoveCommand extends Command {
         this.clicker.reset();
       case MoveCommandMode.SelectPointToMoveTo:
         const translation: Vec3 = vec3.sub(intersection.point, this.pointToMoveFrom!);
+        const translationTransform: Mat4 = mat4.translation(translation);
         for (const [geo, model] of this.objectsToMove) {
-          geo.setModel(mat4.translate(model, translation));
+          geo.setModel(mat4.mul(translationTransform, model));
         }
         this.done();
       default:
@@ -74,8 +80,9 @@ export class MoveCommand extends Command {
       const point: Vec3 | null = this.clicker.getPoint();
       if (point) {
         const translation: Vec3 = vec3.sub(point, this.pointToMoveFrom!);
+        const translationTransform: Mat4 = mat4.translation(translation);
         for (const [geo, model] of this.objectsToMove) {
-          geo.setModel(mat4.translate(model, translation));
+          geo.setModel(mat4.mul(translationTransform, model));
         }
       }
     }
@@ -98,6 +105,9 @@ export class MoveCommand extends Command {
   private done() {
     this.finished = true;
     this.clicker.destroy();
+    for (let geo of this.objectsToMove.keys()) {
+      INSTANCE.getScene().addGeometry(geo);
+    }
   }
 
 }
