@@ -43,3 +43,24 @@ export const getMirrorTransform = function(plane: Plane): Mat4 {
   const toPos = mat4.translation(plane.getOrigin());
   return mat4.mul(mat4.mul(toPos, mirrorTransform), toOrigin);
 }
+
+export const scale1Vector = function(v: Vec3, factor: number, plane: Plane): Vec3 {
+  const d: number = vec3.dot(v, plane.getNormal());
+  return vec3.add(v, vec3.scale(plane.getNormal(), d * factor - d));
+}
+
+export const getScale1Transform = function(plane: Plane, factor: number): Mat4 {
+  const newX: Vec3 = scale1Vector(vec3.create(1, 0, 0), factor, plane);
+  const newY: Vec3 = scale1Vector(vec3.create(0, 1, 0), factor, plane);
+  const newZ: Vec3 = scale1Vector(vec3.create(0, 0, 1), factor, plane);
+  const scaleTransform: Mat4 = mat4.create(
+    ...newX, 0,
+    ...newY, 0,
+    ...newZ, 0,
+    0, 0, 0, 1
+  );
+  const toOrigin = mat4.translation(vec3.scale(plane.getOrigin(), -1));
+  const toPos = mat4.translation(plane.getOrigin());
+  return mat4.mul(mat4.mul(toPos, scaleTransform), toOrigin);
+}
+
