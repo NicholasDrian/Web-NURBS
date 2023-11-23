@@ -1,4 +1,3 @@
-import { Vec3 } from "wgpu-matrix";
 import { INSTANCE } from "../cad";
 import { Intersection } from "../geometry/intersection";
 import { Command } from "./command";
@@ -16,6 +15,7 @@ import { MoveCommand } from "./commands/moveCommand";
 import { PollarArrayCommand } from "./commands/polarArrayCommand";
 import { PolyLineCommand } from "./commands/polylineCommand";
 import { RevolveCommand } from "./commands/revolveCommand";
+import { RotateCommand } from "./commands/rotateCommand";
 import { Scale1Command } from "./commands/scale1Command";
 import { Scale2Command } from "./commands/scale2Command";
 import { ScaleCommand } from "./commands/scaleCommand";
@@ -80,7 +80,7 @@ export class CommandManager {
         case "loft": case "l":
           this.currentCommand = new LoftCommand();
           break;
-        case "revolve": case "r":
+        case "revolve": case "re":
           this.currentCommand = new RevolveCommand();
           break;
         case "copy": case "cp":
@@ -109,6 +109,9 @@ export class CommandManager {
           break;
         case "mirror": case "mi":
           this.currentCommand = new MirrorCommand();
+          break;
+        case "rotate": case "r":
+          this.currentCommand = new RotateCommand();
           break;
         default: INSTANCE.getLog().log("Invalid Command");
       }

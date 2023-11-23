@@ -1,7 +1,6 @@
-import { warn } from "console";
-import { walkUpBindingElementsAndPatterns } from "typescript";
 import { mat4, Mat4, Vec3, vec3 } from "wgpu-matrix";
 import { Plane } from "../geometry/plane";
+import { Ray } from "../geometry/ray";
 
 
 export const swizzleYZ = function(mat: Mat4): Mat4 {
@@ -62,5 +61,13 @@ export const getScale1Transform = function(plane: Plane, factor: number): Mat4 {
   const toOrigin = mat4.translation(vec3.scale(plane.getOrigin(), -1));
   const toPos = mat4.translation(plane.getOrigin());
   return mat4.mul(mat4.mul(toPos, scaleTransform), toOrigin);
+}
+
+
+export const getRotationTransform = function(axis: Ray, theta: number): Mat4 {
+  const rotation: Mat4 = mat4.axisRotate(mat4.identity(), axis.getDirection(), theta);
+  const toOrigin: Mat4 = mat4.translation(vec3.scale(axis.getOrigin(), -1));
+  const toPos: Mat4 = mat4.translation(axis.getOrigin());
+  return mat4.mul(toOrigin, mat4.mul(rotation, toPos));
 }
 

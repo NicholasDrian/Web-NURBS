@@ -5,7 +5,7 @@ import { Intersection } from "../geometry/intersection";
 export abstract class Command {
 
   abstract handleInputString(input: string): void;
-  abstract handleClickResult(input: Intersection): void;
+  abstract handleClickResult(intersection: Intersection): void;
   abstract handleClick(): void;
   abstract handleMouseMove(): void;
   abstract getInstructions(): string;
