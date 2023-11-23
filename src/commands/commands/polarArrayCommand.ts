@@ -4,7 +4,7 @@ import { Geometry } from "../../geometry/geometry";
 import { Intersection } from "../../geometry/intersection";
 import { Ray } from "../../geometry/ray";
 import { ObjectID } from "../../scene/scene";
-import { getRotationTransform } from "../../utils/math";
+import { angleBetween, getRotationTransform } from "../../utils/math";
 import { Clicker } from "../clicker";
 import { Command } from "../command";
 
@@ -26,6 +26,7 @@ export class PollarArrayCommand extends Command {
   private centerPoint: Vec3 | null;
   private axis: Ray | null;
   private basePoint: Vec3 | null;
+  private flipped: boolean;
   private angle: number | null;
   private geometry: Geometry[];
   private arrayedGeometry: Geometry[][];
@@ -35,6 +36,7 @@ export class PollarArrayCommand extends Command {
   constructor() {
     super();
     this.finished = false;
+    this.flipped = false;
     this.clicker = new Clicker();
     this.count = null;
     this.basePoint = null;
@@ -100,8 +102,19 @@ export class PollarArrayCommand extends Command {
         }
         break;
       case PollarArrayCommandMode.EnterFirstPointOrAngle:
+        const angle: number = parseFloat(input);
+        if (!isNaN(angle)) {
+          this.angle = angle;
+          this.setTransforms();
+          this.done();
+        }
         break;
       case PollarArrayCommandMode.EnterFinalPointOrFlip:
+        if (input == "1") {
+          this.flipped = !this.flipped;
+          this.angle! -= 360;
+          this.setTransforms();
+        }
         break;
       default:
         throw new Error("Case not implemented");
@@ -125,8 +138,24 @@ export class PollarArrayCommand extends Command {
       case PollarArrayCommandMode.Options:
         break;
       case PollarArrayCommandMode.EnterFirstPointOrAngle:
+        this.basePoint = intersection.point;
+        this.mode = PollarArrayCommandMode.EnterFinalPointOrFlip;
+        this.createClones();
         break;
       case PollarArrayCommandMode.EnterFinalPointOrFlip:
+        const v1: Vec3 = vec3.sub(this.basePoint!, this.centerPoint!);
+        const v2: Vec3 = vec3.sub(intersection.point!, this.centerPoint!);
+        var theta: number = angleBetween(v1, v2) / Math.PI * 180;
+        if (isNaN(theta)) {
+          break;
+        }
+        if (vec3.dot(v2, vec3.cross(v1, this.axis!.getDirection())) > 0) {
+          theta = 360 - theta;
+        }
+        if (this.flipped) theta -= 360;
+        this.angle = theta;
+        this.setTransforms();
+        this.done();
         break;
       default:
         throw new Error("Case not implemented");
@@ -140,7 +169,23 @@ export class PollarArrayCommand extends Command {
 
   handleMouseMove(): void {
     this.clicker.onMouseMove();
-    //TODO:
+    if (this.mode == PollarArrayCommandMode.EnterFinalPointOrFlip) {
+      const point: Vec3 | null = this.clicker.getPoint();
+      if (point) {
+        const v1: Vec3 = vec3.sub(this.basePoint!, this.centerPoint!);
+        const v2: Vec3 = vec3.sub(point!, this.centerPoint!);
+        var theta: number = angleBetween(v1, v2) / Math.PI * 180;
+        if (isNaN(theta)) {
+          return;
+        }
+        if (vec3.dot(v2, vec3.cross(v1, this.axis!.getDirection())) > 0) {
+          theta = 360 - theta;
+        }
+        if (this.flipped) theta -= 360;
+        this.angle = theta;
+        this.setTransforms();
+      }
+    }
   }
 
   getInstructions(): string {
@@ -188,14 +233,15 @@ export class PollarArrayCommand extends Command {
 
   private setTransforms(): void {
     const rads: number = this.angle! * Math.PI / 180;
-    var angleBetween: number;
+    var theta: number;
     if (this.useAngleBetween) {
-      angleBetween = rads;
+      theta = rads;
     } else {
-      angleBetween = rads / (this.count! - 1);
+      theta = rads / (this.count! - 1);
     }
+
     for (let i = 1; i < this.count!; i++) {
-      const angle = angleBetween * i;
+      const angle = theta * i;
       const transform: Mat4 = getRotationTransform(this.axis!, angle);
       for (let j = 0; j < this.geometry.length; j++) {
         this.arrayedGeometry[i - 1][j].setModel(mat4.mul(transform, this.geometry[j].getModel()));

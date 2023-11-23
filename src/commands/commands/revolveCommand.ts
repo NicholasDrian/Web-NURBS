@@ -123,6 +123,7 @@ export class RevolveCommand extends Command {
           const revolution: Surface = revolve(this.axis!, curve, theta);
           if (this.flipped) {
             var model: Mat4 = revolution.getModel();
+            // TODO: use new rotate math function for this.
             const translation: Vec3 = this.axis!.getOrigin();
             model = mat4.translate(model, vec3.scale(translation, -1));
             model = mat4.axisRotate(model, this.axis!.getDirection(), Math.PI * 2 - theta);

@@ -68,6 +68,6 @@ export const getRotationTransform = function(axis: Ray, theta: number): Mat4 {
   const rotation: Mat4 = mat4.axisRotate(mat4.identity(), axis.getDirection(), theta);
   const toOrigin: Mat4 = mat4.translation(vec3.scale(axis.getOrigin(), -1));
   const toPos: Mat4 = mat4.translation(axis.getOrigin());
-  return mat4.mul(toOrigin, mat4.mul(rotation, toPos));
+  return mat4.mul(toPos, mat4.mul(rotation, toOrigin));
 }
 
