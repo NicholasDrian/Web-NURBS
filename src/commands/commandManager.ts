@@ -3,7 +3,7 @@ import { INSTANCE } from "../cad";
 import { Intersection } from "../geometry/intersection";
 import { Command } from "./command";
 import { ArcCommand } from "./commands/arcCommand";
-import { Array3Command } from "./commands/array3Command";
+import { LinearArrayCommand } from "./commands/arrayCommand";
 import { CameraCommand } from "./commands/cameraCommand";
 import { CircleCommand } from "./commands/circleCommand";
 import { ConstructionPlaneCommand } from "./commands/constructionPlaneCommand";
@@ -104,12 +104,8 @@ export class CommandManager {
         case "polar array": case "pa":
           this.currentCommand = new PollarArrayCommand();
           break;
-        case "array1": case "a1":
-          break;
-        case "array2": case "a2":
-          break;
-        case "array3": case "a3":
-          this.currentCommand = new Array3Command();
+        case "linear array": case "la":
+          this.currentCommand = new LinearArrayCommand();
           break;
         case "mirror": case "mi":
           this.currentCommand = new MirrorCommand();
@@ -122,6 +118,7 @@ export class CommandManager {
     if (this.currentCommand?.isFinished()) {
       this.currentCommand = null;
     }
+
   }
 
   hasActiveCommand(): boolean {

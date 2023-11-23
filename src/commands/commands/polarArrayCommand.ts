@@ -13,6 +13,7 @@ export class PollarArrayCommand extends Command {
   handleInputString(input: string): void {
     throw new Error("Method not implemented.");
   }
+
   handleClickResult(input: Intersection): void {
     throw new Error("Method not implemented.");
   }

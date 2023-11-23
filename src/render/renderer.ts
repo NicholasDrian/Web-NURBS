@@ -102,6 +102,7 @@ export class Renderer {
 
 
     this.canvasFormat = navigator.gpu.getPreferredCanvasFormat();
+    console.log(this.canvasFormat);
     this.context.configure({
       device: this.device,
       format: this.canvasFormat,
@@ -255,6 +256,7 @@ export class Renderer {
       size: [this.canvas.width, this.canvas.height],
       sampleCount: 4,
       format: "depth24plus",
+
       usage: GPUTextureUsage.RENDER_ATTACHMENT
     });
     this.renderTarget = this.device.createTexture({

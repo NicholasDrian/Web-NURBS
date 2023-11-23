@@ -110,6 +110,7 @@ export class MoveCommand extends Command {
     for (let geo of this.objectsToMove.keys()) {
       INSTANCE.getScene().addGeometry(geo);
     }
+    INSTANCE.getMover().updatedSelection();
   }
 
 }

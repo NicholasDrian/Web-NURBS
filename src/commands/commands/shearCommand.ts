@@ -5,6 +5,7 @@ export class ShearCommand extends Command {
 
   private finished: boolean;
 
+
   constructor() {
     super();
     this.finished = false;

@@ -26,6 +26,7 @@ export class SphereCommand extends Command {
     throw new Error("Method not implemented.");
   }
 
+
   isFinished(): boolean {
     return this.finished
   }

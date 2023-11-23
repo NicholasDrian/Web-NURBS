@@ -78,7 +78,6 @@ fn fragmentMain(inputs: FragInputs) -> @location(0) vec4f {
   }
 
   if ((flags & HOVER_BIT) == HOVER_BIT) {
-
       var evenX: bool = modf(scaledFragCoords.x).fract < 0.5;
       var evenY: bool = modf(scaledFragCoords.y).fract < 0.5;
       if ((evenX && !evenY) || (evenY && !evenX)) {
@@ -86,6 +85,7 @@ fn fragmentMain(inputs: FragInputs) -> @location(0) vec4f {
       }
 
   }
+  fragColor.w = 0.5;
   return fragColor;
 
 }

@@ -60,13 +60,15 @@ export class CameraCommand extends Command {
   }
 
   private handleFovyInput(input: string) {
-    const inputNum: number | undefined = parseFloat(input);
-    if (inputNum === 0) {
-      this.mode = CameraCommandMode.Menu;
-    }
-    if (inputNum) {
-      INSTANCE.getScene().getCamera().setFovy(Math.PI * inputNum / 180.0);
-      this.mode = CameraCommandMode.Menu;
+    const inputNum: number = parseFloat(input);
+    if (!isNaN(inputNum)) {
+      if (inputNum === 0) {
+        this.mode = CameraCommandMode.Menu;
+      }
+      if (inputNum) {
+        INSTANCE.getScene().getCamera().setFovy(Math.PI * inputNum / 180.0);
+        this.mode = CameraCommandMode.Menu;
+      }
     }
   }
 

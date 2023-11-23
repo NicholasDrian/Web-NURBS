@@ -42,9 +42,7 @@ export class Pipeline {
         module: shaderModule,
         entryPoint: "fragmentMain",
         targets: [
-          {
-            format: format
-          }
+          getTarget(format)
         ]
       },
       multisample: {
@@ -85,5 +83,30 @@ function getLabel(primitive: PipelinePrimitive): string {
     case PipelinePrimitive.Line: return "line pipeline";
     case PipelinePrimitive.Point: return "point pipeline";
     default: throw new Error("not implemented");
+  }
+}
+
+function getTarget(format: GPUTextureFormat): GPUColorTargetState {
+  if (true) {
+    //if (format === "r32sint") { // TODO:
+    return {
+      format: format
+    }
+  }
+  return {
+    format: format,
+    blend: {
+      color: {
+        operation: 'add',
+        srcFactor: 'src-alpha',
+        dstFactor: 'one-minus-src-alpha',
+      },
+      alpha: {
+        operation: 'add',
+        srcFactor: 'one',
+        dstFactor: 'one-minus-src-alpha',
+      },
+    },
+    writeMask: GPUColorWrite.ALL,
   }
 }

@@ -129,6 +129,7 @@ export class Scale1Command extends Command {
     for (const geo of this.objectsToScale.keys()) {
       INSTANCE.getScene().addGeometry(geo);
     }
+    INSTANCE.getMover().updatedSelection();
   }
 
 }
