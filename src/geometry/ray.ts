@@ -172,7 +172,7 @@ export class Ray {
     return vec3.add(other.origin, vec3.scale(v21, mua));
   }
 
-  public almostIntersectLine(id: ObjectID, start: Vec3, end: Vec3, pixels: number, bounded: boolean = true): Intersection | null {
+  public almostIntersectLine(id: ObjectID, subID: number, start: Vec3, end: Vec3, pixels: number, bounded: boolean = true): Intersection | null {
 
     const p: Vec3 = vec3.add(this.origin, this.direction);
 
@@ -201,7 +201,7 @@ export class Ray {
     const sizeOfPixel: number = INSTANCE.getScene().getCamera().pixelSizeAtDist(distToIntersection);
 
     if (closest < sizeOfPixel * pixels) {
-      return new Intersection(mub, "line", id, pLine, closest, closest * sizeOfPixel);
+      return new Intersection(mub, "line", id, subID, pLine, closest, closest * sizeOfPixel);
     } else {
       return null;
     }

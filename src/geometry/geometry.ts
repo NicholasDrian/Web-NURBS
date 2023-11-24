@@ -29,6 +29,7 @@ export abstract class Geometry {
   public abstract getTypeName(): string;
   public abstract intersect(ray: Ray): Intersection | null;
   public abstract isWithinFrustum(frustum: Frustum, inclusive: boolean): boolean;
+  public abstract onSubSelectionUpdate(objects: Set<ObjectID>): void;
   public abstract delete(): void;
   public abstract clone(): Geometry;
 

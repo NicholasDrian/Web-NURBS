@@ -29,7 +29,6 @@ export class Curve extends Geometry {
   ) {
     super(parent, model, material);
 
-
     if (this.knots.length == 0) {
       this.knots = genericKnotVector(this.weightedControlPoints.length, this.degree);
     }
@@ -37,6 +36,10 @@ export class Curve extends Geometry {
     this.controlCage = null;
     this.polyline = null;
     this.updateSamples();
+  }
+
+  public onSubSelectionUpdate(objects: Set<number>): void {
+    throw new Error("Method not implemented.");
   }
 
   public clone(): Geometry {

@@ -21,6 +21,10 @@ export class Group extends Geometry {
     }
   }
 
+  public onSubSelectionUpdate(objects: Set<number>): void {
+    throw new Error("Method not implemented.");
+  }
+
   public override getBoundingBox(): BoundingBox {
     const boundingBox: BoundingBox = new BoundingBox();
     for (let child of this.children) {

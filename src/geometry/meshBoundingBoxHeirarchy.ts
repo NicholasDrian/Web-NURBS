@@ -135,18 +135,21 @@ class MeshBoundingBoxHeirarchyNode {
 
     if (this.isLeaf()) {
       var res: number | null = null;
+      var subID: number | null = null;
       for (let i = 0; i < this.indices!.length; i += 3) {
         var t: number | null = ray.intersectTriangle(
           this.verts[this.indices![i]],
           this.verts[this.indices![i + 1]],
           this.verts[this.indices![i + 2]]);
         if (t !== null) {
-          if (res === null) res = t;
-          else res = Math.min(res, t);
+          if (res === null || t < res) {
+            res = t;
+            subID = 1 / 3;
+          }
         }
       }
       if (res == null) return res;
-      return new Intersection(res, "mesh", this.id, ray.at(res), 0, 0);
+      return new Intersection(res, "mesh", this.id, subID!, ray.at(res), 0, 0);
     } else {
       const i1: Intersection | null = this.child1!.intersect(ray);
       const i2: Intersection | null = this.child2!.intersect(ray);

@@ -26,13 +26,17 @@ export class Line extends Geometry {
     this.updateRenderLines();
   }
 
+  public onSubSelectionUpdate(objects: Set<ObjectID>): void {
+    throw new Error("Method not implemented.");
+  }
+
   public clone(): Geometry {
     return new Line(this.parent, vec3.clone(this.start), vec3.clone(this.end), mat4.clone(this.model), this.materialName);
   }
 
   public intersect(ray: Ray): Intersection | null {
     if (this.isHidden()) return null;
-    return ray.almostIntersectLine(this.getID(), this.start, this.end, 10);
+    return ray.almostIntersectLine(this.getID(), this.getID(), this.start, this.end, 10);
   }
 
   public getBoundingBox(): BoundingBox {

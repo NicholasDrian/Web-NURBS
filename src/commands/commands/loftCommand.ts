@@ -73,8 +73,8 @@ export class LoftCommand extends Command {
   }
 
   handleClickResult(intersection: Intersection): void {
-    this.curves.push(intersection.object);
-    INSTANCE.getScene().getGeometry(intersection.object).select();
+    this.curves.push(intersection.objectID);
+    INSTANCE.getScene().getGeometry(intersection.objectID).select();
     this.clicker.reset();
   }
 

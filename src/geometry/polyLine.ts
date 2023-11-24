@@ -28,6 +28,10 @@ export class PolyLine extends Geometry {
     this.update();
   }
 
+  public onSubSelectionUpdate(objects: Set<number>): void {
+    throw new Error("Method not implemented.");
+  }
+
   public clone(): Geometry {
     return new PolyLine(this.parent, cloneVec3List(this.points), mat4.clone(this.model), this.materialName);
   }

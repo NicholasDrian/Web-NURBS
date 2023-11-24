@@ -7,7 +7,8 @@ export class Intersection {
   constructor(
     public time: number,
     public description: string,
-    public object: ObjectID,
+    public objectID: ObjectID,
+    public objectSubID: number,
     public point: Vec3,
     public dist: number,
     public screenSpaceDist: number

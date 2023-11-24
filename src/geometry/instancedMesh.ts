@@ -44,6 +44,9 @@ export class InstancedMesh extends Geometry {
 
     this.boundingBoxHeirarchy = new InstancedMeshBoundingBoxHeirarchy(this);
   }
+  public onSubSelectionUpdate(objects: Set<number>): void {
+    throw new Error("Method not implemented.");
+  }
 
   public clone(): Geometry {
     return new InstancedMesh(

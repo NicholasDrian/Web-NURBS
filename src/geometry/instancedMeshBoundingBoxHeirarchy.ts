@@ -82,8 +82,10 @@ class InstancedMeshBoundingBoxHeirarchyNode {
       for (let i of this.instances!) {
         var t: Intersection | null = this.heirarchy.intersectInstance(ray, i);
         if (t !== null) {
-          if (res === null) res = t;
-          else res = (res.time < t.time) ? res : t;
+          if (res === null || t.time < res.time) {
+            res = t;
+            res.objectSubID = i;
+          }
         }
       }
       return res;

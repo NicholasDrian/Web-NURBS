@@ -29,6 +29,10 @@ export class Lines extends Geometry {
     this.update();
   }
 
+  public onSubSelectionUpdate(objects: Set<number>): void {
+    throw new Error("Method not implemented.");
+  }
+
   public clone(): Geometry {
     return new Lines(cloneVec3List(this.points), [...this.indices], this.parent, mat4.clone(this.model), this.materialName);
   }

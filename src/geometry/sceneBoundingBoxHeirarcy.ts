@@ -218,8 +218,7 @@ export class SceneBoundingBoxHeirarchy {
   }
 
   public remove(geo: Geometry): void {
-    //console.log("removing from bbh");
-    // BUG: shrink bbx
+    // TODO: shrink bbx
     this.root.remove(geo);
   }
 

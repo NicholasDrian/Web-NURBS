@@ -60,9 +60,9 @@ export class Selector {
     const geometryAtPixel: Set<Geometry> = new Set<Geometry>;
     for (let intersection of intersections) {
 
-      if (intersection.object === 0) continue; // construction plane intersection
+      if (intersection.objectID === 0) continue; // construction plane intersection
 
-      let geo: Geometry = INSTANCE.getScene().getGeometry(intersection.object);
+      let geo: Geometry = INSTANCE.getScene().getGeometry(intersection.objectID);
       if (!sub) {
         while (geo.getParent() !== null) geo = geo.getParent()!;
         if (geometryAtPixel.has(geo)) continue;

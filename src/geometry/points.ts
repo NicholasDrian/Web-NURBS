@@ -47,6 +47,10 @@ export class Points extends Geometry {
     this.update();
   }
 
+  public onSubSelectionUpdate(objects: Set<number>): void {
+    throw new Error("Method not implemented.");
+  }
+
   private update(): void {
 
     this.instancedMesh?.delete();

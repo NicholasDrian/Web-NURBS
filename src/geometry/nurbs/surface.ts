@@ -41,6 +41,10 @@ export class Surface extends Geometry {
     this.update();
   }
 
+  public onSubSelectionUpdate(objects: Set<number>): void {
+    throw new Error("Method not implemented.");
+  }
+
   public delete(): void {
     this.mesh?.destroy();
     this.edgeLowU?.destroy();

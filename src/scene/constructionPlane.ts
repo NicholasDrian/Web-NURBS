@@ -109,7 +109,7 @@ export class ConstructionPlane {
         pGroundPlane = INSTANCE.getScene().getConstructionPlane().snapToGrid(pGroundPlane);
       }
       if (pGroundPlane) {
-        return new Intersection(tGroundPlane, "ground plane", 0, pGroundPlane, 0, 0);
+        return new Intersection(tGroundPlane, "ground plane", 0, 0, pGroundPlane, 0, 0);
       }
     }
     return null;

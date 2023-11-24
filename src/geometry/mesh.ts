@@ -42,6 +42,10 @@ export class Mesh extends Geometry {
     this.boundingBoxHeirarchy = new MeshBoundingBoxHeirarchy(this, this.verts, this.indices);
   }
 
+  public onSubSelectionUpdate(objects: Set<number>): void {
+    throw new Error("Method not implemented.");
+  }
+
   public clone(): Geometry {
     return new Mesh(this.parent, cloneVec3List(this.verts), cloneVec3List(this.normals), [...this.indices], mat4.clone(this.model), this.materialName);
   }
