@@ -13,9 +13,10 @@ import { Ray } from "./ray";
 
 export class Lines extends Geometry {
 
-  private renderLines!: RenderID;
+  private renderLines: RenderID;
   private boundingBox!: BoundingBox;
   private boundingBoxHeirarchy!: LineBoundingBoxHeirarchy;
+  private subSelectedSegments!: boolean[];
 
   constructor(
     private points: Vec3[],
@@ -30,13 +31,13 @@ export class Lines extends Geometry {
   }
 
   public addToSubSelection(subID: number): void {
-    throw new Error("Method not implemented.");
+    this.subSelectedSegments[subID] = true;
   }
   public removeFromSubSelection(subID: number): void {
-    throw new Error("Method not implemented.");
+    this.subSelectedSegments[subID] = false;
   }
   public isSubSelected(subID: number): boolean {
-    throw new Error("Method not implemented.");
+    return this.subSelectedSegments[subID];
   }
 
   public clone(): Geometry {
@@ -76,11 +77,19 @@ export class Lines extends Geometry {
     for (let i = 0; i < this.points.length; i++) {
       verts.push(...this.points[i], 1.0);
     }
+
+    this.subSelectedSegments = [];
+    for (let i = 0; i < this.indices.length / 2; i++) {
+      this.subSelectedSegments.push(false);
+    }
+
     const renderLinesObj: RenderLines = new RenderLines(
       this,
       new Float32Array(verts),
       new Int32Array(this.indices),
+      this.subSelectedSegments
     );
+
     INSTANCE.getScene().addRenderLines(renderLinesObj);
     this.renderLines = renderLinesObj.getRenderID();
     this.updateBoundingBox();
@@ -94,4 +103,5 @@ export class Lines extends Geometry {
       this.boundingBox.addVec3(vec3.transformMat4(point, model));
     });
   }
+
 }

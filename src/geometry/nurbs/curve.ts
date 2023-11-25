@@ -18,7 +18,6 @@ export class Curve extends Geometry {
   private polyline: PolyLine | null;
   private controlPoints: Points | null;
 
-
   constructor(
     parent: Geometry | null,
     private weightedControlPoints: Vec4[],
@@ -39,19 +38,24 @@ export class Curve extends Geometry {
   }
 
   public addToSubSelection(subID: number): void {
-    console.log("selecting curve subID", subID);
+    throw new Error("shouldnt need this");
   }
+
   public removeFromSubSelection(subID: number): void {
-    throw new Error("Method not implemented.");
+    throw new Error("shouldnt need this");
   }
+
   public isSubSelected(subID: number): boolean {
-    return false;
+    throw new Error("shouldnt need this");
   }
-
-
 
   public clone(): Geometry {
-    return new Curve(this.parent, cloneVec4List(this.weightedControlPoints), this.degree, [...this.knots], mat4.clone(this.model), this.materialName);
+    return new Curve(this.parent,
+      cloneVec4List(this.weightedControlPoints),
+      this.degree,
+      [...this.knots],
+      mat4.clone(this.model),
+      this.materialName);
   }
 
   public delete(): void {
@@ -75,7 +79,10 @@ export class Curve extends Geometry {
 
   public intersect(ray: Ray): Intersection | null {
     if (this.isHidden()) return null;
-    return this.polyline!.intersect(ray);
+
+    return this.controlPoints!.intersect(ray) ||
+      this.polyline!.intersect(ray) ||
+      this.controlCage!.intersect(ray);
   }
 
   public getBoundingBox(): BoundingBox {
@@ -90,7 +97,6 @@ export class Curve extends Geometry {
     this.controlCage!.delete();
     this.controlPoints!.delete();
     this.polyline!.delete();
-    this.controlPoints!.delete();
   }
 
   public addControlPoint(point: Vec3, weight: number) {

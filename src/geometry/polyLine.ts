@@ -16,6 +16,7 @@ export class PolyLine extends Geometry {
 
   private renderLines!: RenderID;
   private boundingBoxHeirarchy!: LineBoundingBoxHeirarchy;
+  private subSelectedSegments!: boolean[];
 
   constructor(
     parent: Geometry | null,
@@ -25,17 +26,19 @@ export class PolyLine extends Geometry {
   ) {
     super(parent, model, material);
     this.renderLines = 0;
+    this.subSelectedSegments = [];
     this.update();
   }
 
   public addToSubSelection(subID: number): void {
-    throw new Error("Method not implemented.");
+    this.subSelectedSegments[subID] = true;
+    console.log(this.subSelectedSegments);
   }
   public removeFromSubSelection(subID: number): void {
-    throw new Error("Method not implemented.");
+    this.subSelectedSegments[subID] = false;
   }
   public isSubSelected(subID: number): boolean {
-    throw new Error("Method not implemented.");
+    return this.subSelectedSegments[subID];
   }
 
   public clone(): Geometry {
@@ -59,6 +62,7 @@ export class PolyLine extends Geometry {
   public getSegmentCount(): number {
     return this.points.length - 1;
   }
+
   public override getTypeName(): string {
     return "PolyLine";
   }
@@ -98,11 +102,17 @@ export class PolyLine extends Geometry {
     }
     indices.pop(); indices.pop();
 
+    this.subSelectedSegments = [];
+    for (let i = 0; i < this.points.length - 1; i++) {
+      this.subSelectedSegments.push(false);
+    }
+
     if (this.renderLines) INSTANCE.getScene().removeLines(this.renderLines);
     const renderLinesObj = new RenderLines(
       this,
       new Float32Array(verts),
       new Int32Array(indices),
+      this.subSelectedSegments
     )
     this.renderLines = renderLinesObj.getRenderID();
     INSTANCE.getScene().addRenderLines(renderLinesObj);

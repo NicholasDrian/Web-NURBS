@@ -57,7 +57,7 @@ export class MouseHandler {
   }
 
   public onMouseUp(event: MouseEvent): void {
-    if (event.button == 0) { // left button
+    if (event.button === 0) { // left button
       if (this.drag && !this.drag.isDrag()) { // click
         if (INSTANCE.getCommandManager().hasActiveCommand()) { // forward click to active command
           INSTANCE.getCommandManager().handleClickInput();

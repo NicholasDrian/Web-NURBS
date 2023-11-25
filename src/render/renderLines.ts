@@ -1,8 +1,5 @@
-import { Mat4 } from "wgpu-matrix"
 import { INSTANCE } from "../cad"
 import { Geometry } from "../geometry/geometry";
-import { swizzleYZ } from "../utils/math";
-import { CONSTANT_SCREEN_SIZE_BIT, HOVER_BIT, SELECTED_BIT } from "./flags";
 import { Renderable } from "./renderable";
 
 export class RenderLines extends Renderable {
@@ -18,9 +15,9 @@ export class RenderLines extends Renderable {
     ]
   };
 
-
   private vertexBuffer: GPUBuffer;
   private indexBuffer: GPUBuffer;
+  private subSelectionBuffer: GPUBuffer;
   private indexCount: number;
 
 
@@ -28,6 +25,7 @@ export class RenderLines extends Renderable {
     parent: Geometry,
     vertices: Float32Array,
     indices: Int32Array,
+    subSelection: boolean[]
   ) {
 
     super(parent);
@@ -40,8 +38,7 @@ export class RenderLines extends Renderable {
     });
     INSTANCE.getRenderer().getDevice().queue.writeBuffer(this.vertexBuffer, 0, vertices);
 
-
-    //index
+    // index
     this.indexBuffer = INSTANCE.getRenderer().getDevice().createBuffer({
       label: "index buffer",
       size: indices.byteLength,
@@ -49,6 +46,21 @@ export class RenderLines extends Renderable {
     });
     INSTANCE.getRenderer().getDevice().queue.writeBuffer(this.indexBuffer, 0, indices);
     this.indexCount = indices.length;
+
+    // sub selection
+    const subSelectionList: number[] = [];
+    for (let i = 0; i < subSelection.length; i++) {
+      if (i % 32 === 0) { subSelectionList.push(0); }
+      if (subSelection[i]) { subSelectionList[i / 32] |= 1 << (i % 32); }
+    }
+    const subSelectionArray: Int32Array = new Int32Array(subSelectionList);
+    this.subSelectionBuffer = INSTANCE.getRenderer().getDevice().createBuffer({
+      label: "sub selection buffer",
+      size: subSelectionArray.byteLength,
+      usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+    });
+    INSTANCE.getRenderer().getDevice().queue.writeBuffer(this.subSelectionBuffer, 0, subSelectionArray);
+
   }
 
   public draw(pass: GPURenderPassEncoder): void {
@@ -58,8 +70,6 @@ export class RenderLines extends Renderable {
     pass.setIndexBuffer(this.indexBuffer, "uint32");
     pass.drawIndexed(this.indexCount);
   }
-
-
 
   public static getVertexBufferLayout(): GPUVertexBufferLayout {
     return RenderLines.vertexBufferLayout;

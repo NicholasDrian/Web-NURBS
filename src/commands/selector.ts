@@ -78,7 +78,9 @@ export class Selector {
       if (intersection.objectID === 0) continue; // construction plane intersection
 
       let geo: Geometry = INSTANCE.getScene().getGeometry(intersection.objectID);
-      while (geo.getParent() !== null) geo = geo.getParent()!;
+      if (!sub) {
+        while (geo.getParent() !== null) geo = geo.getParent()!;
+      }
 
       geometryAtPixel.push([geo, intersection.objectSubID]);
 
@@ -102,6 +104,7 @@ export class Selector {
     }
     if (geometryAtPixel.length === 1) {
       if (sub) {
+        console.log("here");
         this.doneTogglingSelectionAtPixel(geometryAtPixel[0][0], geometryAtPixel[0][1]);
       } else {
         this.doneTogglingSelectionAtPixel(geometryAtPixel[0][0]);
@@ -121,7 +124,7 @@ export class Selector {
   private doneTogglingSelectionAtPixel(geo: Geometry | null, subID?: number): void {
     if (geo !== null) {
       geo.unHover();
-      if (subID) {
+      if (subID !== undefined) {
         if (geo.isSubSelected(subID)) {
           INSTANCE.getSelector().removeFromSubSelection(geo.getID(), subID);
         } else {
