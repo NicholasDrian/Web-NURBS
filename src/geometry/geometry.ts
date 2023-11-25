@@ -10,19 +10,21 @@ import { Ray } from "./ray";
 
 export abstract class Geometry {
 
+  private static idGenerator: number = 1;
+
   private selected: boolean = false;
   private hovered: boolean = false;
   private showing: boolean = true;
   private overlay: boolean = false;
   private constantScreenSize: boolean = false;
-  private id: ObjectID;
+  private id: number;
 
   constructor(
     protected parent: Geometry | null = null,
     protected model: Mat4 = mat4.identity(),
     protected materialName: MaterialName | null,
   ) {
-    this.id = INSTANCE.getScene().generateNewObjectID(this);
+    this.id = Geometry.idGenerator++;
   }
 
   public abstract getBoundingBox(): BoundingBox;
@@ -37,6 +39,9 @@ export abstract class Geometry {
   public abstract delete(): void;
   public abstract clone(): Geometry;
 
+  public getID(): number {
+    return this.id;
+  }
 
   public isOverlay(): boolean {
     return this.overlay || (this.parent && this.parent.isOverlay()) || false;
@@ -106,9 +111,6 @@ export abstract class Geometry {
     this.hovered = false;
   }
 
-  public getID(): ObjectID {
-    return this.id;
-  }
 
   public hide(): void {
     this.showing = false;

@@ -1,4 +1,3 @@
-import { mat4, Mat4 } from "wgpu-matrix";
 import { INSTANCE } from "../cad";
 import { Frustum } from "../geometry/frustum";
 import { Geometry } from "../geometry/geometry";
@@ -10,8 +9,7 @@ import { ObjectID } from "../scene/scene";
 
 export class Selector {
 
-  private selection: Set<ObjectID> = new Set<ObjectID>;
-  private subSelectionParents: Set<ObjectID> = new Set<ObjectID>;
+  private selection: Set<Geometry> = new Set<Geometry>;
   private element: HTMLElement;
   private selecting: boolean;
 
@@ -26,29 +24,26 @@ export class Selector {
   }
 
   public reset(): void {
-    for (let id of this.selection) {
-      const geo: Geometry = INSTANCE.getScene().getGeometry(id);
+    for (let geo of this.selection) {
       geo.unSelect();
     }
     this.selection.clear();
     INSTANCE.getMover().updatedSelection();
   }
 
-  public addToSubSelection(id: ObjectID, subID: number): void {
-    const geo: Geometry = INSTANCE.getScene().getGeometry(id);
+  public addToSubSelection(geo: Geometry, subID: number): void {
     geo.addToSubSelection(subID);
     INSTANCE.getMover().updatedSelection();
   }
 
-  public removeFromSubSelection(id: ObjectID, subID: number): void {
-    const geo: Geometry = INSTANCE.getScene().getGeometry(id);
+  public removeFromSubSelection(geo: Geometry, subID: number): void {
     geo.removeFromSubSelection(subID);
     INSTANCE.getMover().updatedSelection();
   }
 
   public addToSelection(...geometry: Geometry[]): void {
     for (let geo of geometry) {
-      this.selection.add(geo.getID());
+      this.selection.add(geo);
       geo.select();
     }
     INSTANCE.getMover().updatedSelection();
@@ -56,7 +51,7 @@ export class Selector {
 
   public removeFromSelection(...geometry: Geometry[]): void {
     for (let geo of geometry) {
-      this.selection.delete(geo.getID());
+      this.selection.delete(geo);
       geo.unSelect();
     }
     INSTANCE.getMover().updatedSelection();
@@ -75,9 +70,9 @@ export class Selector {
     const geometryAtPixel: [Geometry, number][] = [];
     for (let intersection of intersections) {
 
-      if (intersection.objectID === 0) continue; // construction plane intersection
+      if (intersection.geometry === null) continue; // construction plane intersection
 
-      let geo: Geometry = INSTANCE.getScene().getGeometry(intersection.objectID);
+      let geo: Geometry = intersection.geometry;
       if (!sub) {
         while (geo.getParent() !== null) geo = geo.getParent()!;
       }
@@ -125,9 +120,9 @@ export class Selector {
       geo.unHover();
       if (subID !== undefined) {
         if (geo.isSubSelected(subID)) {
-          INSTANCE.getSelector().removeFromSubSelection(geo.getID(), subID);
+          INSTANCE.getSelector().removeFromSubSelection(geo, subID);
         } else {
-          INSTANCE.getSelector().addToSubSelection(geo.getID(), subID);
+          INSTANCE.getSelector().addToSubSelection(geo, subID);
         }
       } else {
         if (geo.isSelected()) {
@@ -146,9 +141,8 @@ export class Selector {
     if (sub) {
       throw new Error("todo");
     } else {
-      const within: ObjectID[] = INSTANCE.getScene().getBoundingBoxHeirarchy().getWithinFrustum(frustum, sub, inclusive);
-      for (const obj of within) {
-        const geo: Geometry = INSTANCE.getScene().getGeometry(obj);
+      const within: Geometry[] = INSTANCE.getScene().getBoundingBoxHeirarchy().getWithinFrustum(frustum, sub, inclusive);
+      for (const geo of within) {
         this.addToSelection(geo);
       }
     }
@@ -159,15 +153,14 @@ export class Selector {
     if (sub) {
       throw new Error("todo");
     } else {
-      const within: ObjectID[] = INSTANCE.getScene().getBoundingBoxHeirarchy().getWithinFrustum(frustum, sub, inclusive);
-      for (const obj of within) {
-        const geo: Geometry = INSTANCE.getScene().getGeometry(obj);
+      const within: Geometry[] = INSTANCE.getScene().getBoundingBoxHeirarchy().getWithinFrustum(frustum, sub, inclusive);
+      for (const geo of within) {
         this.removeFromSelection(geo);
       }
     }
   }
 
-  public getSelection(): Set<ObjectID> {
+  public getSelection(): Set<Geometry> {
     return this.selection;
   }
 

@@ -4,6 +4,7 @@ import { BoundingBox } from "./boundingBox";
 import { Frustum } from "./frustum";
 import { Geometry } from "./geometry";
 import { Intersection } from "./intersection";
+import { Mesh } from "./mesh";
 import { Ray } from "./ray";
 
 enum Axis {
@@ -21,7 +22,7 @@ class MeshBoundingBoxHeirarchyNode {
   private axis!: Axis;
 
   constructor(
-    private id: ObjectID,
+    private mesh: Geometry,
     private verts: Vec3[],
     private indices: number[],
     triangles: number[],
@@ -70,8 +71,8 @@ class MeshBoundingBoxHeirarchyNode {
           child2Tris.push(tri);
         }
       }
-      this.child1 = new MeshBoundingBoxHeirarchyNode(this.id, this.verts, this.indices, child1Tris, this.depth + 1);
-      this.child2 = new MeshBoundingBoxHeirarchyNode(this.id, this.verts, this.indices, child2Tris, this.depth + 1);
+      this.child1 = new MeshBoundingBoxHeirarchyNode(this.mesh, this.verts, this.indices, child1Tris, this.depth + 1);
+      this.child2 = new MeshBoundingBoxHeirarchyNode(this.mesh, this.verts, this.indices, child2Tris, this.depth + 1);
     }
   }
 
@@ -134,7 +135,7 @@ class MeshBoundingBoxHeirarchyNode {
         }
       }
       if (res == null) return res;
-      return new Intersection(res, "mesh", this.id, subID!, ray.at(res), 0, 0);
+      return new Intersection(res, "mesh", this.mesh, subID!, ray.at(res), 0, 0);
     } else {
       const i1: Intersection | null = this.child1!.intersect(ray);
       const i2: Intersection | null = this.child2!.intersect(ray);
@@ -178,7 +179,7 @@ export class MeshBoundingBoxHeirarchy {
       reducedIndices.push(indices[i], indices[i + 1], indices[i + 2]);
       triangles.push(i / 3);
     }
-    this.root = new MeshBoundingBoxHeirarchyNode(this.mesh.getID(), verts, reducedIndices, triangles);
+    this.root = new MeshBoundingBoxHeirarchyNode(this.mesh, verts, reducedIndices, triangles);
   }
 
   public print(): void {

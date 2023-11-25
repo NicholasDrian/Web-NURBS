@@ -2,6 +2,7 @@ import { Mat4, vec3, Vec3, vec4, Vec4 } from "wgpu-matrix";
 import { INSTANCE } from "../cad";
 import { ObjectID, Scene } from "../scene/scene";
 import { BoundingBox } from "./boundingBox";
+import { Geometry } from "./geometry";
 import { Intersection } from "./intersection";
 import { Plane } from "./plane";
 
@@ -172,7 +173,7 @@ export class Ray {
     return vec3.add(other.origin, vec3.scale(v21, mua));
   }
 
-  public almostIntersectLine(id: ObjectID, subID: number, start: Vec3, end: Vec3, pixels: number, bounded: boolean = true): Intersection | null {
+  public almostIntersectLine(geo: Geometry, subID: number, start: Vec3, end: Vec3, pixels: number, bounded: boolean = true): Intersection | null {
 
     const p: Vec3 = vec3.add(this.origin, this.direction);
 
@@ -201,7 +202,7 @@ export class Ray {
     const sizeOfPixel: number = INSTANCE.getScene().getCamera().pixelSizeAtDist(distToIntersection);
 
     if (closest < sizeOfPixel * pixels) {
-      return new Intersection(mub, "line", id, subID, pLine, closest, closest * sizeOfPixel);
+      return new Intersection(mub, "line", geo, subID, pLine, closest, closest * sizeOfPixel);
     } else {
       return null;
     }

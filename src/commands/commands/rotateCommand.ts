@@ -35,14 +35,13 @@ export class RotateCommand extends Command {
     this.finished = false;
     this.geometry = new Map<Geometry, Mat4>;
 
-    const selected: Set<ObjectID> = INSTANCE.getSelector().getSelection();
+    const selected: Set<Geometry> = INSTANCE.getSelector().getSelection();
     if (selected.size === 0) {
       this.done();
       return;
     }
 
-    for (const id of selected) {
-      const geo: Geometry = INSTANCE.getScene().getGeometry(id);
+    for (const geo of selected) {
       this.geometry.set(geo, geo.getModel());
     }
 

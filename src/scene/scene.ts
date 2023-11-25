@@ -18,16 +18,14 @@ export class Scene {
   private constructionPlane!: ConstructionPlane;
 
 
-  private renderLines: Map<RenderID, RenderLines> = new Map<RenderID, RenderLines>();
-  private renderMeshes: Map<RenderID, RenderMesh> = new Map<RenderID, RenderMesh>();
-  private renderPoints: Map<RenderID, RenderPoints> = new Map<RenderID, RenderPoints>();
-  private renderMeshesInstanced: Map<RenderID, RenderMeshInstanced> = new Map<RenderID, RenderMeshInstanced>();
+  private renderLines: Set<RenderLines> = new Set<RenderLines>();
+  private renderMeshes: Set<RenderMesh> = new Set<RenderMesh>();
+  private renderPoints: Set<RenderPoints> = new Set<RenderPoints>();
+  private renderMeshesInstanced: Set<RenderMeshInstanced> = new Set<RenderMeshInstanced>();
 
-  private rootGeometry: Map<ObjectID, Geometry> = new Map<ObjectID, Geometry>(); // stores geometry with no parents
-  private geometry: Map<ObjectID, Geometry> = new Map<ObjectID, Geometry>(); // stores all geometry
+  private rootGeometry: Set<Geometry> = new Set<Geometry>(); // stores geometry with no parents
+  private geometry: Set<Geometry> = new Set<Geometry>(); // stores all geometry
 
-  private renderIDGenerator: RenderID = 1;
-  private objectIDGenerator: ObjectID = 1;
   private boundingBoxHeirarchy: SceneBoundingBoxHeirarchy = new SceneBoundingBoxHeirarchy([]);
 
   constructor(
@@ -59,48 +57,30 @@ export class Scene {
     this.constructionPlane = new ConstructionPlane();
   }
 
-  public generateNewObjectID(geo: Geometry): ObjectID {
-    this.geometry.set(this.objectIDGenerator, geo);
-    return this.objectIDGenerator++;
-  }
-
   public addGeometry(geo: Geometry): void {
     this.boundingBoxHeirarchy.add(geo);
-    this.rootGeometry.set(geo.getID(), geo);
+    this.rootGeometry.add(geo);
   }
 
   public removeGeometry(geo: Geometry): void {
     this.boundingBoxHeirarchy.remove(geo);
-    this.rootGeometry.delete(geo.getID());
+    this.rootGeometry.delete(geo);
   }
 
-  public getGeometry(id: ObjectID): Geometry {
-    return this.geometry.get(id)!;
-  }
-
-  public generateNewRenderID(): RenderID {
-    return this.renderIDGenerator++;
-  }
-
-  public addRenderMesh(mesh: RenderMesh): void { this.renderMeshes.set(mesh.getRenderID(), mesh); }
-  public addRenderMeshInstanced(mesh: RenderMeshInstanced): void { this.renderMeshesInstanced.set(mesh.getRenderID(), mesh); }
-  public addRenderLines(lines: RenderLines): void { this.renderLines.set(lines.getRenderID(), lines); }
-  public addRenderPoints(points: RenderPoints): void { this.renderPoints.set(points.getRenderID(), points); }
-
-  public getLines(id: RenderID): RenderLines { return this.renderLines.get(id)!; }
-  public getMesh(id: RenderID): RenderMesh { return this.renderMeshes.get(id)!; }
-  public getPoints(id: RenderID): RenderPoints { return this.renderPoints.get(id)!; }
-  public getMeshInstanced(id: RenderID): RenderMeshInstanced { return this.renderMeshesInstanced.get(id)!; }
+  public addRenderMesh(mesh: RenderMesh): void { this.renderMeshes.add(mesh); }
+  public addRenderMeshInstanced(mesh: RenderMeshInstanced): void { this.renderMeshesInstanced.add(mesh); }
+  public addRenderLines(lines: RenderLines): void { this.renderLines.add(lines); }
+  public addRenderPoints(points: RenderPoints): void { this.renderPoints.add(points); }
 
   public getAllLines(): IterableIterator<RenderLines> { return this.renderLines.values(); }
   public getAllMeshes(): IterableIterator<RenderMesh> { return this.renderMeshes.values(); }
   public getAllPoints(): IterableIterator<RenderPoints> { return this.renderPoints.values(); }
   public getAllMeshesInstanced(): IterableIterator<RenderMeshInstanced> { return this.renderMeshesInstanced.values(); }
 
-  public removeMesh(id: RenderID): void { this.renderMeshes.delete(id); }
-  public removeLines(id: RenderID): void { this.renderLines.delete(id); }
-  public removePoints(id: RenderID): void { this.renderPoints.delete(id); }
-  public removeMeshInstanced(id: RenderID): void { this.renderMeshesInstanced.delete(id); }
+  public removeMesh(renderMesh: RenderMesh): void { this.renderMeshes.delete(renderMesh); }
+  public removeLines(renderLines: RenderLines): void { this.renderLines.delete(renderLines); }
+  public removePoints(renderPoints: RenderPoints): void { this.renderPoints.delete(renderPoints); }
+  public removeMeshInstanced(renderMeshInstanced: RenderMeshInstanced): void { this.renderMeshesInstanced.delete(renderMeshInstanced); }
 
   public transformSelected(transform: Mat4): void {
     for (const geo of this.rootGeometry.values()) {
@@ -115,7 +95,7 @@ export class Scene {
     for (const geo of this.rootGeometry.values()) {
       if (geo.isSelected()) {
         this.boundingBoxHeirarchy.remove(geo);
-        this.rootGeometry.delete(geo.getID());
+        this.rootGeometry.delete(geo);
         geo.delete();
       }
     }

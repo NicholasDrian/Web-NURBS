@@ -15,7 +15,7 @@ import { Ray } from "./ray";
 
 export class Mesh extends Geometry {
 
-  private renderMesh: RenderID;
+  private renderMesh: RenderMesh;
   private boundingBoxHeirarchy: MeshBoundingBoxHeirarchy;
   private subSelection: boolean[];
 
@@ -39,14 +39,13 @@ export class Mesh extends Geometry {
       this.subSelection.push(false);
     }
 
-    const renderMeshObj: RenderMesh = new RenderMesh(
+    this.renderMesh = new RenderMesh(
       this,
       new Float32Array(vertexBuffer),
       new Int32Array(this.indices),
       this.subSelection
     )
-    INSTANCE.getScene().addRenderMesh(renderMeshObj);
-    this.renderMesh = renderMeshObj.getRenderID();
+    INSTANCE.getScene().addRenderMesh(this.renderMesh);
     this.boundingBoxHeirarchy = new MeshBoundingBoxHeirarchy(this, this.verts, this.indices);
   }
 

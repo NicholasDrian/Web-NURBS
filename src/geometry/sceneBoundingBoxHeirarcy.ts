@@ -82,12 +82,12 @@ class BBHNode {
     return nearIntersections;
   }
 
-  public getAllGeometry(): ObjectID[] {
-    if (this.isLeaf()) return this.geometry!.map((geo: Geometry) => { return geo.getID(); });
+  public getAllGeometry(): Geometry[] {
+    if (this.isLeaf()) return this.geometry!;
     return [...this.child1!.getAllGeometry(), ...this.child2!.getAllGeometry()];
   }
 
-  public getWithinFrustum(frustum: Frustum, sub: boolean, inclusive: boolean): ObjectID[] {
+  public getWithinFrustum(frustum: Frustum, sub: boolean, inclusive: boolean): Geometry[] {
     if (frustum.containsBoundingBoxFully(this.boundingBox)) {
       return this.getAllGeometry();
     }
@@ -95,10 +95,10 @@ class BBHNode {
       return [];
     }
     if (this.isLeaf()) {
-      const res: ObjectID[] = [];
+      const res: Geometry[] = [];
       for (const geo of this.geometry!) {
         if (geo.isWithinFrustum(frustum, inclusive)) {
-          res.push(geo.getID());
+          res.push(geo);
         }
       }
       return res;
@@ -243,7 +243,7 @@ export class SceneBoundingBoxHeirarchy {
     return res;
   }
 
-  public getWithinFrustum(frustum: Frustum, sub: boolean, inclusive: boolean): ObjectID[] {
+  public getWithinFrustum(frustum: Frustum, sub: boolean, inclusive: boolean): Geometry[] {
     return this.root.getWithinFrustum(frustum, sub, inclusive);
   }
 

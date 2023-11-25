@@ -4,7 +4,6 @@ import { mat4, Mat4, vec3, Vec3 } from "wgpu-matrix";
 import { INSTANCE } from "../../cad";
 import { Geometry } from "../../geometry/geometry";
 import { Intersection } from "../../geometry/intersection";
-import { ObjectID } from "../../scene/scene";
 import { Clicker } from "../clicker";
 import { Command } from "../command";
 
@@ -37,15 +36,16 @@ export class LinearArrayCommand extends Command {
     this.directionPoint = null;
     this.count = null;
 
-    const selected: Set<ObjectID> = INSTANCE.getSelector().getSelection();
+    const selected: Set<Geometry> = INSTANCE.getSelector().getSelection();
     if (selected.size === 0) {
       this.done();
       return;
     }
 
-    for (const id of selected) {
-      this.geometry.push(INSTANCE.getScene().getGeometry(id));
+    for (const geo of selected) {
+      this.geometry.push(geo);
     }
+
   }
 
   handleInputString(input: string): void {

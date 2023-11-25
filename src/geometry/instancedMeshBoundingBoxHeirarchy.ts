@@ -4,6 +4,7 @@ import { BoundingBox } from "./boundingBox";
 import { Frustum } from "./frustum";
 import { InstancedMesh } from "./instancedMesh";
 import { Intersection } from "./intersection";
+import { Mesh } from "./mesh";
 import { MeshBoundingBoxHeirarchy } from "./meshBoundingBoxHeirarchy";
 import { Ray } from "./ray";
 
@@ -24,7 +25,7 @@ class InstancedMeshBoundingBoxHeirarchyNode {
   private axis!: Axis;
 
   constructor(
-    private id: ObjectID,
+    private mesh: InstancedMesh,
     private heirarchy: InstancedMeshBoundingBoxHeirarchy,
     instances: number[],
     boundingBoxes: BoundingBox[],
@@ -64,8 +65,8 @@ class InstancedMeshBoundingBoxHeirarchyNode {
           child2Indices.push(instances[i]);
         }
       }
-      this.child1 = new InstancedMeshBoundingBoxHeirarchyNode(this.id, this.heirarchy, child1Indices, boundingBoxes, this.depth + 1);
-      this.child2 = new InstancedMeshBoundingBoxHeirarchyNode(this.id, this.heirarchy, child2Indices, boundingBoxes, this.depth + 1);
+      this.child1 = new InstancedMeshBoundingBoxHeirarchyNode(this.mesh, this.heirarchy, child1Indices, boundingBoxes, this.depth + 1);
+      this.child2 = new InstancedMeshBoundingBoxHeirarchyNode(this.mesh, this.heirarchy, child2Indices, boundingBoxes, this.depth + 1);
     }
   }
 
@@ -134,7 +135,7 @@ export class InstancedMeshBoundingBoxHeirarchy {
       instances.push(i);
       bbs.push(mesh.getBoundingBoxInstance(i));
     }
-    this.root = new InstancedMeshBoundingBoxHeirarchyNode(mesh.getID(), this, instances, bbs);
+    this.root = new InstancedMeshBoundingBoxHeirarchyNode(mesh, this, instances, bbs);
   }
 
   public print(): void {

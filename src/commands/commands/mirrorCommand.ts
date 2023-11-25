@@ -33,7 +33,7 @@ export class MirrorCommand extends Command {
     this.pointA = null;
     this.pointB = null;
     this.pointC = null;
-    const selection: Set<ObjectID> = INSTANCE.getSelector().getSelection();
+    const selection: Set<Geometry> = INSTANCE.getSelector().getSelection();
     if (selection.size === 0) {
       this.done();
     }
@@ -63,12 +63,9 @@ export class MirrorCommand extends Command {
     switch (this.mode) {
       case MirrorCommandMode.SelectFirstPoint:
         this.pointA = intersection.point;
-        const selection: Set<ObjectID> = INSTANCE.getSelector().getSelection();
-        for (const id of selection) {
-          this.oldToNew.set(
-            INSTANCE.getScene().getGeometry(id),
-            INSTANCE.getScene().getGeometry(id).clone(),
-          );
+        const selection: Set<Geometry> = INSTANCE.getSelector().getSelection();
+        for (const geometry of selection) {
+          this.oldToNew.set(geometry, geometry.clone());
         }
         this.mode = MirrorCommandMode.SelectSecondPoint;
         this.clicker.reset();

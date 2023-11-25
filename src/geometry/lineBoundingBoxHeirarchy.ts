@@ -113,7 +113,7 @@ class LineBoundingBoxHeirarchyNode {
       // time, dist
       let closestIntersection: Intersection | null = null;
       for (const line of this.lines!) {
-        let intersection: Intersection | null = ray.almostIntersectLine(this.geometry.getID(), line,
+        let intersection: Intersection | null = ray.almostIntersectLine(this.geometry, line,
           this.verts[this.indices[line * 2]],
           this.verts[this.indices[line * 2 + 1]],
           pixels);

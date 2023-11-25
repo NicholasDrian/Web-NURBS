@@ -34,13 +34,12 @@ export class Scale1Command extends Command {
     this.clicker = new Clicker();
     this.objectsToScale = new Map<Geometry, Mat4>;
 
-    const selection: Set<ObjectID> = INSTANCE.getSelector().getSelection();
+    const selection: Set<Geometry> = INSTANCE.getSelector().getSelection();
     if (selection.size === 0) {
       this.done();
       return;
     }
-    for (const id of selection) {
-      const geo: Geometry = INSTANCE.getScene().getGeometry(id);
+    for (const geo of selection) {
       this.objectsToScale.set(
         geo, geo.getModel()
       )

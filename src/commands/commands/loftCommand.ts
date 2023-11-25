@@ -19,7 +19,7 @@ export class LoftCommand extends Command {
   private degree: number;
   private clicker: Clicker;
   private mode: LoftCommandMode;
-  private curves: ObjectID[];
+  private curves: Geometry[];
 
   constructor() {
     super();
@@ -42,16 +42,14 @@ export class LoftCommand extends Command {
         }
         if (input == "") {
           const curves: Curve[] = [];
-          for (let id of this.curves) {
-            var geometry: Geometry = INSTANCE.getScene().getGeometry(id);
-            while (geometry.getTypeName() != "Curve" && geometry.getParent()) {
-              geometry = geometry.getParent()!;
+          for (let curve of this.curves) {
+            while (curve.getTypeName() != "Curve" && curve.getParent()) {
+              curve = curve.getParent()!;
             }
-            if (geometry.getTypeName() == "Curve") {
-              curves.push(<Curve>geometry);
+            if (curve.getTypeName() == "Curve") {
+              curves.push(<Curve>curve);
             }
           }
-          console.log(curves);
           if (curves.length < 2) this.done();
           this.degree = Math.min(this.degree, curves.length - 1);
           const surface: Surface = loft(curves, this.degree);
@@ -73,8 +71,8 @@ export class LoftCommand extends Command {
   }
 
   handleClickResult(intersection: Intersection): void {
-    this.curves.push(intersection.objectID);
-    INSTANCE.getScene().getGeometry(intersection.objectID).select();
+    this.curves.push(intersection.geometry!);
+    intersection.geometry!.select();
     this.clicker.reset();
   }
 
@@ -101,8 +99,8 @@ export class LoftCommand extends Command {
 
   private done(): void {
     this.clicker.destroy();
-    for (const id of this.curves) {
-      INSTANCE.getScene().getGeometry(id).unSelect();
+    for (const curve of this.curves) {
+      curve.unSelect();
     }
     this.finished = true;
   }

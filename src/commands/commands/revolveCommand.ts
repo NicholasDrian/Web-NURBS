@@ -79,7 +79,7 @@ export class RevolveCommand extends Command {
   public override handleClickResult(intersection: Intersection): void {
     switch (this.mode) {
       case RevolveCommandMode.SelectCurves:
-        var geometry: Geometry = INSTANCE.getScene().getGeometry(intersection.objectID);
+        let geometry = intersection.geometry!;
         while (geometry.getTypeName() != "Curve" && geometry.getParent()) {
           geometry = geometry.getParent()!;
         }

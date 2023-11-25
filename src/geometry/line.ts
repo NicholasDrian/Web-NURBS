@@ -12,7 +12,7 @@ import { Ray } from "./ray";
 
 export class Line extends Geometry {
 
-  private renderLines!: RenderID;
+  private renderLines!: RenderLines | null;
 
   constructor(
     parent: Geometry | null,
@@ -22,7 +22,7 @@ export class Line extends Geometry {
     material: MaterialName | null = null
   ) {
     super(parent, model, material);
-    this.renderLines = 0;
+    this.renderLines = null;
     this.updateRenderLines();
   }
 
@@ -44,7 +44,7 @@ export class Line extends Geometry {
   public intersect(ray: Ray): Intersection | null {
     if (this.isHidden()) return null;
     const objectSpaceRay: Ray = Ray.transform(ray, mat4.inverse(this.getModelRecursive()));
-    return objectSpaceRay.almostIntersectLine(this.getID(), this.getID(), this.start, this.end, 10);
+    return objectSpaceRay.almostIntersectLine(this, 0, this.start, this.end, 10);
   }
 
   public getBoundingBox(): BoundingBox {
@@ -55,15 +55,14 @@ export class Line extends Geometry {
   }
 
   private updateRenderLines(): void {
-    if (this.renderLines) INSTANCE.getScene().removeLines(this.renderLines);
-    const renderLinesObj: RenderLines = new RenderLines(
+    if (this.renderLines !== null) INSTANCE.getScene().removeLines(this.renderLines);
+    this.renderLines = new RenderLines(
       this,
       new Float32Array([...this.start, 1.0, ...this.end, 1.0]),
       new Int32Array([0, 1]),
       [false]
     );
-    this.renderLines = renderLinesObj.getRenderID()
-    INSTANCE.getScene().addRenderLines(renderLinesObj);
+    INSTANCE.getScene().addRenderLines(this.renderLines);
   }
 
   public override getTypeName(): string {
@@ -85,7 +84,7 @@ export class Line extends Geometry {
   }
 
   public override delete(): void {
-    INSTANCE.getScene().removeLines(this.renderLines);
+    INSTANCE.getScene().removeLines(this.renderLines!);
     INSTANCE.getScene().removeGeometry(this);
   }
 

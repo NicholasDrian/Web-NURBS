@@ -1,5 +1,5 @@
 import { mat4, Mat4, vec3, Vec3 } from "wgpu-matrix";
-import { ObjectID } from "../scene/scene";
+import { Geometry } from "./geometry";
 
 export class Intersection {
 
@@ -7,7 +7,7 @@ export class Intersection {
   constructor(
     public time: number,
     public description: string,
-    public objectID: ObjectID,
+    public geometry: Geometry | null,
     public objectSubID: number,
     public point: Vec3,
     public dist: number,

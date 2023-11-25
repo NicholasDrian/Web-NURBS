@@ -10,7 +10,6 @@ import { CONSTANT_SCREEN_SIZE_BIT, HOVER_BIT, SELECTED_BIT } from "./flags";
 
 export abstract class Renderable {
 
-  protected renderID: number;
   protected flags: Int32Array;
   protected objectIDBuffer: GPUBuffer;
   protected flagsBuffer: GPUBuffer;
@@ -22,9 +21,6 @@ export abstract class Renderable {
     protected parent: Geometry,
     subSelection: boolean[],
   ) {
-
-    this.renderID = INSTANCE.getScene().generateNewRenderID();
-
 
     //model
     this.modelBuffer = INSTANCE.getRenderer().getDevice().createBuffer({
@@ -40,7 +36,7 @@ export abstract class Renderable {
       size: 4,
       usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
     });
-    const objectIDArray: Int32Array = new Int32Array([this.parent.getID()])
+    const objectIDArray: Int32Array = new Int32Array([this.parent.getID()]);
     INSTANCE.getRenderer().getDevice().queue.writeBuffer(this.objectIDBuffer, 0, objectIDArray);
 
 
@@ -121,10 +117,6 @@ export abstract class Renderable {
         }
       ]
     });
-  }
-
-  public getRenderID(): number {
-    return this.renderID;
   }
 
   public getParent(): Geometry {

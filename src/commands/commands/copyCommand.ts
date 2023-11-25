@@ -27,16 +27,13 @@ export class CopyCommand extends Command {
     this.clicker = new Clicker();
     this.objectToCopy = new Map<Geometry, Geometry>;
 
-    const selection: Set<ObjectID> = INSTANCE.getSelector().getSelection();
+    const selection: Set<Geometry> = INSTANCE.getSelector().getSelection();
     if (selection.size === 0) {
       this.done();
       return;
     }
-    for (const id of selection) {
-      this.objectToCopy.set(
-        INSTANCE.getScene().getGeometry(id),
-        INSTANCE.getScene().getGeometry(id).clone()
-      );
+    for (const geometry of selection) {
+      this.objectToCopy.set(geometry, geometry.clone());
     }
 
   }

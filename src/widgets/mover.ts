@@ -593,13 +593,12 @@ export class Mover {
   }
 
   public updatedSelection(): void {
-    const selection: Set<ObjectID> = INSTANCE.getSelector().getSelection();
+    const selection: Set<Geometry> = INSTANCE.getSelector().getSelection();
     if (selection.size === 0) {
       this.surfaces.hide();
     } else {
       const selectionBB: BoundingBox = new BoundingBox();
-      for (const id of selection) {
-        const geo: Geometry = INSTANCE.getScene().getGeometry(id);
+      for (const geo of selection) {
         selectionBB.addBoundingBox(geo.getBoundingBox());
       }
       this.originalModel = mat4.translate(mat4.identity(), selectionBB.getCenter());

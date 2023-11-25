@@ -48,14 +48,14 @@ export class PollarArrayCommand extends Command {
     this.arrayedGeometry = [];
     this.mode = PollarArrayCommandMode.EnterCount;
 
-    const selected: Set<ObjectID> = INSTANCE.getSelector().getSelection();
+    const selected: Set<Geometry> = INSTANCE.getSelector().getSelection();
     if (selected.size === 0) {
       this.done();
       return;
     }
 
-    for (const id of selected) {
-      this.geometry.push(INSTANCE.getScene().getGeometry(id));
+    for (const geo of selected) {
+      this.geometry.push(geo);
     }
 
   }

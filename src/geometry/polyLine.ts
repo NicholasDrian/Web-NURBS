@@ -14,7 +14,7 @@ import { Ray } from "./ray";
 
 export class PolyLine extends Geometry {
 
-  private renderLines!: RenderID;
+  private renderLines!: RenderLines | null;
   private boundingBoxHeirarchy!: LineBoundingBoxHeirarchy;
   private subSelectedSegments!: boolean[];
 
@@ -25,14 +25,14 @@ export class PolyLine extends Geometry {
     material: MaterialName | null = null
   ) {
     super(parent, model, material);
-    this.renderLines = 0;
+    this.renderLines = null;
     this.subSelectedSegments = [];
     this.update();
   }
 
   public addToSubSelection(subID: number): void {
     this.subSelectedSegments[subID] = true;
-
+    // TODO: update gpu buffer
   }
   public removeFromSubSelection(subID: number): void {
     this.subSelectedSegments[subID] = false;
@@ -88,7 +88,7 @@ export class PolyLine extends Geometry {
   }
 
   public override delete(): void {
-    INSTANCE.getScene().removeLines(this.renderLines);
+    INSTANCE.getScene().removeLines(this.renderLines!);
     INSTANCE.getScene().removeGeometry(this);
   }
 
@@ -107,15 +107,14 @@ export class PolyLine extends Geometry {
       this.subSelectedSegments.push(false);
     }
 
-    if (this.renderLines) INSTANCE.getScene().removeLines(this.renderLines);
-    const renderLinesObj = new RenderLines(
+    if (this.renderLines !== null) INSTANCE.getScene().removeLines(this.renderLines);
+    this.renderLines = new RenderLines(
       this,
       new Float32Array(verts),
       new Int32Array(indices),
       this.subSelectedSegments
     )
-    this.renderLines = renderLinesObj.getRenderID();
-    INSTANCE.getScene().addRenderLines(renderLinesObj);
+    INSTANCE.getScene().addRenderLines(this.renderLines);
 
     this.boundingBoxHeirarchy = new LineBoundingBoxHeirarchy(this, this.points, indices);
   }

@@ -13,7 +13,7 @@ import { Ray } from "./ray";
 
 export class Lines extends Geometry {
 
-  private renderLines: RenderID;
+  private renderLines: RenderLines | null;
   private boundingBox!: BoundingBox;
   private boundingBoxHeirarchy!: LineBoundingBoxHeirarchy;
   private subSelectedSegments!: boolean[];
@@ -26,7 +26,7 @@ export class Lines extends Geometry {
     material: MaterialName | null = null
   ) {
     super(parent, model, material);
-    this.renderLines = 0;
+    this.renderLines = null;
     this.update();
   }
 
@@ -67,12 +67,13 @@ export class Lines extends Geometry {
   }
 
   public override delete(): void {
-    INSTANCE.getScene().removeLines(this.renderLines);
+    INSTANCE.getScene().removeLines(this.renderLines!);
     INSTANCE.getScene().removeGeometry(this);
   }
 
   private update(): void {
-    if (this.renderLines) INSTANCE.getScene().removeLines(this.renderLines);
+    if (this.renderLines !== null) INSTANCE.getScene().removeLines(this.renderLines);
+
     const verts: number[] = [];
     for (let i = 0; i < this.points.length; i++) {
       verts.push(...this.points[i], 1.0);
@@ -83,15 +84,14 @@ export class Lines extends Geometry {
       this.subSelectedSegments.push(false);
     }
 
-    const renderLinesObj: RenderLines = new RenderLines(
+    this.renderLines = new RenderLines(
       this,
       new Float32Array(verts),
       new Int32Array(this.indices),
       this.subSelectedSegments
     );
 
-    INSTANCE.getScene().addRenderLines(renderLinesObj);
-    this.renderLines = renderLinesObj.getRenderID();
+    INSTANCE.getScene().addRenderLines(this.renderLines);
     this.updateBoundingBox();
     this.boundingBoxHeirarchy = new LineBoundingBoxHeirarchy(this, this.points, this.indices);
   }
