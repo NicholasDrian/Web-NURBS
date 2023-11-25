@@ -73,22 +73,12 @@ export class Lines extends Geometry {
   private update(): void {
     if (this.renderLines !== null) INSTANCE.getScene().removeLines(this.renderLines);
 
-    const verts: number[] = [];
-    for (let i = 0; i < this.points.length; i++) {
-      verts.push(...this.points[i], 1.0);
-    }
-
     this.subSelectedSegments = [];
     for (let i = 0; i < this.indices.length / 2; i++) {
       this.subSelectedSegments.push(false);
     }
 
-    this.renderLines = new RenderLines(
-      this,
-      new Float32Array(verts),
-      new Int32Array(this.indices),
-      this.subSelectedSegments
-    );
+    this.renderLines = new RenderLines(this, this.points, this.indices, this.subSelectedSegments);
 
     INSTANCE.getScene().addRenderLines(this.renderLines);
     this.updateBoundingBox();

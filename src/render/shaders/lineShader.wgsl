@@ -1,6 +1,7 @@
 
 struct VertexOutput {
   @builtin(position) position : vec4<f32>,
+  @location(0) @interpolate(linear) selectedness: f32,
 }
 
 // local uniforms;
@@ -8,6 +9,7 @@ struct VertexOutput {
 @group(0) @binding(1) var<uniform> color : vec4<f32>;
 @group(0) @binding(2) var<uniform> flags: i32;
 @group(0) @binding(3) var<uniform> id: i32;
+@group(0) @binding(4) var<storage, read> subSelection: array<u32>;
 
 // global uniforms:
 @group(1) @binding(0) var<uniform> cameraPos: vec3<f32>;
@@ -20,6 +22,8 @@ const HOVER_BIT: i32 = 1 << 1;
 const SELECTED_BIT: i32 = 1 << 2;
 
 const STRIPE_WIDTH: f32 = 10.0;
+
+const SELECTED_COLOR: vec4<f32> = vec4<f32>(1,1,0,1);
 
 fn toWorldSpace(p: vec4<f32>) -> vec4<f32> {
   return model * p.xzyw;
@@ -36,10 +40,11 @@ fn applySelectionTransform(p: vec4<f32>) -> vec4<f32> {
 @vertex
 fn vertexMain(
     @location(0) objectSpacePosition : vec4<f32>,
+    @builtin(vertex_index) index: u32,
     ) -> VertexOutput
 {
-  var worldSpacePosition = applySelectionTransform(toWorldSpace(objectSpacePosition));
 
+  var worldSpacePosition = applySelectionTransform(toWorldSpace(objectSpacePosition));
   if ((flags & CONSTANT_SCREEN_SIZE_BIT) != 0) {
     var dist: f32 = distance(worldSpacePosition.xyz, cameraPos.xzy);
     // TODO: dist should actually be dist in forward direction
@@ -47,8 +52,13 @@ fn vertexMain(
     worldSpacePosition = applySelectionTransform(toWorldSpace(scaledObjectSpacePosition));
   } 
 
+  var selectedness: f32 = 0;
+  if ((flags & SELECTED_BIT) == SELECTED_BIT) {selectedness = 1;}
+  if ((subSelection[index / 32] & (1u << (index % 32))) > 0) {selectedness = 1;}
+
   var output: VertexOutput;
   output.position = cameraViewProj * worldSpacePosition;
+  output.selectedness = selectedness;
   return output;
 }
 
@@ -57,12 +67,9 @@ struct FragOutputs {
   @location(0) color: vec4f,
 }
 
-struct FragInputs {
-  @builtin(position) fragCoords: vec4<f32>,
-}
 
 @fragment
-fn fragmentMain(inputs: FragInputs) -> FragOutputs {
+fn fragmentMain(inputs: VertexOutput) -> FragOutputs {
 
   // set up frag color
   var fragColor: vec4<f32> = color - vec4<f32>(0.5, 0.5, 0.5, 0);
@@ -70,13 +77,13 @@ fn fragmentMain(inputs: FragInputs) -> FragOutputs {
   if (fragColor.y < 0){ fragColor.y += 1;}
   if (fragColor.z < 0){ fragColor.z += 1;}
 
-  var scaledFragCoords: vec2<f32> = inputs.fragCoords.xy / STRIPE_WIDTH;
-  if ((flags & SELECTED_BIT) == SELECTED_BIT) {
-    
+
+  var scaledFragCoords: vec2<f32> = inputs.position.xy / STRIPE_WIDTH;
+  if (inputs.selectedness > 0) {
       var evenX: bool = modf(scaledFragCoords.x).fract < 0.5;
       var evenY: bool = modf(scaledFragCoords.y).fract < 0.5;
       if ((evenX && !evenY) || (evenY && !evenX)) {
-        fragColor = vec4<f32>(1.0, 1.0, 0.0, 1.0);
+        fragColor = (1 - inputs.selectedness) * fragColor + (inputs.selectedness) * SELECTED_COLOR;
       }
    
   }
@@ -92,7 +99,7 @@ fn fragmentMain(inputs: FragInputs) -> FragOutputs {
 
   var output: FragOutputs;
   output.color = fragColor;
-  output.depth = inputs.fragCoords.z * 0.99999999;
+  output.depth = inputs.position.z * 0.99999999;
   return output;
 }
 

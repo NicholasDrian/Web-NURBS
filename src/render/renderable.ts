@@ -64,14 +64,14 @@ export abstract class Renderable {
     const subSelectionList: number[] = [];
     for (let i = 0; i < subSelection.length; i++) {
       if (i % 32 === 0) { subSelectionList.push(0); }
-      if (subSelection[i]) { subSelectionList[i / 32] |= 1 << (i % 32); }
+      if (subSelection[i]) { subSelectionList[Math.floor(i / 32)] |= 1 << (i % 32); }
     }
-    const subSelectionArray: Int32Array = new Int32Array(subSelectionList);
+    const subSelectionArray: Uint32Array = new Uint32Array(subSelectionList);
     if (this.subSelectionBuffer === null) {
       this.subSelectionBuffer = INSTANCE.getRenderer().getDevice().createBuffer({
         label: "sub selection buffer",
         size: subSelectionArray.byteLength,
-        usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+        usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST,
       });
     }
     INSTANCE.getRenderer().getDevice().queue.writeBuffer(this.subSelectionBuffer, 0, subSelectionArray);

@@ -185,7 +185,7 @@ export class Renderer {
         }, {
           binding: 4, // subSelectionBuffer
           visibility: GPUShaderStage.VERTEX,
-          buffer: {},
+          buffer: { type: "read-only-storage" },
         }
       ]
     });

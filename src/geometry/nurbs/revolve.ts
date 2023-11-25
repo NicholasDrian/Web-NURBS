@@ -4,7 +4,6 @@ import { Curve } from "./curve";
 import { Surface } from "./surface";
 
 export const revolve = function(axis: Ray, curve: Curve, theta: number): Surface {
-
   // TODO: think about model
 
   if (theta < 0 || theta > Math.PI * 2) throw new Error("Invalid params");

@@ -1,3 +1,4 @@
+import { Vec3 } from "wgpu-matrix";
 import { INSTANCE } from "../cad"
 import { Geometry } from "../geometry/geometry";
 import { Renderable } from "./renderable";
@@ -22,30 +23,35 @@ export class RenderLines extends Renderable {
 
   constructor(
     parent: Geometry,
-    vertices: Float32Array,
-    indices: Int32Array,
+    vertices: Vec3[],
+    indices: number[],
     subSelection: boolean[]
   ) {
 
     super(parent, subSelection);
 
     // vertex
+    const vertexList: number[] = []
+    for (const vert of vertices) {
+      vertexList.push(...vert, 1);
+    }
+    const vertexArray: Float32Array = new Float32Array(vertexList);
     this.vertexBuffer = INSTANCE.getRenderer().getDevice().createBuffer({
       label: "vertex buffer",
-      size: vertices.byteLength,
+      size: vertexArray.byteLength,
       usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST,
     });
-    INSTANCE.getRenderer().getDevice().queue.writeBuffer(this.vertexBuffer, 0, vertices);
+    INSTANCE.getRenderer().getDevice().queue.writeBuffer(this.vertexBuffer, 0, vertexArray);
 
     // index
+    const indexArray: Uint32Array = new Uint32Array(indices);
     this.indexBuffer = INSTANCE.getRenderer().getDevice().createBuffer({
       label: "index buffer",
-      size: indices.byteLength,
+      size: indexArray.byteLength,
       usage: GPUBufferUsage.INDEX | GPUBufferUsage.COPY_DST,
     });
-    INSTANCE.getRenderer().getDevice().queue.writeBuffer(this.indexBuffer, 0, indices);
+    INSTANCE.getRenderer().getDevice().queue.writeBuffer(this.indexBuffer, 0, indexArray);
     this.indexCount = indices.length;
-
 
   }
 

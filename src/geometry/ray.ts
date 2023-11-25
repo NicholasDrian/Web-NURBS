@@ -155,25 +155,7 @@ export class Ray {
     );
   }
 
-  intersect(other: any): Vec3 {
-
-    const p: Vec3 = vec3.add(this.origin, this.direction);
-    const v13: Vec3 = vec3.sub(other.origin, this.origin);
-    const v43: Vec3 = vec3.sub(p, this.origin);
-    const v21: Vec3 = vec3.sub(vec3.add(other.origin, other.direction), other.origin);
-
-    const d1343: number = vec3.dot(v13, v43);
-    const d4321: number = vec3.dot(v43, v21);
-    const d1321: number = vec3.dot(v13, v21);
-    const d4343: number = vec3.dot(v43, v43);
-    const d2121: number = vec3.dot(v21, v21);
-
-    var mua: number = (d1343 * d4321 - d1321 * d4343) / (d2121 * d4343 - d4321 * d4321);
-
-    return vec3.add(other.origin, vec3.scale(v21, mua));
-  }
-
-  public almostIntersectLine(geo: Geometry, subID: number, start: Vec3, end: Vec3, pixels: number, bounded: boolean = true): Intersection | null {
+  public almostIntersectLine(geo: Geometry, subID: number, start: Vec3, end: Vec3, pixels: number): Intersection | null {
 
     const p: Vec3 = vec3.add(this.origin, this.direction);
 
@@ -203,6 +185,24 @@ export class Ray {
 
     if (closest < sizeOfPixel * pixels) {
       return new Intersection(mub, "line", geo, subID, pLine, closest, closest * sizeOfPixel);
+    } else {
+      return null;
+    }
+
+  }
+
+  almostIntersectPoint(geometry: Geometry, subID: number, point: Vec3, pixels: number,): Intersection | null {
+
+    const toPoint: Vec3 = vec3.sub(point, this.origin);
+    const time: number = vec3.dot(toPoint, this.direction);
+    if (time <= 0) return null;
+
+    const pointOnRay: Vec3 = this.at(time);
+    const dist: number = vec3.distance(pointOnRay, point);
+    const sizeOfPixel: number = INSTANCE.getScene().getCamera().pixelSizeAtDist(time);
+
+    if (dist < sizeOfPixel * pixels) {
+      return new Intersection(time, "point", geometry, subID, point, dist, dist * sizeOfPixel)
     } else {
       return null;
     }
@@ -243,6 +243,7 @@ export class Ray {
 
     var mua: number = (d1343 * d4321 - d1321 * d4343) / (d2121 * d4343 - d4321 * d4321);
     const mub: number = (d1343 + mua * d4321) / d4343;
+
     return vec3.add(this.origin, vec3.scale(v43, mub));
   }
 

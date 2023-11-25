@@ -1,8 +1,6 @@
 import { vec3, Vec3, vec4, Vec4 } from "wgpu-matrix";
 import { Ray } from "../ray";
 import { Curve } from "./curve";
-import { genericKnotVector } from "./utils";
-
 
 
 export const createArc = function(
@@ -57,7 +55,7 @@ export const createArc = function(
 
     const ray0: Ray = new Ray(point0, tangent0);
     const ray1: Ray = new Ray(point2, tangent2);
-    const point1: Vec3 = ray0.intersect(ray1);
+    const point1: Vec3 = ray0.closestPointToLine(ray1.getOrigin(), vec3.add(ray1.getDirection(), ray1.getOrigin()));
 
     weightedControls.push(
       vec4.create(...vec3.scale(point1, weight), weight),

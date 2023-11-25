@@ -16,6 +16,7 @@ export class PolyLine extends Geometry {
   private renderLines!: RenderLines | null;
   private boundingBoxHeirarchy!: LineBoundingBoxHeirarchy;
   private subSelectedSegments!: boolean[];
+  private subSelectedVerts!: boolean[];
 
   constructor(
     parent: Geometry | null,
@@ -25,18 +26,25 @@ export class PolyLine extends Geometry {
   ) {
     super(parent, model, material);
     this.renderLines = null;
+    this.subSelectedVerts = [];
     this.subSelectedSegments = [];
     this.update();
   }
 
   public addToSubSelection(subID: number): void {
     this.subSelectedSegments[subID] = true;
-    this.renderLines!.updateSubSelection(this.subSelectedSegments);
+    this.subSelectedVerts[subID] = true;
+    this.subSelectedVerts[subID + 1] = true;
+    this.renderLines!.updateSubSelection(this.subSelectedVerts);
   }
+
   public removeFromSubSelection(subID: number): void {
     this.subSelectedSegments[subID] = false;
-    this.renderLines!.updateSubSelection(this.subSelectedSegments);
+    this.subSelectedVerts[subID] = (subID > 0) && this.subSelectedSegments[subID - 1];
+    this.subSelectedVerts[subID + 1] = (subID < this.subSelectedSegments.length - 1) && this.subSelectedSegments[subID + 1];
+    this.renderLines!.updateSubSelection(this.subSelectedVerts);
   }
+
   public isSubSelected(subID: number): boolean {
     return this.subSelectedSegments[subID];
   }
@@ -94,24 +102,23 @@ export class PolyLine extends Geometry {
 
   private update(): void {
 
-    const verts: number[] = [];
     const indices: number[] = [];
-    for (let i = 0; i < this.points.length; i++) {
-      verts.push(...this.points[i], 1.0);
+    for (let i = 0; i < this.points.length - 1; i++) {
       indices.push(i, i + 1);
     }
-    indices.pop(); indices.pop();
 
     this.subSelectedSegments = [];
-    for (let i = 0; i < this.points.length - 1; i++) {
+    for (let i = 0; i <= this.points.length - 1; i++) {
       this.subSelectedSegments.push(false);
+      this.subSelectedVerts.push(false);
     }
+    this.subSelectedSegments.pop();
 
     if (this.renderLines !== null) INSTANCE.getScene().removeLines(this.renderLines);
     this.renderLines = new RenderLines(
       this,
-      new Float32Array(verts),
-      new Int32Array(indices),
+      this.points,
+      indices,
       this.subSelectedSegments
     )
     INSTANCE.getScene().addRenderLines(this.renderLines);

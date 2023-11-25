@@ -3,6 +3,7 @@ import { INSTANCE } from "../../cad";
 import { MaterialName } from "../../materials/material";
 import { cloneVec4List } from "../../utils/clone";
 import { BoundingBox } from "../boundingBox";
+import { ControlCage1D } from "../controlCage1D";
 import { Frustum } from "../frustum";
 import { Geometry } from "../geometry";
 import { Intersection } from "../intersection";
@@ -14,9 +15,8 @@ import { basisFuncs, calcBezierAlphas, genericKnotVector, span } from "./utils";
 export class Curve extends Geometry {
   public static readonly SAMPLES_PER_EDGE = 20;
 
-  private controlCage: PolyLine | null;
+  private controlCage: ControlCage1D | null;
   private polyline: PolyLine | null;
-  private controlPoints: Points | null;
 
   constructor(
     parent: Geometry | null,
@@ -31,7 +31,6 @@ export class Curve extends Geometry {
     if (this.knots.length == 0) {
       this.knots = genericKnotVector(this.weightedControlPoints.length, this.degree);
     }
-    this.controlPoints = null;
     this.controlCage = null;
     this.polyline = null;
     this.updateSamples();
@@ -61,7 +60,6 @@ export class Curve extends Geometry {
   public delete(): void {
     this.controlCage!.delete();
     this.polyline!.delete();
-    this.controlPoints!.delete();
     INSTANCE.getScene().removeGeometry(this);
   }
 
@@ -79,10 +77,8 @@ export class Curve extends Geometry {
 
   public intersect(ray: Ray): Intersection | null {
     if (this.isHidden()) return null;
-
-    return this.controlPoints!.intersect(ray) ||
-      this.polyline!.intersect(ray) ||
-      this.controlCage!.intersect(ray);
+    return this.controlCage!.intersect(ray) ||
+      this.polyline!.intersect(ray);
   }
 
   public getBoundingBox(): BoundingBox {
@@ -95,7 +91,6 @@ export class Curve extends Geometry {
 
   public destroy(): void {
     this.controlCage!.delete();
-    this.controlPoints!.delete();
     this.polyline!.delete();
   }
 
@@ -132,7 +127,6 @@ export class Curve extends Geometry {
   private updateSamples(): void {
     if (this.controlCage) this.controlCage.delete();
     if (this.polyline) this.polyline.delete();
-    if (this.controlPoints) this.controlPoints.delete();
 
     const samples: Vec3[] = [];
     const sampleCount: number = Curve.SAMPLES_PER_EDGE * (this.weightedControlPoints.length - 1);
@@ -145,9 +139,7 @@ export class Curve extends Geometry {
     })
 
     this.polyline = new PolyLine(this, samples,);
-    this.controlCage = new PolyLine(this, controlPointArray);
-    this.controlPoints = new Points(this, controlPointArray);
-    this.controlPoints.setConstantScreenSize(true);
+    this.controlCage = new ControlCage1D(this, controlPointArray);
 
   }
 

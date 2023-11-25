@@ -65,6 +65,7 @@ export class Mover {
     this.element.hidden = true;
     document.body.appendChild(this.element);
 
+
     const origin: Vec3 = vec3.create(1, 1, 0);
     const xAxis: Vec3 = vec3.create(1, 0, 0);
     const yAxis: Vec3 = vec3.create(0, 1, 0);
@@ -76,6 +77,7 @@ export class Mover {
     this.ySpinner.setMaterial("green");
     this.xSpinner = loft([spinnerInner, spinnerOuter], 1);
     this.xSpinner.setMaterial("red");
+
 
     this.xyzScaler = new Mesh(null,
       [vec3.create(0, 0, 0), vec3.create(1, 0, 0), vec3.create(1, 1, 0), vec3.create(0, 1, 0), vec3.create(0, 1, 1), vec3.create(0, 0, 1), vec3.create(1, 0, 1)],

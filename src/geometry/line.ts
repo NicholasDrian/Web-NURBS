@@ -55,12 +55,7 @@ export class Line extends Geometry {
 
   private updateRenderLines(): void {
     if (this.renderLines !== null) INSTANCE.getScene().removeLines(this.renderLines);
-    this.renderLines = new RenderLines(
-      this,
-      new Float32Array([...this.start, 1.0, ...this.end, 1.0]),
-      new Int32Array([0, 1]),
-      [false]
-    );
+    this.renderLines = new RenderLines(this, [this.start, this.end], [0, 1], [false]);
     INSTANCE.getScene().addRenderLines(this.renderLines);
   }
 

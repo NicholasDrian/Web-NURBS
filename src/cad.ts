@@ -69,9 +69,9 @@ class CAD {
     this.mover = new Mover();
 
     //addTestSceneComplex();
-    addTestSceneRevolve();
+    // addTestSceneRevolve();
     // addTestSceneLine();
-    // addTestSceneCurve();
+    addTestSceneCurve();
     //    addTestSceneArc();
 
   }

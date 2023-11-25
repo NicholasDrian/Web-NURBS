@@ -50,8 +50,8 @@ class LineBoundingBoxHeirarchyNode {
       // non leaf
       this.lines = null;
 
-      var child1Lines: number[] = [];
-      var child2Lines: number[] = [];
+      const child1Lines: number[] = [];
+      const child2Lines: number[] = [];
 
       for (const line of lines) {
         const center: Vec3 = vec3.scale(

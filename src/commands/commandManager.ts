@@ -120,7 +120,6 @@ export class CommandManager {
 
     if (this.currentCommand?.isFinished()) {
       this.currentCommand = null;
-
     }
 
   }
