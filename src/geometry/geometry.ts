@@ -1,7 +1,6 @@
 import { mat4, Mat4, Vec4 } from "wgpu-matrix";
 import { INSTANCE } from "../cad";
 import { Material, MaterialName } from "../materials/material";
-import { ObjectID } from "../scene/scene";
 import { BoundingBox } from "./boundingBox";
 import { Frustum } from "./frustum";
 import { Intersection } from "./intersection";

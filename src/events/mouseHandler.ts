@@ -1,6 +1,4 @@
 import { INSTANCE } from "../cad";
-import { Renderer } from "../render/renderer";
-import { ObjectID } from "../scene/scene";
 
 
 
@@ -34,7 +32,7 @@ export class MouseHandler {
 
       if (!INSTANCE.getCommandManager().hasActiveCommand()) {
         // forward clicked id to mover incase mover was clicked
-        INSTANCE.getRenderer().getIdAtPixel(event.clientX, event.clientY).then((id: ObjectID) => {
+        INSTANCE.getRenderer().getIdAtPixel(event.clientX, event.clientY).then((id: number) => {
           if (id === 0) {
             this.drag = new Drag(event.clientX, event.clientY);
             this.mouseDown = true;

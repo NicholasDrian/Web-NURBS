@@ -3,7 +3,6 @@ import { INSTANCE } from "../../cad";
 import { Geometry } from "../../geometry/geometry";
 import { Intersection } from "../../geometry/intersection";
 import { Plane } from "../../geometry/plane";
-import { ObjectID } from "../../scene/scene";
 import { getScale1Transform } from "../../utils/math";
 import { Clicker } from "../clicker";
 import { Command } from "../command";

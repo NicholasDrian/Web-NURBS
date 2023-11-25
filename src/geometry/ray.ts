@@ -1,6 +1,6 @@
 import { Mat4, vec3, Vec3, vec4, Vec4 } from "wgpu-matrix";
 import { INSTANCE } from "../cad";
-import { ObjectID, Scene } from "../scene/scene";
+import { Scene } from "../scene/scene";
 import { BoundingBox } from "./boundingBox";
 import { Geometry } from "./geometry";
 import { Intersection } from "./intersection";

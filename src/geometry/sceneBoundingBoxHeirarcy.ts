@@ -1,6 +1,4 @@
-import { Vec3 } from "wgpu-matrix";
 import { INSTANCE } from "../cad";
-import { ObjectID } from "../scene/scene";
 import { BoundingBox } from "./boundingBox";
 import { Frustum } from "./frustum";
 import { Geometry } from "./geometry";

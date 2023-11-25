@@ -2,7 +2,6 @@ import { mat4, Mat4, vec3, Vec3 } from "wgpu-matrix";
 import { INSTANCE } from "../cad";
 import { MaterialName } from "../materials/material";
 import { RenderLines } from "../render/renderLines";
-import { ObjectID, RenderID } from "../scene/scene";
 import { BoundingBox } from "./boundingBox";
 import { Frustum } from "./frustum";
 import { Geometry } from "./geometry";

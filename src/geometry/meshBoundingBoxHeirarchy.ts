@@ -1,10 +1,8 @@
 import { Mat4, mat4, vec3, Vec3 } from "wgpu-matrix";
-import { ObjectID } from "../scene/scene";
 import { BoundingBox } from "./boundingBox";
 import { Frustum } from "./frustum";
 import { Geometry } from "./geometry";
 import { Intersection } from "./intersection";
-import { Mesh } from "./mesh";
 import { Ray } from "./ray";
 
 enum Axis {

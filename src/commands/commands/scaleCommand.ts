@@ -2,7 +2,6 @@ import { mat4, Mat4, vec3, Vec3 } from "wgpu-matrix";
 import { INSTANCE } from "../../cad";
 import { Geometry } from "../../geometry/geometry";
 import { Intersection } from "../../geometry/intersection";
-import { ObjectID } from "../../scene/scene";
 import { Clicker } from "../clicker";
 import { Command } from "../command";
 

@@ -3,7 +3,6 @@ import { Frustum } from "../geometry/frustum";
 import { Geometry } from "../geometry/geometry";
 import { Intersection } from "../geometry/intersection";
 import { Ray } from "../geometry/ray";
-import { ObjectID } from "../scene/scene";
 
 
 

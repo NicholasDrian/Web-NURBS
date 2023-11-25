@@ -3,7 +3,6 @@ import { INSTANCE } from "../../cad";
 import { Geometry } from "../../geometry/geometry";
 import { Intersection } from "../../geometry/intersection";
 import { Ray } from "../../geometry/ray";
-import { ObjectID } from "../../scene/scene";
 import { angleBetween, getRotationTransform } from "../../utils/math";
 import { Clicker } from "../clicker";
 import { Command } from "../command";

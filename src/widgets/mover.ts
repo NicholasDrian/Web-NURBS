@@ -10,7 +10,6 @@ import { loft } from "../geometry/nurbs/loft";
 import { Surface } from "../geometry/nurbs/surface";
 import { Plane } from "../geometry/plane";
 import { Ray } from "../geometry/ray";
-import { ObjectID, RenderID } from "../scene/scene";
 import { angleBetween, swizzleYZ } from "../utils/math";
 
 export class Mover {
@@ -22,7 +21,7 @@ export class Mover {
   private originalModel: Mat4;
   private currentModel: Mat4;
   private active: boolean; // currently getting dragged
-  private componentClicked: ObjectID | null;
+  private componentClicked: number | null;
   private originalIntersectionPoint: Vec3 | null;
 
   private surfaces: Group;
@@ -481,6 +480,10 @@ export class Mover {
             case this.xyzScaler.getID():
               this.element.innerHTML = "Scale: ";
               break;
+            default:
+              this.active = false;
+              this.originalIntersectionPoint = null;
+              return;
           }
           const mousePos: [number, number] = INSTANCE.getEventManager().getMouseHandler().getMousePos();
           this.element.setAttribute("style", `
@@ -579,7 +582,7 @@ export class Mover {
     return this.active;
   }
 
-  public idClicked(id: ObjectID): void {
+  public idClicked(id: number): void {
     if (!this.active) {
       if (this.element.hidden) {
         this.active = true;

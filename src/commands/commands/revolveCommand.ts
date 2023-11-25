@@ -6,7 +6,6 @@ import { Curve } from "../../geometry/nurbs/curve";
 import { revolve } from "../../geometry/nurbs/revolve";
 import { Surface } from "../../geometry/nurbs/surface";
 import { Ray } from "../../geometry/ray";
-import { ObjectID } from "../../scene/scene";
 import { angleBetween } from "../../utils/math";
 import { Clicker } from "../clicker";
 import { Command } from "../command";

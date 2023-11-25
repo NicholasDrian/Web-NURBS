@@ -9,9 +9,6 @@ import { Geometry } from "../geometry/geometry"
 import { RenderMeshInstanced } from "../render/renterMeshInstanced"
 import { INSTANCE } from "../cad"
 
-export type RenderID = number; // for gpu objects
-export type ObjectID = number; // for cpu objects
-
 export class Scene {
 
   private camera: Camera;

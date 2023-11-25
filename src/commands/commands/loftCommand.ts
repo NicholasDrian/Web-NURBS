@@ -4,7 +4,6 @@ import { Intersection } from "../../geometry/intersection";
 import { Curve } from "../../geometry/nurbs/curve";
 import { loft } from "../../geometry/nurbs/loft";
 import { Surface } from "../../geometry/nurbs/surface";
-import { ObjectID } from "../../scene/scene";
 import { Clicker } from "../clicker";
 import { Command } from "../command";
 

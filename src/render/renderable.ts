@@ -1,7 +1,6 @@
 import { Mat4 } from "wgpu-matrix";
 import { INSTANCE } from "../cad";
 import { Geometry } from "../geometry/geometry";
-import { ObjectID } from "../scene/scene";
 import { swizzleYZ } from "../utils/math";
 import { CONSTANT_SCREEN_SIZE_BIT, HOVER_BIT, SELECTED_BIT } from "./flags";
 

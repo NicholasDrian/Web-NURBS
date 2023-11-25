@@ -5,7 +5,7 @@ import pointShader from "./shaders/pointShader.wgsl";
 import instancedTriangleShader from "./shaders/instancedTriangleShader.wgsl"
 import overlayMeshShader from "./shaders/overlayMeshShader.wgsl"
 import idShader from "./shaders/idShader.wgsl";
-import { ObjectID, Scene } from "../scene/scene"
+import { Scene } from "../scene/scene"
 import { Pipeline, PipelinePrimitive } from "./pipeline"
 import { INSTANCE } from "../cad";
 import { GlobalUniforms } from "./globalUniforms";
@@ -110,7 +110,7 @@ export class Renderer {
 
   }
 
-  public async getIdAtPixel(x: number, y: number): Promise<ObjectID> {
+  public async getIdAtPixel(x: number, y: number): Promise<number> {
 
     // window is mirrored
     x = window.innerWidth - x;
