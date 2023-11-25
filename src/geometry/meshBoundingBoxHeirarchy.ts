@@ -15,7 +15,7 @@ enum Axis {
 
 class MeshBoundingBoxHeirarchyNode {
 
-  private indices!: number[] | null;
+  private triangles!: number[] | null;
   private child1!: MeshBoundingBoxHeirarchyNode | null;
   private child2!: MeshBoundingBoxHeirarchyNode | null;
   private boundingBox!: BoundingBox;
@@ -24,93 +24,82 @@ class MeshBoundingBoxHeirarchyNode {
   constructor(
     private id: ObjectID,
     private verts: Vec3[],
-    indices: number[],
+    private indices: number[],
+    triangles: number[],
     private depth: number = 0
   ) {
-    this.setup(indices);
+    this.setup(triangles);
   }
 
-  private setup(indices: number[]): void {
+  private setup(triangles: number[]): void {
+
     this.axis = this.depth % 3;
     this.boundingBox = new BoundingBox();
+
+    /*
     for (let index of indices) {
       this.boundingBox.addVec3(this.verts[index]);
     }
-    if (indices.length / 3 <= MeshBoundingBoxHeirarchy.MAX_TRIS_PER_LEAF) {
+    */
+    for (const tri of triangles) {
+      this.boundingBox.addVec3(this.verts[this.indices[tri * 3]]);
+      this.boundingBox.addVec3(this.verts[this.indices[tri * 3 + 1]]);
+      this.boundingBox.addVec3(this.verts[this.indices[tri * 3 + 2]]);
+    }
+
+    if (triangles.length <= MeshBoundingBoxHeirarchy.MAX_TRIS_PER_LEAF) {
       // leaf
-      this.indices = indices;
+      this.triangles = triangles;
       this.child1 = null;
       this.child2 = null;
     } else {
       // non leaf
-      this.indices = null;
-      const child1Indices: number[] = [];
-      const child2Indices: number[] = [];
-      for (let i = 0; i < indices.length; i += 3) {
-        const triCenter = vec3.scale(vec3.add(
-          this.verts[indices[i]],
+      this.triangles = null;
+      const child1Tris: number[] = [];
+      const child2Tris: number[] = [];
+      for (const tri of triangles) {
+        const center: Vec3 = vec3.scale(
           vec3.add(
-            this.verts[indices[i + 1]],
-            this.verts[indices[i + 2]]
-          )
-        ), 1 / 3);
-        if (triCenter[this.axis] < this.boundingBox.getCenter()[this.axis]) {
-          child1Indices.push(indices[i], indices[i + 1], indices[i + 2]);
+            this.verts[this.indices[tri * 3]],
+            vec3.add(
+              this.verts[this.indices[tri * 3 + 1]],
+              this.verts[this.indices[tri * 3 + 2]])
+          ), 1 / 3);
+        if (center[this.axis] < this.boundingBox.getCenter()[this.axis]) {
+          child1Tris.push(tri);
         } else {
-          child2Indices.push(indices[i], indices[i + 1], indices[i + 2]);
+          child2Tris.push(tri);
         }
       }
-      this.child1 = new MeshBoundingBoxHeirarchyNode(this.id, this.verts, child1Indices, this.depth + 1);
-      this.child2 = new MeshBoundingBoxHeirarchyNode(this.id, this.verts, child2Indices, this.depth + 1);
-    }
-  }
-
-  public add(indices: [number, number, number], verts: Vec3[]): void {
-    if (this.isLeaf()) {
-      this.indices!.push(...indices);
-      if (this.indices!.length / 3 < MeshBoundingBoxHeirarchy.MAX_TRIS_PER_LEAF) {
-        this.setup(this.indices!);
-      }
-    } else {
-      const triCenterPoint = vec3.scale(vec3.add(
-        verts[indices[0]],
-        vec3.add(
-          verts[indices[1]],
-          verts[indices[2]]
-        )
-      ), 1 / 3);
-      const bbCenterPoint = this.boundingBox.getCenter();
-      if (triCenterPoint[this.axis] < bbCenterPoint[this.axis]) {
-        this.child1!.add(indices, verts);
-      } else {
-        this.child2!.add(indices, verts);
-      }
+      this.child1 = new MeshBoundingBoxHeirarchyNode(this.id, this.verts, this.indices, child1Tris, this.depth + 1);
+      this.child2 = new MeshBoundingBoxHeirarchyNode(this.id, this.verts, this.indices, child2Tris, this.depth + 1);
     }
   }
 
   public isWithinFrustum(frustum: Frustum, inclusive: boolean): boolean {
+
     if (frustum.containsBoundingBoxFully(this.boundingBox)) return true;
 
     if (!frustum.intersectsBoundingBox(this.boundingBox)) return false;
 
     if (this.isLeaf()) {
       if (inclusive) {
-        for (let i = 0; i < this.indices!.length; i += 3) {
+        for (const tri of this.triangles!) {
           if (frustum.containsTriangle(
-            this.verts[this.indices![i]],
-            this.verts[this.indices![i + 1]],
-            this.verts[this.indices![i + 2]],
+            this.verts[this.indices![tri * 3]],
+            this.verts[this.indices![tri * 3 + 1]],
+            this.verts[this.indices![tri * 3 + 2]],
             inclusive)) {
             return true;
           }
         }
         return false;
       } else {
-        for (let i = 0; i < this.indices!.length; i += 3) {
+        for (let tri of this.triangles!) {
           if (!frustum.containsTriangle(
-            this.verts[this.indices![i]],
-            this.verts[this.indices![i + 1]],
-            this.verts[this.indices![i + 2]],
+            this.verts[this.indices![tri * 3]],
+            this.verts[this.indices![tri * 3 + 1]],
+            this.verts[this.indices![tri * 3 + 2]],
             inclusive)) {
             return false;
           }
@@ -128,23 +117,20 @@ class MeshBoundingBoxHeirarchyNode {
   }
 
   public intersect(ray: Ray): Intersection | null {
-
-
     if (ray.intersectBoundingBox(this.boundingBox) === null) return null;
-
-
     if (this.isLeaf()) {
       var res: number | null = null;
       var subID: number | null = null;
-      for (let i = 0; i < this.indices!.length; i += 3) {
+
+      for (const tri of this.triangles!) {
         var t: number | null = ray.intersectTriangle(
-          this.verts[this.indices![i]],
-          this.verts[this.indices![i + 1]],
-          this.verts[this.indices![i + 2]]);
+          this.verts[this.indices![tri * 3]],
+          this.verts[this.indices![tri * 3 + 1]],
+          this.verts[this.indices![tri * 3 + 2]]);
         if (t !== null) {
           if (res === null || t < res) {
             res = t;
-            subID = i / 3;
+            subID = tri;
           }
         }
       }
@@ -160,13 +146,13 @@ class MeshBoundingBoxHeirarchyNode {
   }
 
   public isLeaf(): boolean {
-    return this.indices !== null;
+    return this.triangles !== null;
   }
 
   public print(): void {
     let str: string = "";
     for (let i = 0; i < this.depth; i++) str += "->";
-    if (this.indices) str += `${this.indices.length / 3}triangles`;
+    if (this.triangles) str += `${this.triangles.length / 3}triangles`;
     else str += "node";
     console.log(str);
     this.child1?.print();
@@ -184,14 +170,16 @@ export class MeshBoundingBoxHeirarchy {
   constructor(private mesh: Geometry, verts: Vec3[], indices: number[]) {
     // degenerates breaks the bbh
     const reducedIndices: number[] = [];
+    const triangles: number[] = [];
     for (let i = 0; i < indices.length; i += 3) {
       const d1: number = vec3.distance(verts[indices[i]], verts[indices[i + 1]]);
       const d2: number = vec3.distance(verts[indices[i + 1]], verts[indices[i + 2]]);
       const d3: number = vec3.distance(verts[indices[i + 2]], verts[indices[i]]);
       if (d1 === 0 || d2 === 0 || d3 === 0) continue;
       reducedIndices.push(indices[i], indices[i + 1], indices[i + 2]);
+      triangles.push(i / 3);
     }
-    this.root = new MeshBoundingBoxHeirarchyNode(this.mesh.getID(), verts, reducedIndices);
+    this.root = new MeshBoundingBoxHeirarchyNode(this.mesh.getID(), verts, reducedIndices, triangles);
   }
 
   public print(): void {
