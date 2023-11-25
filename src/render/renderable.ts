@@ -16,9 +16,11 @@ export abstract class Renderable {
   protected flagsBuffer: GPUBuffer;
   protected modelBuffer: GPUBuffer;
   protected bindGroup!: GPUBindGroup;
+  protected subSelectionBuffer: GPUBuffer | null;
 
   constructor(
     protected parent: Geometry,
+    subSelection: boolean[],
   ) {
 
     this.renderID = INSTANCE.getScene().generateNewRenderID();
@@ -50,12 +52,34 @@ export abstract class Renderable {
     })
     this.flags = new Int32Array([0]);
 
+
+    this.subSelectionBuffer = null;
+    this.updateSubSelection(subSelection);
+
   }
 
   public update(): void {
     this.updateFlags();
     this.updateModel();
     this.updateBindGroup();
+  }
+
+  public updateSubSelection(subSelection: boolean[]): void {
+    // sub selection
+    const subSelectionList: number[] = [];
+    for (let i = 0; i < subSelection.length; i++) {
+      if (i % 32 === 0) { subSelectionList.push(0); }
+      if (subSelection[i]) { subSelectionList[i / 32] |= 1 << (i % 32); }
+    }
+    const subSelectionArray: Int32Array = new Int32Array(subSelectionList);
+    if (this.subSelectionBuffer === null) {
+      this.subSelectionBuffer = INSTANCE.getRenderer().getDevice().createBuffer({
+        label: "sub selection buffer",
+        size: subSelectionArray.byteLength,
+        usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+      });
+    }
+    INSTANCE.getRenderer().getDevice().queue.writeBuffer(this.subSelectionBuffer, 0, subSelectionArray);
   }
 
   protected updateFlags(): void {
@@ -91,6 +115,9 @@ export abstract class Renderable {
         }, {
           binding: 3,
           resource: { buffer: this.objectIDBuffer }
+        }, {
+          binding: 4,
+          resource: { buffer: this.subSelectionBuffer! }
         }
       ]
     });

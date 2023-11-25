@@ -28,8 +28,9 @@ export class RenderMesh extends Renderable {
     parent: Geometry,
     vertices: Float32Array,
     indices: Int32Array,
+    subSelection: boolean[]
   ) {
-    super(parent);
+    super(parent, subSelection);
 
     //vertex
     this.vertexBuffer = INSTANCE.getRenderer().getDevice().createBuffer({

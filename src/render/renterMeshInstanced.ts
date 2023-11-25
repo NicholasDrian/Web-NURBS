@@ -14,9 +14,10 @@ export class RenderMeshInstanced extends RenderMesh {
     parent: Geometry,
     vertices: Float32Array,
     indices: Int32Array,
-    transforms: Mat4[]
+    transforms: Mat4[],
+    subSelection: boolean[]
   ) {
-    super(parent, vertices, indices);
+    super(parent, vertices, indices, subSelection);
 
     this.instanceCount = transforms.length;
 

@@ -32,7 +32,7 @@ export class PolyLine extends Geometry {
 
   public addToSubSelection(subID: number): void {
     this.subSelectedSegments[subID] = true;
-    console.log(this.subSelectedSegments);
+
   }
   public removeFromSubSelection(subID: number): void {
     this.subSelectedSegments[subID] = false;

@@ -104,7 +104,6 @@ export class Selector {
     }
     if (geometryAtPixel.length === 1) {
       if (sub) {
-        console.log("here");
         this.doneTogglingSelectionAtPixel(geometryAtPixel[0][0], geometryAtPixel[0][1]);
       } else {
         this.doneTogglingSelectionAtPixel(geometryAtPixel[0][0]);

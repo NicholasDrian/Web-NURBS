@@ -17,6 +17,7 @@ export class Mesh extends Geometry {
 
   private renderMesh: RenderID;
   private boundingBoxHeirarchy: MeshBoundingBoxHeirarchy;
+  private subSelection: boolean[];
 
   constructor(
     parent: Geometry | null,
@@ -32,10 +33,17 @@ export class Mesh extends Geometry {
     for (let i = 0; i < verts.length; i++) {
       vertexBuffer.push(...verts[i], 1, ...normals[i], 0);
     }
+
+    this.subSelection = [];
+    for (let i = 0; i < this.indices.length / 3; i++) {
+      this.subSelection.push(false);
+    }
+
     const renderMeshObj: RenderMesh = new RenderMesh(
       this,
       new Float32Array(vertexBuffer),
       new Int32Array(this.indices),
+      this.subSelection
     )
     INSTANCE.getScene().addRenderMesh(renderMeshObj);
     this.renderMesh = renderMeshObj.getRenderID();
@@ -43,13 +51,13 @@ export class Mesh extends Geometry {
   }
 
   public addToSubSelection(subID: number): void {
-    throw new Error("Method not implemented.");
+    this.subSelection[subID] = true;
   }
   public removeFromSubSelection(subID: number): void {
-    throw new Error("Method not implemented.");
+    this.subSelection[subID] = false;
   }
   public isSubSelected(subID: number): boolean {
-    throw new Error("Method not implemented.");
+    return this.subSelection[subID];
   }
 
   public clone(): Geometry {

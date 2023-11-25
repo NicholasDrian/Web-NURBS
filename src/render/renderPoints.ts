@@ -24,9 +24,10 @@ export class RenderPoints extends Renderable {
   constructor(
     parent: Geometry,
     points: Vec3[],
+    subSelection: boolean[]
   ) {
 
-    super(parent);
+    super(parent, subSelection);
 
     // vertex
     const verts: number[] = [];

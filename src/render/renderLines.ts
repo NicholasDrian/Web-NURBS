@@ -17,7 +17,6 @@ export class RenderLines extends Renderable {
 
   private vertexBuffer: GPUBuffer;
   private indexBuffer: GPUBuffer;
-  private subSelectionBuffer: GPUBuffer;
   private indexCount: number;
 
 
@@ -28,7 +27,7 @@ export class RenderLines extends Renderable {
     subSelection: boolean[]
   ) {
 
-    super(parent);
+    super(parent, subSelection);
 
     // vertex
     this.vertexBuffer = INSTANCE.getRenderer().getDevice().createBuffer({
@@ -47,19 +46,6 @@ export class RenderLines extends Renderable {
     INSTANCE.getRenderer().getDevice().queue.writeBuffer(this.indexBuffer, 0, indices);
     this.indexCount = indices.length;
 
-    // sub selection
-    const subSelectionList: number[] = [];
-    for (let i = 0; i < subSelection.length; i++) {
-      if (i % 32 === 0) { subSelectionList.push(0); }
-      if (subSelection[i]) { subSelectionList[i / 32] |= 1 << (i % 32); }
-    }
-    const subSelectionArray: Int32Array = new Int32Array(subSelectionList);
-    this.subSelectionBuffer = INSTANCE.getRenderer().getDevice().createBuffer({
-      label: "sub selection buffer",
-      size: subSelectionArray.byteLength,
-      usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
-    });
-    INSTANCE.getRenderer().getDevice().queue.writeBuffer(this.subSelectionBuffer, 0, subSelectionArray);
 
   }
 

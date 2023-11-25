@@ -182,6 +182,10 @@ export class Renderer {
           binding: 3, // id
           visibility: GPUShaderStage.FRAGMENT,
           buffer: {},
+        }, {
+          binding: 4, // subSelectionBuffer
+          visibility: GPUShaderStage.VERTEX,
+          buffer: {},
         }
       ]
     });
