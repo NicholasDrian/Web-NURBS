@@ -38,9 +38,17 @@ export class Curve extends Geometry {
     this.updateSamples();
   }
 
-  public onSubSelectionUpdate(objects: Set<number>): void {
+  public addToSubSelection(subID: number): void {
+    console.log("selecting curve subID", subID);
+  }
+  public removeFromSubSelection(subID: number): void {
     throw new Error("Method not implemented.");
   }
+  public isSubSelected(subID: number): boolean {
+    return false;
+  }
+
+
 
   public clone(): Geometry {
     return new Curve(this.parent, cloneVec4List(this.weightedControlPoints), this.degree, [...this.knots], mat4.clone(this.model), this.materialName);

@@ -26,7 +26,14 @@ export class Line extends Geometry {
     this.updateRenderLines();
   }
 
-  public onSubSelectionUpdate(objects: Set<ObjectID>): void {
+
+  public addToSubSelection(subID: number): void {
+    throw new Error("Method not implemented.");
+  }
+  public removeFromSubSelection(subID: number): void {
+    throw new Error("Method not implemented.");
+  }
+  public isSubSelected(subID: number): boolean {
     throw new Error("Method not implemented.");
   }
 
@@ -36,7 +43,8 @@ export class Line extends Geometry {
 
   public intersect(ray: Ray): Intersection | null {
     if (this.isHidden()) return null;
-    return ray.almostIntersectLine(this.getID(), this.getID(), this.start, this.end, 10);
+    const objectSpaceRay: Ray = Ray.transform(ray, mat4.inverse(this.getModelRecursive()));
+    return objectSpaceRay.almostIntersectLine(this.getID(), this.getID(), this.start, this.end, 10);
   }
 
   public getBoundingBox(): BoundingBox {
@@ -62,9 +70,17 @@ export class Line extends Geometry {
   }
 
   public isWithinFrustum(frustum: Frustum, inclusive: boolean): boolean {
+
     if (this.isHidden()) return false;
-    if (inclusive) return frustum.containsLinePartially(this.start, this.end);
-    return frustum.containsLineFully(this.start, this.end);
+
+    frustum.transform(mat4.inverse(this.getModelRecursive()));
+    var res: boolean;
+
+    if (inclusive) res = frustum.containsLinePartially(this.start, this.end);
+    else res = frustum.containsLineFully(this.start, this.end);
+
+    frustum.transform(this.getModelRecursive());
+    return res;
   }
 
   public override delete(): void {

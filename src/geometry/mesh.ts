@@ -42,7 +42,13 @@ export class Mesh extends Geometry {
     this.boundingBoxHeirarchy = new MeshBoundingBoxHeirarchy(this, this.verts, this.indices);
   }
 
-  public onSubSelectionUpdate(objects: Set<number>): void {
+  public addToSubSelection(subID: number): void {
+    throw new Error("Method not implemented.");
+  }
+  public removeFromSubSelection(subID: number): void {
+    throw new Error("Method not implemented.");
+  }
+  public isSubSelected(subID: number): boolean {
     throw new Error("Method not implemented.");
   }
 

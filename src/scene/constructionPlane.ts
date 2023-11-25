@@ -1,4 +1,3 @@
-import { warn } from "console";
 import { mat4, vec3, Vec3 } from "wgpu-matrix";
 import { INSTANCE } from "../cad";
 import { Intersection } from "../geometry/intersection";
@@ -7,8 +6,7 @@ import { Lines } from "../geometry/lines";
 import { Plane } from "../geometry/plane";
 import { Ray } from "../geometry/ray";
 import { MaterialName } from "../materials/material";
-import { RenderLines } from "../render/renderLines"
-import { RenderID } from "./scene";
+
 
 // TODO: draw this first, disable depth buffer while drawing
 export class ConstructionPlane {

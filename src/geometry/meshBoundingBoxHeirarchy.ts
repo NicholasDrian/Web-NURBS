@@ -144,7 +144,7 @@ class MeshBoundingBoxHeirarchyNode {
         if (t !== null) {
           if (res === null || t < res) {
             res = t;
-            subID = 1 / 3;
+            subID = i / 3;
           }
         }
       }

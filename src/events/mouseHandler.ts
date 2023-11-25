@@ -10,6 +10,7 @@ export class MouseHandler {
   private mouseDown: boolean;
   private shiftDown: boolean;
   private controlDown: boolean;
+  private metaDown: boolean;
   private drag: Drag | null;
 
   constructor() {
@@ -17,6 +18,7 @@ export class MouseHandler {
     this.mouseDown = false;
     this.shiftDown = false;
     this.controlDown = false;
+    this.metaDown = false;
     this.drag = null;
   }
 
@@ -38,6 +40,7 @@ export class MouseHandler {
             this.mouseDown = true;
             this.shiftDown = event.shiftKey;
             this.controlDown = event.ctrlKey;
+            this.metaDown = event.metaKey;
           } else {
             INSTANCE.getMover().idClicked(id);
           }
@@ -47,6 +50,7 @@ export class MouseHandler {
         this.mouseDown = true;
         this.shiftDown = event.shiftKey;
         this.controlDown = event.ctrlKey;
+        this.metaDown = event.metaKey;
       }
 
     }
@@ -61,14 +65,14 @@ export class MouseHandler {
         } else {
           if (!INSTANCE.getMover().isActive()) {
             if (!this.shiftDown) INSTANCE.getSelector().reset();
-            INSTANCE.getSelector().toggleSelectionAtPixel(event.clientX, event.clientY, this.controlDown);
+            INSTANCE.getSelector().toggleSelectionAtPixel(event.clientX, event.clientY, this.metaDown);
           }
         }
       } else { // drag
         if (!INSTANCE.getMover().isActive()) {
           if (!this.shiftDown) INSTANCE.getSelector().reset();
           const inclusive: boolean = this.drag!.isLeftward();
-          INSTANCE.getSelector().selectInRectangle(...this.drag!.getBounds(), inclusive, false);
+          INSTANCE.getSelector().selectInRectangle(...this.drag!.getBounds(), inclusive, this.metaDown);
         }
       }
       this.drag?.destroy();
