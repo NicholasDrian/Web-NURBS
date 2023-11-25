@@ -13,7 +13,7 @@ enum Axis {
 
 class LineBoundingBoxHeirarchyNode {
 
-  private indices!: number[] | null;
+  private lines!: number[] | null;
   private child1!: LineBoundingBoxHeirarchyNode | null;
   private child2!: LineBoundingBoxHeirarchyNode | null;
   private boundingBox!: BoundingBox;
@@ -22,50 +22,52 @@ class LineBoundingBoxHeirarchyNode {
   constructor(
     private geometry: Geometry,
     private verts: Vec3[],
-    indices: number[],
+    private indices: number[],
+    lines: number[],
     private depth: number = 0
   ) {
-    this.setup(verts, indices);
+    this.setup(lines);
   }
 
-  private setup(verts: Vec3[], indices: number[]): void {
+  private setup(lines: number[]): void {
     this.axis = this.depth % 3;
     this.boundingBox = new BoundingBox();
-    var average: Vec3 = vec3.create(0, 0, 0);
-    for (let index of indices) {
-      this.boundingBox.addVec3(verts[index]);
-      average = vec3.add(average, verts[index]);
+    let average: Vec3 = vec3.create(0, 0, 0);
+    for (const line of lines) {
+      this.boundingBox.addVec3(this.verts[this.indices[line * 2]]);
+      this.boundingBox.addVec3(this.verts[this.indices[line * 2 + 1]]);
+      average = vec3.add(average, this.verts[this.indices[line * 2]]);
+      average = vec3.add(average, this.verts[this.indices[line * 2 + 1]]);
     }
-    average = vec3.scale(average, 1 / indices.length);
+    average = vec3.scale(average, 1 / (lines.length * 2));
 
-    if (indices.length / 2 <= LineBoundingBoxHeirarchy.MAX_LINES_PER_LEAF) {
+    if (lines.length <= LineBoundingBoxHeirarchy.MAX_LINES_PER_LEAF) {
       // leaf
-      this.indices = indices;
+      this.lines = lines;
       this.child1 = null;
       this.child2 = null;
     } else {
       // non leaf
-      this.indices = null;
+      this.lines = null;
 
-      var child1Indices: number[] = [];
-      var child2Indices: number[] = [];
+      var child1Lines: number[] = [];
+      var child2Lines: number[] = [];
 
-
-      for (let i = 0; i < indices.length; i += 2) {
-        const lineCenter = vec3.scale(
+      for (const line of lines) {
+        const center: Vec3 = vec3.scale(
           vec3.add(
-            verts[indices[i]],
-            verts[indices[i + 1]]
-          ), 0.5);
-        if (lineCenter[this.axis] < average[this.axis]) {
-          child1Indices.push(indices[i], indices[i + 1]);
+            this.verts[this.indices[2 * line]],
+            this.verts[this.indices[2 * line + 1]]),
+          0.5
+        );
+        if (center[this.axis] < average[this.axis]) {
+          child1Lines.push(line);
         } else {
-          child2Indices.push(indices[i], indices[i + 1]);
+          child2Lines.push(line);
         }
       }
-
-      this.child1 = new LineBoundingBoxHeirarchyNode(this.geometry, verts, child1Indices, this.depth + 1);
-      this.child2 = new LineBoundingBoxHeirarchyNode(this.geometry, verts, child2Indices, this.depth + 1);
+      this.child1 = new LineBoundingBoxHeirarchyNode(this.geometry, this.verts, this.indices, child1Lines, this.depth + 1);
+      this.child2 = new LineBoundingBoxHeirarchyNode(this.geometry, this.verts, this.indices, child2Lines, this.depth + 1);
     }
   }
 
@@ -74,17 +76,23 @@ class LineBoundingBoxHeirarchyNode {
     if (!frustum.intersectsBoundingBox(this.boundingBox)) return false;
     if (this.isLeaf()) {
       if (inclusive) {
-        for (let i = 0; i < this.indices!.length; i += 2) {
+        for (const line of this.lines!) {
           if (frustum.containsLinePartially(
-            this.verts[this.indices![i]],
-            this.verts[this.indices![i + 1]])) return true;
+            this.verts[this.indices[line * 2]],
+            this.verts[this.indices[line * 2 + 1]]
+          )) {
+            return true;
+          }
         }
         return false;
       } else {
-        for (let i = 0; i < this.indices!.length; i += 2) {
+        for (const line of this.lines!) {
           if (!frustum.containsLineFully(
-            this.verts[this.indices![i]],
-            this.verts[this.indices![i + 1]])) return false;
+            this.verts[this.indices[line * 2]],
+            this.verts[this.indices[line * 2 + 1]]
+          )) {
+            return false;
+          }
         }
         return true;
       }
@@ -97,29 +105,28 @@ class LineBoundingBoxHeirarchyNode {
     }
   }
 
-  public almostIntersect(ray: Ray, verts: Vec3[], pixels: number): Intersection | null {
+  public almostIntersect(ray: Ray, pixels: number): Intersection | null {
 
     if (ray.almostIntersectBoundingBox(this.boundingBox, pixels) === null) return null;
 
     if (this.isLeaf()) {
       // time, dist
-      var closestIntersection: Intersection | null = null;
-      for (let i = 0; i < this.indices!.length; i += 2) {
-        // BUG: need a layer of indirection for subID, ex: verts[indices[indices[i]]]
-        // TODO:
-        var intersection: Intersection | null = ray.almostIntersectLine(this.geometry.getID(), this.indices![i] / 2,
-          verts[this.indices![i]],
-          verts[this.indices![i + 1]],
+      let closestIntersection: Intersection | null = null;
+      for (const line of this.lines!) {
+        let intersection: Intersection | null = ray.almostIntersectLine(this.geometry.getID(), line,
+          this.verts[this.indices[line * 2]],
+          this.verts[this.indices[line * 2 + 1]],
           pixels);
         if (intersection !== null) {
-          if (closestIntersection === null) closestIntersection = intersection;
-          else closestIntersection = (closestIntersection.screenSpaceDist < intersection.screenSpaceDist) ? closestIntersection : intersection;
+          if (closestIntersection === null || intersection.screenSpaceDist < closestIntersection.screenSpaceDist) {
+            closestIntersection = intersection;
+          }
         }
       }
       return closestIntersection;
     } else {
-      const t1 = this.child1!.almostIntersect(ray, verts, pixels);
-      const t2 = this.child2!.almostIntersect(ray, verts, pixels);
+      const t1 = this.child1!.almostIntersect(ray, pixels);
+      const t2 = this.child2!.almostIntersect(ray, pixels);
       if (t1 === null) return t2;
       if (t2 === null) return t1;
       return (t1.time < t2.time) ? t1 : t2;
@@ -127,7 +134,7 @@ class LineBoundingBoxHeirarchyNode {
   }
 
   public isLeaf(): boolean {
-    return this.indices !== null;
+    return this.lines !== null;
   }
 
   public print(): void {
@@ -150,18 +157,21 @@ export class LineBoundingBoxHeirarchy {
 
   constructor(
     private geometry: Geometry,
-    private verts: Vec3[],
+    verts: Vec3[],
     indices: number[]) {
+
     // remove degenerate edges, they can cause infinite loop.
     let reducedIndices: number[] = [];
+    const lines: number[] = [];
     for (let i = 0; i < indices.length; i += 2) {
       const a: Vec3 = verts[indices[i]];
       const b: Vec3 = verts[indices[i + 1]];
       if (a[0] !== b[0] || a[1] !== b[1] || a[2] !== b[2]) {
+        lines.push(i / 2);
         reducedIndices.push(indices[i], indices[i + 1]);
       }
     }
-    this.root = new LineBoundingBoxHeirarchyNode(this.geometry, verts, reducedIndices);
+    this.root = new LineBoundingBoxHeirarchyNode(this.geometry, verts, reducedIndices, lines);
   }
 
   public print(): void {
@@ -174,7 +184,7 @@ export class LineBoundingBoxHeirarchy {
   public almostIntersect(ray: Ray, pixels: number): Intersection | null {
     const model: Mat4 = this.geometry.getModelRecursive();
     const objectSpaceRay: Ray = Ray.transform(ray, mat4.inverse(model));
-    const res: Intersection | null = this.root.almostIntersect(objectSpaceRay, this.verts, pixels);
+    const res: Intersection | null = this.root.almostIntersect(objectSpaceRay, pixels);
     res?.transform(model);
     return res;
   }
