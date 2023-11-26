@@ -53,6 +53,9 @@ export class PolyLine extends Geometry {
   public clearSubSelection(): void {
     throw new Error("Method not implemented.");
   }
+  public getSubSelectionBoundingBox(): BoundingBox {
+    throw new Error("Method not implemented.");
+  }
 
   public clone(): Geometry {
     return new PolyLine(this.parent, cloneVec3List(this.points), mat4.clone(this.model), this.materialName);

@@ -47,6 +47,9 @@ export class ControlCage1D extends Geometry {
   private segmentSubSelection: boolean[];
   private accumulatedSubSelection: boolean[];
 
+  private subSelectedVertCount: number;
+  private subSelectedSegmentCount: number;
+
   constructor(
     parent: Geometry | null,
     private verts: Vec3[],
@@ -58,6 +61,9 @@ export class ControlCage1D extends Geometry {
     this.vertexSubSelection = [];
     this.segmentSubSelection = [];
     this.accumulatedSubSelection = [];
+    this.subSelectedVertCount = 0;
+    this.subSelectedSegmentCount = 0;
+
 
     for (let i = 0; i < this.verts.length; i++) {
       this.vertexSubSelection.push(false);
@@ -119,45 +125,65 @@ export class ControlCage1D extends Geometry {
     if (subID >= this.verts.length) {
       subID -= this.verts.length;
       // Line Sub ID
-      this.segmentSubSelection[subID] = true;
-      this.accumulatedSubSelection[subID] = true;
-      this.accumulatedSubSelection[subID + 1] = true;
+      if (!this.segmentSubSelection[subID]) {
+        this.segmentSubSelection[subID] = true;
+        this.subSelectedSegmentCount++;
+        this.accumulatedSubSelection[subID] = true;
+        this.accumulatedSubSelection[subID + 1] = true;
+        this.points.updateSubSelection(this.vertexSubSelection);
+        this.renderLines.updateSubSelection(this.accumulatedSubSelection);
+      }
     } else {
       // Point Sub ID
-      this.vertexSubSelection[subID] = true;
-      this.accumulatedSubSelection[subID] = true;
+      if (!this.vertexSubSelection[subID]) {
+        this.vertexSubSelection[subID] = true;
+        this.subSelectedVertCount++;
+        this.accumulatedSubSelection[subID] = true;
+        this.points.updateSubSelection(this.vertexSubSelection);
+        this.renderLines.updateSubSelection(this.accumulatedSubSelection);
+      }
     }
-    this.points.updateSubSelection(this.vertexSubSelection);
-    this.renderLines.updateSubSelection(this.accumulatedSubSelection);
   }
 
   public removeFromSubSelection(subID: number): void {
     if (subID >= this.verts.length) {
       subID -= this.verts.length;
       // Line Sub ID
-      this.segmentSubSelection[subID] = false;
-      if (!this.vertexSubSelection[subID] &&
-        (subID === 0 || !this.segmentSubSelection[subID - 1])
-      ) {
-        this.accumulatedSubSelection[subID] = false;
-      }
-      if (!this.vertexSubSelection[subID + 1] &&
-        (subID === this.verts.length - 1 || !this.segmentSubSelection[subID + 1])
-      ) {
-        this.accumulatedSubSelection[subID + 1] = false;
+      if (this.segmentSubSelection[subID]) {
+
+        this.segmentSubSelection[subID] = false;
+        this.subSelectedSegmentCount--;
+
+        if (!this.vertexSubSelection[subID] &&
+          (subID === 0 || !this.segmentSubSelection[subID - 1])
+        ) {
+          this.accumulatedSubSelection[subID] = false;
+        }
+        if (!this.vertexSubSelection[subID + 1] &&
+          (subID === this.verts.length - 1 || !this.segmentSubSelection[subID + 1])
+        ) {
+          this.accumulatedSubSelection[subID + 1] = false;
+        }
+        this.points.updateSubSelection(this.vertexSubSelection);
+        this.renderLines.updateSubSelection(this.accumulatedSubSelection);
       }
 
     } else {
       // Point Sub ID
-      this.vertexSubSelection[subID] = false;
-      if ((subID == this.verts.length - 1 || !this.segmentSubSelection[subID]) &&
-        (subID === 0 || !this.segmentSubSelection[subID - 1])
-      ) {
-        this.accumulatedSubSelection[subID] = false;
+      if (this.vertexSubSelection[subID]) {
+
+        this.vertexSubSelection[subID] = false;
+        this.subSelectedVertCount--;
+
+        if ((subID == this.verts.length - 1 || !this.segmentSubSelection[subID]) &&
+          (subID === 0 || !this.segmentSubSelection[subID - 1])
+        ) {
+          this.accumulatedSubSelection[subID] = false;
+        }
+        this.points.updateSubSelection(this.vertexSubSelection);
+        this.renderLines.updateSubSelection(this.accumulatedSubSelection);
       }
     }
-    this.points.updateSubSelection(this.vertexSubSelection);
-    this.renderLines.updateSubSelection(this.accumulatedSubSelection);
   }
 
   public isSubSelected(subID: number): boolean {
@@ -171,14 +197,36 @@ export class ControlCage1D extends Geometry {
     }
   }
 
-  public clearSubSelection(): void {
-    console.log("clear cc sub select");
-    this.accumulatedSubSelection = this.accumulatedSubSelection.map(() => { return false; });
-    this.vertexSubSelection = this.vertexSubSelection.map(() => { return false; });
-    this.segmentSubSelection = this.segmentSubSelection.map(() => { return false; });
+  public hasSubSelection(): boolean {
+    return this.subSelectedSegmentCount > 0 ||
+      this.subSelectedVertCount > 0;
+  }
 
-    this.points.updateSubSelection(this.vertexSubSelection);
-    this.renderLines.updateSubSelection(this.accumulatedSubSelection);
+  public getSubSelectionBoundingBox(): BoundingBox {
+    const res: BoundingBox = new BoundingBox();
+
+    if (!this.hasSubSelection()) return res;
+
+    for (let i = 0; i < this.verts.length; i++) {
+      if (this.accumulatedSubSelection[i]) {
+        res.addVec3(this.verts[i]);
+      }
+    }
+
+    return res;
+  }
+
+  public clearSubSelection(): void {
+
+    if (this.hasSubSelection()) {
+      this.accumulatedSubSelection = this.accumulatedSubSelection.map(() => { return false; });
+      this.vertexSubSelection = this.vertexSubSelection.map(() => { return false; });
+      this.segmentSubSelection = this.segmentSubSelection.map(() => { return false; });
+
+      this.points.updateSubSelection(this.vertexSubSelection);
+      this.renderLines.updateSubSelection(this.accumulatedSubSelection);
+    }
+
   }
 
   public delete(): void {

@@ -54,10 +54,14 @@ export class Mesh extends Geometry {
     this.subSelection.map(() => { return false; });
     this.renderMesh.updateSubSelection(this.subSelection);
   }
+  public getSubSelectionBoundingBox(): BoundingBox {
+    throw new Error("Method not implemented.");
+  }
 
   public setConstantScreenSpaceSize(on: boolean) {
     this.renderMesh.setConstantScreenSpaceSize(on);
   }
+
 
   public clone(): Geometry {
     return new Mesh(this.parent, cloneVec3List(this.verts), cloneVec3List(this.normals), [...this.indices], mat4.clone(this.model), this.materialName);

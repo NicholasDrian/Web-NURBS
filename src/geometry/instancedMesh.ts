@@ -59,6 +59,9 @@ export class InstancedMesh extends Geometry {
   public clearSubSelection(): void {
     throw new Error("todo");
   }
+  public getSubSelectionBoundingBox(): BoundingBox {
+    throw new Error("Method not implemented.");
+  }
 
   public clone(): Geometry {
     return new InstancedMesh(

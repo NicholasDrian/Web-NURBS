@@ -34,6 +34,7 @@ export abstract class Geometry {
   public abstract removeFromSubSelection(subID: number): void;
   public abstract clearSubSelection(): void;
   public abstract isSubSelected(subID: number): boolean;
+  public abstract getSubSelectionBoundingBox(): BoundingBox;
 
   public abstract delete(): void;
   public abstract clone(): Geometry;

@@ -48,6 +48,9 @@ export class Curve extends Geometry {
   public clearSubSelection(): void {
     this.controlCage!.clearSubSelection();
   }
+  public getSubSelectionBoundingBox(): BoundingBox {
+    throw new Error("Method not implemented.");
+  }
 
   public clone(): Geometry {
     return new Curve(this.parent,

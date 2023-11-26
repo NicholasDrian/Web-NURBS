@@ -110,7 +110,6 @@ export class Mover {
       [0, 1, 2, 2, 3, 0], mat4.identity(), "red", true
     );
 
-
     this.xAxisMover = new Mesh(null,
       [vec3.create(1, 0, 0), vec3.create(1, 1, 0), vec3.create(6, 1, 0), vec3.create(6, 0, 0),
       vec3.create(6, 0, 1), vec3.create(1, 0, 1)],
@@ -126,7 +125,6 @@ export class Mover {
       vec3.create(0, 0, 1), vec3.create(0, 0, 1)],
       [0, 1, 2, 2, 3, 0, 0, 3, 4, 4, 5, 0], mat4.identity(), "green", true
     );
-
 
     this.zAxisMover = new Mesh(null,
       [vec3.create(0, 0, 1), vec3.create(1, 0, 1), vec3.create(1, 0, 6), vec3.create(0, 0, 6),
@@ -600,13 +598,18 @@ export class Mover {
   }
 
   public updatedSelection(): void {
+
     const selection: Set<Geometry> = INSTANCE.getSelector().getSelection();
     if (selection.size === 0) {
       this.surfaces.hide();
     } else {
       const selectionBB: BoundingBox = new BoundingBox();
       for (const geo of selection) {
-        selectionBB.addBoundingBox(geo.getBoundingBox());
+        if (geo.isSelected()) {
+          selectionBB.addBoundingBox(geo.getBoundingBox());
+        } else {
+          selectionBB.addBoundingBox(geo.getSubSelectionBoundingBox());
+        }
       }
       this.originalModel = mat4.translate(mat4.identity(), selectionBB.getCenter());
       this.currentModel = mat4.clone(this.originalModel);
@@ -614,7 +617,6 @@ export class Mover {
 
       this.flip();
       this.surfaces.show();
-
     }
   }
 

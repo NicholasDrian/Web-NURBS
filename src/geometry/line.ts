@@ -38,6 +38,9 @@ export class Line extends Geometry {
   public clearSubSelection(): void {
     throw new Error("todo");
   }
+  public getSubSelectionBoundingBox(): BoundingBox {
+    throw new Error("Method not implemented.");
+  }
 
   public clone(): Geometry {
     return new Line(this.parent, vec3.clone(this.start), vec3.clone(this.end), mat4.clone(this.model), this.materialName);

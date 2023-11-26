@@ -59,6 +59,9 @@ export class Points extends Geometry {
   public clearSubSelection(): void {
     throw new Error("Method not implemented.");
   }
+  public getSubSelectionBoundingBox(): BoundingBox {
+    throw new Error("Method not implemented.");
+  }
 
   private update(): void {
 
