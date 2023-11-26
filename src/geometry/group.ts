@@ -36,6 +36,9 @@ export class Group extends Geometry {
   public getSubSelectionBoundingBox(): BoundingBox {
     throw new Error("Method not implemented.");
   }
+  public onSelectionMoved(): void {
+    throw new Error("Method not implemented.");
+  }
 
   public override getBoundingBox(): BoundingBox {
     const boundingBox: BoundingBox = new BoundingBox();

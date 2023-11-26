@@ -57,6 +57,12 @@ export class Selector {
     INSTANCE.getMover().updatedSelection();
   }
 
+  public onSelectionMoved(): void {
+    for (const geo of this.selection) {
+      geo.onSelectionMoved();
+    }
+  }
+
   public toggleSelectionAtPixel(x: number, y: number, sub: boolean): void {
 
     if (this.selecting) return;

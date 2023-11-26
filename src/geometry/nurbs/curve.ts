@@ -51,6 +51,18 @@ export class Curve extends Geometry {
   public getSubSelectionBoundingBox(): BoundingBox {
     throw new Error("Method not implemented.");
   }
+  public onSelectionMoved(): void {
+
+    if (this.controlCage!.hasSubSelection()) {
+      const newVerts: Vec3[] = this.controlCage!.getVertsSubSelectionTransformed();
+      this.weightedControlPoints = this.weightedControlPoints.map((p: Vec4, index: number) => {
+        const newVert: Vec3 = newVerts[index];
+        return vec4.create(newVert[0] * p[3], newVert[1] * p[3], newVert[2] * p[3], p[3]);
+      });
+      this.updateSamples(false);
+    }
+
+  }
 
   public clone(): Geometry {
     return new Curve(this.parent,
@@ -128,8 +140,11 @@ export class Curve extends Geometry {
     return this.weightedControlPoints.length;
   }
 
-  private updateSamples(): void {
-    if (this.controlCage) this.controlCage.delete();
+  private updateSamples(updateCage: boolean = true): void {
+
+
+
+    if (updateCage && this.controlCage) this.controlCage.delete();
     if (this.polyline) this.polyline.delete();
 
     const samples: Vec3[] = [];
@@ -143,7 +158,7 @@ export class Curve extends Geometry {
     })
 
     this.polyline = new PolyLine(this, samples,);
-    this.controlCage = new ControlCage1D(this, controlPointArray);
+    if (updateCage) this.controlCage = new ControlCage1D(this, controlPointArray);
 
   }
 

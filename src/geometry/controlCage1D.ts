@@ -3,6 +3,7 @@ import { INSTANCE } from "../cad";
 import { MaterialName } from "../materials/material";
 import { RenderLines } from "../render/renderLines";
 import { RenderMeshInstanced } from "../render/renterMeshInstanced";
+import { cloneVec3List } from "../utils/clone";
 import { swizzleYZ } from "../utils/math";
 import { BoundingBox } from "./boundingBox";
 import { Frustum } from "./frustum";
@@ -186,6 +187,23 @@ export class ControlCage1D extends Geometry {
     }
   }
 
+  public getVertsSubSelectionTransformed(): Vec3[] {
+    if (!this.hasSubSelection()) {
+      return cloneVec3List(this.verts);
+    }
+    const res: Vec3[] = [];
+    const t: Mat4 = INSTANCE.getMover().getTransform();
+    for (let i = 0; i < this.verts.length; i++) {
+      if (this.accumulatedSubSelection[i]) {
+        res.push(vec3.transformMat4(this.verts[i], t));
+      } else {
+        res.push(this.verts[i]);
+      }
+    }
+    return cloneVec3List(res);
+  }
+
+
   public isSubSelected(subID: number): boolean {
     if (subID >= this.verts.length) {
       subID -= this.verts.length;
@@ -227,6 +245,11 @@ export class ControlCage1D extends Geometry {
       this.renderLines.updateSubSelection(this.accumulatedSubSelection);
     }
 
+  }
+
+  public onSelectionMoved(): void {
+    console.log("bro")
+    this.parent!.onSelectionMoved();
   }
 
   public delete(): void {

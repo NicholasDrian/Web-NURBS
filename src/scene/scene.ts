@@ -88,6 +88,7 @@ export class Scene {
       }
     }
   }
+
   public deleteSelected(): void {
     for (const geo of this.rootGeometry.values()) {
       if (geo.isSelected()) {

@@ -427,6 +427,7 @@ export class Mover {
         throw new Error("case not implemented");
     }
     this.surfaces.setModel(mat4.scale(this.currentModel, vec3.inverse(mat4.getScaling(this.currentModel))));
+    INSTANCE.getSelector().onSelectionMoved();
   }
 
   public onMouseUp(): void {
