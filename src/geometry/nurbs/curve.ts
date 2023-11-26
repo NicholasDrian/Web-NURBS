@@ -39,13 +39,14 @@ export class Curve extends Geometry {
   public addToSubSelection(subID: number): void {
     throw new Error("shouldnt need this");
   }
-
   public removeFromSubSelection(subID: number): void {
     throw new Error("shouldnt need this");
   }
-
   public isSubSelected(subID: number): boolean {
     throw new Error("shouldnt need this");
+  }
+  public clearSubSelection(): void {
+    this.controlCage!.clearSubSelection();
   }
 
   public clone(): Geometry {

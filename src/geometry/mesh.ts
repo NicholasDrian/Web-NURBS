@@ -41,12 +41,18 @@ export class Mesh extends Geometry {
 
   public addToSubSelection(subID: number): void {
     this.subSelection[subID] = true;
+    this.renderMesh.updateSubSelection(this.subSelection);
   }
   public removeFromSubSelection(subID: number): void {
     this.subSelection[subID] = false;
+    this.renderMesh.updateSubSelection(this.subSelection);
   }
   public isSubSelected(subID: number): boolean {
     return this.subSelection[subID];
+  }
+  public clearSubSelection(): void {
+    this.subSelection.map(() => { return false; });
+    this.renderMesh.updateSubSelection(this.subSelection);
   }
 
   public setConstantScreenSpaceSize(on: boolean) {

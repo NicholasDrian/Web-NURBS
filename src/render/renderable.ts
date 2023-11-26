@@ -70,7 +70,7 @@ export abstract class Renderable {
   }
 
   public updateSubSelection(subSelection: boolean[]): void {
-    // sub selection
+
     const subSelectionList: number[] = [];
     for (let i = 0; i < subSelection.length; i++) {
       if (i % 32 === 0) { subSelectionList.push(0); }
@@ -85,6 +85,7 @@ export abstract class Renderable {
       });
     }
     INSTANCE.getRenderer().getDevice().queue.writeBuffer(this.subSelectionBuffer, 0, subSelectionArray);
+
   }
 
   protected updateFlags(): void {

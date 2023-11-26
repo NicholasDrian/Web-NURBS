@@ -32,6 +32,7 @@ export abstract class Geometry {
 
   public abstract addToSubSelection(subID: number): void;
   public abstract removeFromSubSelection(subID: number): void;
+  public abstract clearSubSelection(): void;
   public abstract isSubSelected(subID: number): boolean;
 
   public abstract delete(): void;
@@ -81,10 +82,12 @@ export abstract class Geometry {
 
   public select(): void {
     this.selected = true;
+    this.clearSubSelection();
   }
 
   public unSelect(): void {
     this.selected = false;
+    this.clearSubSelection();
   }
 
   public isHovered(): boolean {

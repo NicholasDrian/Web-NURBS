@@ -127,7 +127,7 @@ export class ControlCage1D extends Geometry {
       this.vertexSubSelection[subID] = true;
       this.accumulatedSubSelection[subID] = true;
     }
-    this.points.updateSubSelection(this.accumulatedSubSelection);
+    this.points.updateSubSelection(this.vertexSubSelection);
     this.renderLines.updateSubSelection(this.accumulatedSubSelection);
   }
 
@@ -156,7 +156,7 @@ export class ControlCage1D extends Geometry {
         this.accumulatedSubSelection[subID] = false;
       }
     }
-    this.points.updateSubSelection(this.accumulatedSubSelection);
+    this.points.updateSubSelection(this.vertexSubSelection);
     this.renderLines.updateSubSelection(this.accumulatedSubSelection);
   }
 
@@ -169,6 +169,16 @@ export class ControlCage1D extends Geometry {
       // Point Sub ID
       return this.vertexSubSelection[subID];
     }
+  }
+
+  public clearSubSelection(): void {
+    console.log("clear cc sub select");
+    this.accumulatedSubSelection = this.accumulatedSubSelection.map(() => { return false; });
+    this.vertexSubSelection = this.vertexSubSelection.map(() => { return false; });
+    this.segmentSubSelection = this.segmentSubSelection.map(() => { return false; });
+
+    this.points.updateSubSelection(this.vertexSubSelection);
+    this.renderLines.updateSubSelection(this.accumulatedSubSelection);
   }
 
   public delete(): void {

@@ -50,6 +50,10 @@ export class Surface extends Geometry {
   public isSubSelected(subID: number): boolean {
     throw new Error("Method not implemented.");
   }
+  public clearSubSelection(): void {
+    throw new Error("Method not implemented.");
+  }
+
 
   public delete(): void {
     this.mesh?.destroy();

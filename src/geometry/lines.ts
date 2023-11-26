@@ -30,13 +30,16 @@ export class Lines extends Geometry {
   }
 
   public addToSubSelection(subID: number): void {
-    this.subSelectedSegments[subID] = true;
+    throw new Error("todo");
   }
   public removeFromSubSelection(subID: number): void {
-    this.subSelectedSegments[subID] = false;
+    throw new Error("todo");
   }
   public isSubSelected(subID: number): boolean {
-    return this.subSelectedSegments[subID];
+    throw new Error("todo");
+  }
+  public clearSubSelection(): void {
+    throw new Error("todo");
   }
 
   public clone(): Geometry {

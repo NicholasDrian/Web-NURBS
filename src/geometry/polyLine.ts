@@ -10,6 +10,7 @@ import { Intersection } from "./intersection";
 import { LineBoundingBoxHeirarchy } from "./lineBoundingBoxHeirarchy";
 import { Ray } from "./ray";
 
+// TODO: Should be wrapper around control cage
 
 export class PolyLine extends Geometry {
 
@@ -47,6 +48,10 @@ export class PolyLine extends Geometry {
 
   public isSubSelected(subID: number): boolean {
     return this.subSelectedSegments[subID];
+  }
+
+  public clearSubSelection(): void {
+    throw new Error("Method not implemented.");
   }
 
   public clone(): Geometry {

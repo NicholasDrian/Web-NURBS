@@ -48,13 +48,16 @@ export class InstancedMesh extends Geometry {
   }
 
   public addToSubSelection(subID: number): void {
-    this.subSelection[subID] = true;
+    throw new Error("todo");
   }
   public removeFromSubSelection(subID: number): void {
-    this.subSelection[subID] = false;
+    throw new Error("todo");
   }
   public isSubSelected(subID: number): boolean {
-    return this.subSelection[subID];
+    throw new Error("todo");
+  }
+  public clearSubSelection(): void {
+    throw new Error("todo");
   }
 
   public clone(): Geometry {

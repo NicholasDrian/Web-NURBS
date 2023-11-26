@@ -46,6 +46,9 @@ export class ControlCage2D extends Geometry {
   public isSubSelected(subID: number): boolean {
     throw new Error("Method not implemented.");
   }
+  public clearSubSelection(): void {
+    throw new Error("Method not implemented.");
+  }
   public delete(): void {
     throw new Error("Method not implemented.");
   }

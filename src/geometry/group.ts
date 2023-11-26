@@ -30,6 +30,9 @@ export class Group extends Geometry {
   public isSubSelected(subID: number): boolean {
     throw new Error("Method not implemented.");
   }
+  public clearSubSelection(): void {
+    throw new Error("todo");
+  }
 
   public override getBoundingBox(): BoundingBox {
     const boundingBox: BoundingBox = new BoundingBox();

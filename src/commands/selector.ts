@@ -31,6 +31,7 @@ export class Selector {
   }
 
   public addToSubSelection(geo: Geometry, subID: number): void {
+    this.selection.add(geo);
     geo.addToSubSelection(subID);
     INSTANCE.getMover().updatedSelection();
   }

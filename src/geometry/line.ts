@@ -35,6 +35,9 @@ export class Line extends Geometry {
   public isSubSelected(subID: number): boolean {
     throw new Error("Method not implemented.");
   }
+  public clearSubSelection(): void {
+    throw new Error("todo");
+  }
 
   public clone(): Geometry {
     return new Line(this.parent, vec3.clone(this.start), vec3.clone(this.end), mat4.clone(this.model), this.materialName);
