@@ -24,26 +24,17 @@ export class Mesh extends Geometry {
     private normals: Vec3[],
     private indices: number[],
     model: Mat4 = mat4.identity(),
-    material: MaterialName | null = null
+    material: MaterialName | null = null,
+    constantScreenSpaceSize: boolean = false
   ) {
     super(parent, model, material);
-
-    const vertexBuffer: number[] = [];
-    for (let i = 0; i < verts.length; i++) {
-      vertexBuffer.push(...verts[i], 1, ...normals[i], 0);
-    }
 
     this.subSelection = [];
     for (let i = 0; i < this.indices.length / 3; i++) {
       this.subSelection.push(false);
     }
 
-    this.renderMesh = new RenderMesh(
-      this,
-      new Float32Array(vertexBuffer),
-      new Int32Array(this.indices),
-      this.subSelection
-    )
+    this.renderMesh = new RenderMesh(this, this.verts, this.normals, this.indices, this.subSelection, constantScreenSpaceSize);
     INSTANCE.getScene().addRenderMesh(this.renderMesh);
     this.boundingBoxHeirarchy = new MeshBoundingBoxHeirarchy(this, this.verts, this.indices);
   }
@@ -56,6 +47,10 @@ export class Mesh extends Geometry {
   }
   public isSubSelected(subID: number): boolean {
     return this.subSelection[subID];
+  }
+
+  public setConstantScreenSpaceSize(on: boolean) {
+    this.renderMesh.setConstantScreenSpaceSize(on);
   }
 
   public clone(): Geometry {

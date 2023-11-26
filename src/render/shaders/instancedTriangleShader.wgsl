@@ -9,6 +9,7 @@ struct VertexOutput {
 @group(0) @binding(1) var<uniform> color: vec4<f32>;
 @group(0) @binding(2) var<uniform> flags: i32;
 @group(0) @binding(3) var<uniform> id: i32;
+@group(0) @binding(4) var<storage, read> subSelection: array<u32>;
 
 // global uniforms:
 @group(1) @binding(0) var<uniform> cameraPos: vec3<f32>;

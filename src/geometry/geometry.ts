@@ -15,7 +15,6 @@ export abstract class Geometry {
   private hovered: boolean = false;
   private showing: boolean = true;
   private overlay: boolean = false;
-  private constantScreenSize: boolean = false;
   private id: number;
 
   constructor(
@@ -48,14 +47,6 @@ export abstract class Geometry {
 
   public setOverlay(option: boolean) {
     this.overlay = option;
-  }
-
-  public isConstantScreenSize(): boolean {
-    return this.constantScreenSize || (this.parent && this.parent.isConstantScreenSize()) || false;
-  }
-
-  public setConstantScreenSize(option: boolean) {
-    this.constantScreenSize = option;
   }
 
   public setModel(model: Mat4): void {

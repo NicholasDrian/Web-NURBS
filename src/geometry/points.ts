@@ -65,7 +65,7 @@ export class Points extends Geometry {
     for (let i = 0; i < this.points.length; i++) {
 
       const pointXZY: Vec3 = vec3.create(this.points[i][0], this.points[i][2], this.points[i][1]);
-      var translation: Mat4 = mat4.translate(mat4.identity(), pointXZY);
+      var translation: Mat4 = mat4.translation(pointXZY);
 
       var scale: Mat4 = mat4.scale(mat4.identity(), vec3.create(0.01, 0.01, 0.01));
 

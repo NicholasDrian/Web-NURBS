@@ -2,7 +2,8 @@ import { Mat4, mat4, vec3, Vec3 } from "wgpu-matrix";
 import { INSTANCE } from "../cad";
 import { MaterialName } from "../materials/material";
 import { RenderLines } from "../render/renderLines";
-import { RenderPoints } from "../render/renderPoints";
+import { RenderMeshInstanced } from "../render/renterMeshInstanced";
+import { swizzleYZ } from "../utils/math";
 import { BoundingBox } from "./boundingBox";
 import { Frustum } from "./frustum";
 import { Geometry } from "./geometry";
@@ -11,9 +12,32 @@ import { LineBoundingBoxHeirarchy } from "./lineBoundingBoxHeirarchy";
 import { PointBoundingBoxHeirarchy } from "./pointBoundingBoxHeirarchy";
 import { Ray } from "./ray";
 
+const controlPointVerts: Vec3[] = [
+  vec3.create(1, 0, 0),
+  vec3.create(0, 1, 0),
+  vec3.create(0, 0, 1),
+  vec3.create(-1, 0, 0),
+  vec3.create(0, -1, 0),
+  vec3.create(0, 0, -1),
+];
+
+const controlPointIndices: number[] = [
+  0, 1, 2,
+  0, 2, 4,
+  0, 4, 5,
+  0, 5, 1,
+
+  3, 1, 5,
+  3, 5, 4,
+  3, 4, 2,
+  3, 2, 1,
+];
+
+const controlPointModel: Mat4 = mat4.uniformScaling(0.01);
+
 export class ControlCage1D extends Geometry {
 
-  private renderPoints: RenderPoints;
+  private points: RenderMeshInstanced;
   private pointBBH: PointBoundingBoxHeirarchy;
 
   private renderLines: RenderLines;
@@ -25,7 +49,7 @@ export class ControlCage1D extends Geometry {
 
   constructor(
     parent: Geometry | null,
-    private points: Vec3[],
+    private verts: Vec3[],
     model: Mat4 = mat4.identity(),
     materialName: MaterialName | null = null
   ) {
@@ -35,31 +59,38 @@ export class ControlCage1D extends Geometry {
     this.segmentSubSelection = [];
     this.accumulatedSubSelection = [];
 
-    for (let i = 0; i < this.points.length; i++) {
+    for (let i = 0; i < this.verts.length; i++) {
       this.vertexSubSelection.push(false);
       this.accumulatedSubSelection.push(false);
       this.segmentSubSelection.push(false);
     }
     this.segmentSubSelection.pop();
 
+
+    const transforms: Mat4[] = []
+    for (const vert of this.verts) {
+      transforms.push(swizzleYZ(mat4.mul(mat4.translation(vert), controlPointModel)));
+    }
+    this.points = new RenderMeshInstanced(this,
+      controlPointVerts, controlPointVerts, controlPointIndices, transforms, this.accumulatedSubSelection, true);
+    INSTANCE.getScene().addRenderMeshInstanced(this.points);
+
+
     const indices: number[] = [];
-    for (let i = 0; i < this.points.length - 1; i++) { indices.push(i, i + 1); }
-
-    this.renderPoints = new RenderPoints(this, this.points, this.accumulatedSubSelection);
-    this.renderLines = new RenderLines(this, this.points, indices, this.accumulatedSubSelection);
-
+    for (let i = 0; i < this.verts.length - 1; i++) { indices.push(i, i + 1); }
+    this.renderLines = new RenderLines(this, this.verts, indices, this.accumulatedSubSelection);
     INSTANCE.getScene().addRenderLines(this.renderLines);
-    INSTANCE.getScene().addRenderPoints(this.renderPoints);
 
-    this.pointBBH = new PointBoundingBoxHeirarchy(this, this.points);
-    this.lineBBH = new LineBoundingBoxHeirarchy(this, this.points, indices);
+    this.pointBBH = new PointBoundingBoxHeirarchy(this, this.verts);
+    this.lineBBH = new LineBoundingBoxHeirarchy(this, this.verts, indices);
 
   }
+
 
   public getBoundingBox(): BoundingBox {
     const res: BoundingBox = new BoundingBox();
     const model: Mat4 = this.getModelRecursive();
-    for (const v of this.points) {
+    for (const v of this.verts) {
       res.addVec3(vec3.transformMat4(v, model));
     }
     return res;
@@ -74,7 +105,7 @@ export class ControlCage1D extends Geometry {
     if (intersection === null) {
       intersection = this.lineBBH.almostIntersect(ray, 10);
       if (intersection !== null) {
-        intersection.objectSubID += this.points.length;
+        intersection.objectSubID += this.verts.length;
       }
     }
     return intersection;
@@ -85,8 +116,8 @@ export class ControlCage1D extends Geometry {
   }
 
   public addToSubSelection(subID: number): void {
-    if (subID >= this.points.length) {
-      subID -= this.points.length;
+    if (subID >= this.verts.length) {
+      subID -= this.verts.length;
       // Line Sub ID
       this.segmentSubSelection[subID] = true;
       this.accumulatedSubSelection[subID] = true;
@@ -96,34 +127,42 @@ export class ControlCage1D extends Geometry {
       this.vertexSubSelection[subID] = true;
       this.accumulatedSubSelection[subID] = true;
     }
-    this.renderPoints.updateSubSelection(this.accumulatedSubSelection);
+    this.points.updateSubSelection(this.accumulatedSubSelection);
     this.renderLines.updateSubSelection(this.accumulatedSubSelection);
   }
 
   public removeFromSubSelection(subID: number): void {
-    if (subID >= this.points.length) {
-      subID -= this.points.length;
+    if (subID >= this.verts.length) {
+      subID -= this.verts.length;
       // Line Sub ID
       this.segmentSubSelection[subID] = false;
-      if (!this.vertexSubSelection[subID]) { this.accumulatedSubSelection[subID] = false; }
-      if (!this.vertexSubSelection[subID + 1]) { this.accumulatedSubSelection[subID + 1] = false; }
+      if (!this.vertexSubSelection[subID] &&
+        (subID === 0 || !this.segmentSubSelection[subID - 1])
+      ) {
+        this.accumulatedSubSelection[subID] = false;
+      }
+      if (!this.vertexSubSelection[subID + 1] &&
+        (subID === this.verts.length - 1 || !this.segmentSubSelection[subID + 1])
+      ) {
+        this.accumulatedSubSelection[subID + 1] = false;
+      }
+
     } else {
       // Point Sub ID
       this.vertexSubSelection[subID] = false;
-      if (
-        (subID == this.points.length - 1 || !this.segmentSubSelection[subID]) &&
+      if ((subID == this.verts.length - 1 || !this.segmentSubSelection[subID]) &&
         (subID === 0 || !this.segmentSubSelection[subID - 1])
       ) {
         this.accumulatedSubSelection[subID] = false;
       }
     }
-    this.renderPoints.updateSubSelection(this.accumulatedSubSelection);
+    this.points.updateSubSelection(this.accumulatedSubSelection);
     this.renderLines.updateSubSelection(this.accumulatedSubSelection);
   }
 
   public isSubSelected(subID: number): boolean {
-    if (subID >= this.points.length) {
-      subID -= this.points.length;
+    if (subID >= this.verts.length) {
+      subID -= this.verts.length;
       // Line Sub ID
       return this.segmentSubSelection[subID];
     } else {
@@ -134,12 +173,12 @@ export class ControlCage1D extends Geometry {
 
   public delete(): void {
     INSTANCE.getScene().removeLines(this.renderLines);
-    INSTANCE.getScene().removePoints(this.renderPoints);
+    INSTANCE.getScene().removeMeshInstanced(this.points);
     INSTANCE.getScene().removeGeometry(this);
   }
 
   public clone(): Geometry {
-    return new ControlCage1D(this.parent, [...this.points], mat4.clone(this.model), this.materialName);
+    return new ControlCage1D(this.parent, [...this.verts], mat4.clone(this.model), this.materialName);
   }
 
 }

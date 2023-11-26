@@ -19,6 +19,7 @@ export abstract class Renderable {
   constructor(
     protected parent: Geometry,
     subSelection: boolean[],
+    protected constantScreenSize: boolean = false
   ) {
 
     //model
@@ -46,11 +47,20 @@ export abstract class Renderable {
       usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
     })
     this.flags = new Int32Array([0]);
+    if (this.constantScreenSize) this.flags[0] |= CONSTANT_SCREEN_SIZE_BIT;
 
 
     this.subSelectionBuffer = null;
     this.updateSubSelection(subSelection);
 
+  }
+
+  public setConstantScreenSpaceSize(on: boolean): void {
+    if (on) {
+      this.flags[0] |= CONSTANT_SCREEN_SIZE_BIT;
+    } else {
+      this.flags[0] &= ~CONSTANT_SCREEN_SIZE_BIT;
+    }
   }
 
   public update(): void {
@@ -82,8 +92,6 @@ export abstract class Renderable {
     else this.flags[0] &= ~SELECTED_BIT;
     if (this.parent.isHovered()) this.flags[0] |= HOVER_BIT;
     else this.flags[0] &= ~HOVER_BIT;
-    if (this.parent.isConstantScreenSize()) this.flags[0] |= CONSTANT_SCREEN_SIZE_BIT;
-    else this.flags[0] &= ~CONSTANT_SCREEN_SIZE_BIT;
     INSTANCE.getRenderer().getDevice().queue.writeBuffer(this.flagsBuffer, 0, this.flags);
   }
 

@@ -29,11 +29,6 @@ export class InstancedMesh extends Geometry {
   ) {
     super(parent, model, material);
 
-    const vertexBuffer: number[] = [];
-    for (let i = 0; i < verts.length; i++) {
-      vertexBuffer.push(...verts[i], 1, ...normals[i], 0);
-    }
-
     this.subSelection = [];
     for (let i = 0; i < transforms.length; i++) {
       this.subSelection.push(false);
@@ -41,10 +36,11 @@ export class InstancedMesh extends Geometry {
 
     this.renderMeshInstanced = new RenderMeshInstanced(
       this,
-      new Float32Array(vertexBuffer),
-      new Int32Array(this.indices),
+      this.verts,
+      this.normals,
+      this.indices,
       transforms,
-      this.subSelection
+      this.subSelection,
     );
     INSTANCE.getScene().addRenderMeshInstanced(this.renderMeshInstanced);
 

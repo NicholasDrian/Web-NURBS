@@ -99,10 +99,8 @@ export class Renderer {
     this.device = <GPUDevice>await adapter.requestDevice();
     this.canvas = <HTMLCanvasElement>document.getElementById("screen");
     this.context = <GPUCanvasContext>this.canvas.getContext("webgpu");
-
-
     this.canvasFormat = navigator.gpu.getPreferredCanvasFormat();
-    console.log(this.canvasFormat);
+
     this.context.configure({
       device: this.device,
       format: this.canvasFormat,

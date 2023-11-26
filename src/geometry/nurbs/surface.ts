@@ -51,7 +51,6 @@ export class Surface extends Geometry {
     throw new Error("Method not implemented.");
   }
 
-
   public delete(): void {
     this.mesh?.destroy();
     this.edgeLowU?.destroy();

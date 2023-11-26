@@ -1,6 +1,6 @@
 
 import { INSTANCE } from "../cad"
-import { mat4, Mat4 } from "wgpu-matrix"
+import { mat4, Mat4, Vec3 } from "wgpu-matrix"
 import { Geometry } from "../geometry/geometry";
 import { RenderMesh } from "./renderMesh";
 
@@ -12,12 +12,14 @@ export class RenderMeshInstanced extends RenderMesh {
 
   constructor(
     parent: Geometry,
-    vertices: Float32Array,
-    indices: Int32Array,
+    vertices: Vec3[],
+    normals: Vec3[],
+    indices: number[],
     transforms: Mat4[],
-    subSelection: boolean[]
+    subSelection: boolean[],
+    constantScreenSpaceSize: boolean = false,
   ) {
-    super(parent, vertices, indices, subSelection);
+    super(parent, vertices, normals, indices, subSelection, constantScreenSpaceSize);
 
     this.instanceCount = transforms.length;
 

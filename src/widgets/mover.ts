@@ -28,9 +28,10 @@ export class Mover {
   private xyPlaneMover: Mesh;
   private xzPlaneMover: Mesh;
   private yzPlaneMover: Mesh;
-  private xSpinner: Surface;
-  private ySpinner: Surface;
-  private zSpinner: Surface;
+
+  private xSpinner: Mesh;
+  private ySpinner: Mesh;
+  private zSpinner: Mesh;
 
   private xAxisMover: Mesh;
   private yAxisMover: Mesh;
@@ -71,41 +72,43 @@ export class Mover {
     const yAxis: Vec3 = vec3.create(0, 1, 0);
     const spinnerInner: Curve = createArc(origin, xAxis, yAxis, 4, 0, Math.PI / 2);
     const spinnerOuter: Curve = createArc(origin, xAxis, yAxis, 5, 0, Math.PI / 2);
-    this.zSpinner = loft([spinnerInner, spinnerOuter], 1);
-    this.zSpinner.setMaterial("blue");
-    this.ySpinner = loft([spinnerInner, spinnerOuter], 1);
-    this.ySpinner.setMaterial("green");
-    this.xSpinner = loft([spinnerInner, spinnerOuter], 1);
-    this.xSpinner.setMaterial("red");
+    const tempSurface: Surface = loft([spinnerInner, spinnerOuter], 1);
 
+    this.xSpinner = <Mesh>tempSurface.getMesh().clone();
+    this.ySpinner = <Mesh>tempSurface.getMesh().clone();
+    this.zSpinner = <Mesh>tempSurface.getMesh().clone();
+    this.xSpinner.setMaterial("red");
+    this.ySpinner.setMaterial("green");
+    this.zSpinner.setMaterial("blue");
+    this.xSpinner.setConstantScreenSpaceSize(true);
+    this.ySpinner.setConstantScreenSpaceSize(true);
+    this.zSpinner.setConstantScreenSpaceSize(true);
+
+    tempSurface.delete();
 
     this.xyzScaler = new Mesh(null,
       [vec3.create(0, 0, 0), vec3.create(1, 0, 0), vec3.create(1, 1, 0), vec3.create(0, 1, 0), vec3.create(0, 1, 1), vec3.create(0, 0, 1), vec3.create(1, 0, 1)],
       [vec3.create(0, 0, 0), vec3.create(0, 0, 0), vec3.create(0, 0, 0), vec3.create(0, 0, 0), vec3.create(0, 0, 0), vec3.create(0, 0, 0), vec3.create(0, 0, 0)],
-      [0, 1, 2, 0, 2, 3, 0, 3, 4, 0, 4, 5, 0, 5, 6, 0, 6, 1]
+      [0, 1, 2, 0, 2, 3, 0, 3, 4, 0, 4, 5, 0, 5, 6, 0, 6, 1], mat4.identity(), "white", true
     );
-    this.xyzScaler.setMaterial("white");
 
     this.xyPlaneMover = new Mesh(null,
       [vec3.create(1, 1, 0), vec3.create(3, 1, 0), vec3.create(3, 3, 0), vec3.create(1, 3, 0)],
       [vec3.create(0, 0, 1), vec3.create(0, 0, 1), vec3.create(0, 0, 1), vec3.create(0, 0, 1)],
-      [0, 1, 2, 2, 3, 0]
+      [0, 1, 2, 2, 3, 0], mat4.identity(), "blue", true
     );
-    this.xyPlaneMover.setMaterial("blue");
 
     this.xzPlaneMover = new Mesh(null,
       [vec3.create(1, 1, 0), vec3.create(3, 1, 0), vec3.create(3, 3, 0), vec3.create(1, 3, 0)],
       [vec3.create(0, 0, 1), vec3.create(0, 0, 1), vec3.create(0, 0, 1), vec3.create(0, 0, 1)],
-      [0, 1, 2, 2, 3, 0]
+      [0, 1, 2, 2, 3, 0], mat4.identity(), "green", true
     );
-    this.xzPlaneMover.setMaterial("green");
 
     this.yzPlaneMover = new Mesh(null,
       [vec3.create(1, 1, 0), vec3.create(3, 1, 0), vec3.create(3, 3, 0), vec3.create(1, 3, 0)],
       [vec3.create(0, 0, 1), vec3.create(0, 0, 1), vec3.create(0, 0, 1), vec3.create(0, 0, 1)],
-      [0, 1, 2, 2, 3, 0]
+      [0, 1, 2, 2, 3, 0], mat4.identity(), "red", true
     );
-    this.yzPlaneMover.setMaterial("red");
 
 
     this.xAxisMover = new Mesh(null,
@@ -113,16 +116,16 @@ export class Mover {
       vec3.create(6, 0, 1), vec3.create(1, 0, 1)],
       [vec3.create(0, 0, 1), vec3.create(0, 0, 1), vec3.create(0, 0, 1), vec3.create(0, 0, 1),
       vec3.create(0, 0, 1), vec3.create(0, 0, 1)],
-      [0, 1, 2, 2, 3, 0, 0, 3, 4, 4, 5, 0]);
-    this.xAxisMover.setMaterial("red");
+      [0, 1, 2, 2, 3, 0, 0, 3, 4, 4, 5, 0], mat4.identity(), "red", true
+    );
 
     this.yAxisMover = new Mesh(null,
       [vec3.create(0, 1, 0), vec3.create(1, 1, 0), vec3.create(1, 6, 0), vec3.create(0, 6, 0),
       vec3.create(0, 6, 1), vec3.create(0, 1, 1)],
       [vec3.create(0, 0, 1), vec3.create(0, 0, 1), vec3.create(0, 0, 1), vec3.create(0, 0, 1),
       vec3.create(0, 0, 1), vec3.create(0, 0, 1)],
-      [0, 1, 2, 2, 3, 0, 0, 3, 4, 4, 5, 0]);
-    this.yAxisMover.setMaterial("green");
+      [0, 1, 2, 2, 3, 0, 0, 3, 4, 4, 5, 0], mat4.identity(), "green", true
+    );
 
 
     this.zAxisMover = new Mesh(null,
@@ -130,44 +133,44 @@ export class Mover {
       vec3.create(0, 1, 6), vec3.create(0, 1, 1)],
       [vec3.create(0, 0, 1), vec3.create(0, 0, 1), vec3.create(0, 0, 1), vec3.create(0, 0, 1),
       vec3.create(0, 0, 1), vec3.create(0, 0, 1)],
-      [0, 1, 2, 2, 3, 0, 0, 3, 4, 4, 5, 0]);
-    this.zAxisMover.setMaterial("blue");
+      [0, 1, 2, 2, 3, 0, 0, 3, 4, 4, 5, 0], mat4.identity(), "blue", true
+    );
 
     this.xScaler = new Mesh(null,
       [vec3.create(6, 0, 0), vec3.create(6.5, 1, 0), vec3.create(8, 0, 0), vec3.create(6.5, 0, 1)],
       [vec3.create(0, 0, 1), vec3.create(0, 0, 1), vec3.create(0, 0, 1), vec3.create(0, 0, 1)],
-      [0, 1, 2, 2, 3, 0]);
-    this.xScaler.setMaterial("red");
+      [0, 1, 2, 2, 3, 0], mat4.identity(), "red", true
+    );
 
     this.yScaler = new Mesh(null,
       [vec3.create(0, 6, 0), vec3.create(1, 6.5, 0), vec3.create(0, 8, 0), vec3.create(0, 6.5, 1)],
       [vec3.create(0, 0, 1), vec3.create(0, 0, 1), vec3.create(0, 0, 1), vec3.create(0, 0, 1)],
-      [0, 1, 2, 2, 3, 0]);
-    this.yScaler.setMaterial("green");
+      [0, 1, 2, 2, 3, 0], mat4.identity(), "green", true
+    );
 
     this.zScaler = new Mesh(null,
       [vec3.create(0, 0, 6), vec3.create(0, 1, 6.5), vec3.create(0, 0, 8), vec3.create(1, 0, 6.5)],
       [vec3.create(0, 0, 1), vec3.create(0, 0, 1), vec3.create(0, 0, 1), vec3.create(0, 0, 1)],
-      [0, 1, 2, 2, 3, 0]);
-    this.zScaler.setMaterial("blue");
+      [0, 1, 2, 2, 3, 0], mat4.identity(), "blue", true
+    );
 
     this.xyScaler = new Mesh(null,
       [vec3.create(4.5, 4.5, 0), vec3.create(5.5, 4.5, 0), vec3.create(7, 7, 0), vec3.create(4.5, 5.5, 0)],
       [vec3.create(0, 0, 1), vec3.create(0, 0, 1), vec3.create(0, 0, 1), vec3.create(0, 0, 1)],
-      [0, 1, 2, 2, 3, 0]);
-    this.xyScaler.setMaterial("blue");
+      [0, 1, 2, 2, 3, 0], mat4.identity(), "blue", true
+    );
 
     this.yzScaler = new Mesh(null,
       [vec3.create(4.5, 4.5, 0), vec3.create(5.5, 4.5, 0), vec3.create(7, 7, 0), vec3.create(4.5, 5.5, 0)],
       [vec3.create(0, 0, 1), vec3.create(0, 0, 1), vec3.create(0, 0, 1), vec3.create(0, 0, 1)],
-      [0, 1, 2, 2, 3, 0]);
-    this.yzScaler.setMaterial("red");
+      [0, 1, 2, 2, 3, 0], mat4.identity(), "red", true
+    );
 
     this.xzScaler = new Mesh(null,
       [vec3.create(4.5, 4.5, 0), vec3.create(5.5, 4.5, 0), vec3.create(7, 7, 0), vec3.create(4.5, 5.5, 0)],
       [vec3.create(0, 0, 1), vec3.create(0, 0, 1), vec3.create(0, 0, 1), vec3.create(0, 0, 1)],
-      [0, 1, 2, 2, 3, 0]);
-    this.xzScaler.setMaterial("green");
+      [0, 1, 2, 2, 3, 0], mat4.identity(), "green", true
+    );
 
 
 
@@ -181,7 +184,6 @@ export class Mover {
 
     this.surfaces.hide();
     this.surfaces.setOverlay(true);
-    this.surfaces.setConstantScreenSize(true);
 
     // cleanup construction curves
     spinnerInner.destroy();
@@ -242,7 +244,7 @@ export class Mover {
         }
         break;
       }
-      case this.xSpinner.getMesh().getID(): {
+      case this.xSpinner.getID(): {
         const yzPlane: Plane = new Plane(originalPos, vec3.create(1, 0, 0));
         const intersectionTime: number | null = ray.intersectPlane(yzPlane);
         if (intersectionTime) {
@@ -262,7 +264,7 @@ export class Mover {
         }
         break
       }
-      case this.ySpinner.getMesh().getID(): {
+      case this.ySpinner.getID(): {
         const xzPlane: Plane = new Plane(originalPos, vec3.create(0, 1, 0));
         const intersectionTime: number | null = ray.intersectPlane(xzPlane);
         if (intersectionTime) {
@@ -282,7 +284,7 @@ export class Mover {
         }
         break;
       }
-      case this.zSpinner.getMesh().getID(): {
+      case this.zSpinner.getID(): {
 
         const xyPlane: Plane = new Plane(originalPos, vec3.create(0, 0, 1));
         const intersectionTime: number | null = ray.intersectPlane(xyPlane);
@@ -443,13 +445,13 @@ export class Mover {
           this.originalIntersectionPoint = null;
 
           switch (this.componentClicked) {
-            case this.xSpinner.getMesh().getID():
+            case this.xSpinner.getID():
               this.element.innerHTML = "X Rotation: ";
               break;
-            case this.ySpinner.getMesh().getID():
+            case this.ySpinner.getID():
               this.element.innerHTML = "Y Rotation: ";
               break;
-            case this.zSpinner.getMesh().getID():
+            case this.zSpinner.getID():
               this.element.innerHTML = "Z Rotation: ";
               break;
             case this.xAxisMover.getID():
@@ -524,15 +526,15 @@ export class Mover {
       const input: string = this.element.innerHTML.split(":")[1];
       var parsedInput: number = parseFloat(input);
       switch (this.componentClicked) {
-        case this.xSpinner.getMesh().getID():
+        case this.xSpinner.getID():
           if (isNaN(parsedInput)) parsedInput = 0;
           this.currentModel = mat4.rotateX(this.originalModel, parsedInput / 180 * Math.PI);
           break;
-        case this.ySpinner.getMesh().getID():
+        case this.ySpinner.getID():
           if (isNaN(parsedInput)) parsedInput = 0;
           this.currentModel = mat4.rotateY(this.originalModel, parsedInput / 180 * Math.PI);
           break;
-        case this.zSpinner.getMesh().getID():
+        case this.zSpinner.getID():
           if (isNaN(parsedInput)) parsedInput = 0;
           this.currentModel = mat4.rotateZ(this.originalModel, parsedInput / 180 * Math.PI);
           break;
