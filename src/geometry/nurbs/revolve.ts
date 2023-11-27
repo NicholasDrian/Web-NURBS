@@ -1,9 +1,10 @@
-import { vec3, Vec3, vec4, Vec4 } from "wgpu-matrix";
+import { Mat4, vec3, Vec3, vec4, Vec4 } from "wgpu-matrix";
 import { Ray } from "../ray";
 import { Curve } from "./curve";
 import { Surface } from "./surface";
 
 export const revolve = function(axis: Ray, curve: Curve, theta: number): Surface {
+
   // TODO: think about model
 
   if (theta < 0 || theta > Math.PI * 2) throw new Error("Invalid params");
@@ -40,12 +41,19 @@ export const revolve = function(axis: Ray, curve: Curve, theta: number): Surface
     cosCash.push(Math.cos(angle));
     sinCash.push(Math.sin(angle));
   }
+  const model: Mat4 = curve.getModelRecursive();
+  const points: Vec3[] = [];
+  const weights: number[] = [];
+  for (const point of curve.getWeightedControlPoints()) {
+    weights.push(point[3]);
+    const p: Vec3 = vec3.create(point[0] / point[3], point[1] / point[3], point[2] / point[3]);
+    points.push(vec3.transformMat4(p, model));
+  }
 
-  for (let j = 0; j < curve.getControlPointCount(); j++) {
+  for (let j = 0; j < points.length; j++) {
 
-    const p0temp: Vec4 = curve.getWeightedControlPoints()[j];
-    var P0: Vec3 = vec3.create(p0temp[0] / p0temp[3], p0temp[1] / p0temp[3], p0temp[2] / p0temp[3]);
-    const W0: number = p0temp[3];
+    var P0: Vec3 = points[j];
+    const W0: number = weights[j];
 
     const O: Vec3 = axis.closestPointToPoint(P0);
     var X: Vec3 = vec3.sub(P0, O);
@@ -65,9 +73,9 @@ export const revolve = function(axis: Ray, curve: Curve, theta: number): Surface
       const ray: Ray = new Ray(P0, T0);
 
       outControls[index + 1].push(ray.closestPointOnLine(P2, vec3.add(P2, T2)));
-      outWeights[index + 1].push(wm * curve.getWeightedControlPoints()[j][3]);
+      outWeights[index + 1].push(wm * weights[j]);
       outControls[index + 2].push(P2);
-      outWeights[index + 2].push(curve.getWeightedControlPoints()[j][3]);
+      outWeights[index + 2].push(weights[j]);
 
       index += 2;
       if (i < narcs - 1) {
