@@ -59,6 +59,9 @@ export class Surface extends Geometry {
   public onSelectionMoved(): void {
     throw new Error("Method not implemented.");
   }
+  public bakeSelectionTransform(): void {
+    throw new Error("Method not implemented.");
+  }
 
 
   public delete(): void {

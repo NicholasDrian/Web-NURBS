@@ -52,7 +52,6 @@ export class Curve extends Geometry {
     throw new Error("Method not implemented.");
   }
   public onSelectionMoved(): void {
-
     if (this.controlCage!.hasSubSelection()) {
       const newVerts: Vec3[] = this.controlCage!.getVertsSubSelectionTransformed();
       this.weightedControlPoints = this.weightedControlPoints.map((p: Vec4, index: number) => {
@@ -61,7 +60,10 @@ export class Curve extends Geometry {
       });
       this.updateSamples(false);
     }
+  }
 
+  public bakeSelectionTransform(): void {
+    this.controlCage!.bakeSelectionTransform();
   }
 
   public clone(): Geometry {

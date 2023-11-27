@@ -44,6 +44,9 @@ export class Line extends Geometry {
   public onSelectionMoved(): void {
     throw new Error("Method not implemented.");
   }
+  public bakeSelectionTransform(): void {
+    throw new Error("Method not implemented.");
+  }
 
   public clone(): Geometry {
     return new Line(this.parent, vec3.clone(this.start), vec3.clone(this.end), mat4.clone(this.model), this.materialName);

@@ -1,8 +1,10 @@
+import { Mat4 } from "wgpu-matrix";
 import { INSTANCE } from "../cad";
 import { Frustum } from "../geometry/frustum";
 import { Geometry } from "../geometry/geometry";
 import { Intersection } from "../geometry/intersection";
 import { Ray } from "../geometry/ray";
+import { Scene } from "../scene/scene";
 
 
 
@@ -168,6 +170,19 @@ export class Selector {
 
   public getSelection(): Set<Geometry> {
     return this.selection;
+  }
+
+  transformSelected(transform: Mat4) {
+    const scene: Scene = INSTANCE.getScene();
+    for (const geo of this.selection) {
+      scene.getBoundingBoxHeirarchy().remove(geo);
+      if (geo.isSelected()) {
+        geo.transform(transform);
+      } else {
+        geo.bakeSelectionTransform();
+      }
+      scene.getBoundingBoxHeirarchy().add(geo);
+    }
   }
 
 }

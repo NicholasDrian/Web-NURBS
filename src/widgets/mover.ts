@@ -437,7 +437,7 @@ export class Mover {
           this.moved = false;
           this.active = false;
           this.originalIntersectionPoint = null;
-          INSTANCE.getScene().transformSelected(this.getTransform());
+          INSTANCE.getSelector().transformSelected(this.getTransform());
           this.updatedSelection();
           this.originalModel = this.currentModel;
         } else { // clicked
@@ -512,7 +512,7 @@ export class Mover {
         this.active = false;
         this.element.hidden = true;
         this.originalIntersectionPoint = null;
-        INSTANCE.getScene().transformSelected(this.getTransform());
+        INSTANCE.getSelector().transformSelected(this.getTransform());
         this.updatedSelection();
         this.originalModel = this.currentModel;
         return;

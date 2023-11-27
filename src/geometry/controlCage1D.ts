@@ -200,9 +200,38 @@ export class ControlCage1D extends Geometry {
         res.push(this.verts[i]);
       }
     }
+    this.points.updateTransforms(res.map((pos: Vec3) => {
+      return swizzleYZ(mat4.mul(mat4.translation(pos), controlPointModel));
+    }));
+    this.renderLines.updateVerts(res);
     return cloneVec3List(res);
   }
 
+  public bakeSelectionTransform(): void {
+    if (!this.hasSubSelection()) {
+      return;
+    }
+    const newVerts: Vec3[] = [];
+    const t: Mat4 = INSTANCE.getMover().getTransform();
+    const indices: number[] = [];
+    for (let i = 0; i < this.verts.length; i++) {
+      if (this.accumulatedSubSelection[i]) {
+        newVerts.push(vec3.transformMat4(this.verts[i], t));
+      } else {
+        newVerts.push(this.verts[i]);
+      }
+      indices.push(i, i + 1);
+    }
+    indices.pop();
+    indices.pop();
+    this.points.updateTransforms(newVerts.map((pos: Vec3) => {
+      return swizzleYZ(mat4.mul(mat4.translation(pos), controlPointModel));
+    }));
+    this.renderLines.updateVerts(newVerts);
+    this.verts = newVerts;
+    this.lineBBH = new LineBoundingBoxHeirarchy(this, this.verts, indices);
+    this.pointBBH = new PointBoundingBoxHeirarchy(this, this.verts);
+  }
 
   public isSubSelected(subID: number): boolean {
     if (subID >= this.verts.length) {
@@ -222,33 +251,26 @@ export class ControlCage1D extends Geometry {
 
   public getSubSelectionBoundingBox(): BoundingBox {
     const res: BoundingBox = new BoundingBox();
-
     if (!this.hasSubSelection()) return res;
-
     for (let i = 0; i < this.verts.length; i++) {
       if (this.accumulatedSubSelection[i]) {
         res.addVec3(this.verts[i]);
       }
     }
-
     return res;
   }
 
   public clearSubSelection(): void {
-
     if (this.hasSubSelection()) {
       this.accumulatedSubSelection = this.accumulatedSubSelection.map(() => { return false; });
       this.vertexSubSelection = this.vertexSubSelection.map(() => { return false; });
       this.segmentSubSelection = this.segmentSubSelection.map(() => { return false; });
-
       this.points.updateSubSelection(this.vertexSubSelection);
       this.renderLines.updateSubSelection(this.accumulatedSubSelection);
     }
-
   }
 
   public onSelectionMoved(): void {
-    console.log("bro")
     this.parent!.onSelectionMoved();
   }
 

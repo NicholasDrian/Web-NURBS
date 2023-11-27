@@ -37,6 +37,7 @@ export abstract class Geometry {
   public abstract getSubSelectionBoundingBox(): BoundingBox;
 
   public abstract onSelectionMoved(): void;
+  public abstract bakeSelectionTransform(): void;
 
   public abstract delete(): void;
   public abstract clone(): Geometry;

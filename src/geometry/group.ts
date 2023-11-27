@@ -39,6 +39,9 @@ export class Group extends Geometry {
   public onSelectionMoved(): void {
     throw new Error("Method not implemented.");
   }
+  public bakeSelectionTransform(): void {
+    throw new Error("Method not implemented.");
+  }
 
   public override getBoundingBox(): BoundingBox {
     const boundingBox: BoundingBox = new BoundingBox();

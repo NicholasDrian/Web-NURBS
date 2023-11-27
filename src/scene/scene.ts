@@ -79,15 +79,6 @@ export class Scene {
   public removePoints(renderPoints: RenderPoints): void { this.renderPoints.delete(renderPoints); }
   public removeMeshInstanced(renderMeshInstanced: RenderMeshInstanced): void { this.renderMeshesInstanced.delete(renderMeshInstanced); }
 
-  public transformSelected(transform: Mat4): void {
-    for (const geo of this.rootGeometry.values()) {
-      if (geo.isSelected()) {
-        this.boundingBoxHeirarchy.remove(geo);
-        geo.transform(transform);
-        this.boundingBoxHeirarchy.add(geo);
-      }
-    }
-  }
 
   public deleteSelected(): void {
     for (const geo of this.rootGeometry.values()) {

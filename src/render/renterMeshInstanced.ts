@@ -35,19 +35,23 @@ export class RenderMeshInstanced extends RenderMesh {
 
   }
 
+  public updateTransforms(transforms: Mat4[]) {
+    const transformsList: number[] = [];
+    for (let i = 0; i < transforms.length; i++) transformsList.push(...transforms[i]);
+    const transformsArray: Float32Array = new Float32Array(transformsList);
+    INSTANCE.getRenderer().getDevice().queue.writeBuffer(this.transformBuffer, 0, transformsArray);
+  }
+
+
   protected override updateBindGroup(): void {
-
     super.updateBindGroup();
-
     this.instanceBindGroup = INSTANCE.getRenderer().getDevice().createBindGroup({
       label: "bind group instanced mesh",
       layout: INSTANCE.getRenderer().getBindGroupLayoutInstanced(),
-      entries: [
-        {
-          binding: 0,
-          resource: { buffer: this.transformBuffer }
-        }
-      ]
+      entries: [{
+        binding: 0,
+        resource: { buffer: this.transformBuffer }
+      }]
     });
   }
 

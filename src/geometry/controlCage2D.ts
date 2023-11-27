@@ -58,6 +58,9 @@ export class ControlCage2D extends Geometry {
   public delete(): void {
     throw new Error("Method not implemented.");
   }
+  public bakeSelectionTransform(): void {
+    throw new Error("Method not implemented.");
+  }
   public clone(): Geometry {
     return new ControlCage2D(this.parent, this.controlPoints, this.model, this.materialName);
   }

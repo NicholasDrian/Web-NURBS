@@ -59,6 +59,9 @@ export class PolyLine extends Geometry {
   public onSelectionMoved(): void {
     throw new Error("Method not implemented.");
   }
+  public bakeSelectionTransform(): void {
+    throw new Error("Method not implemented.");
+  }
 
   public clone(): Geometry {
     return new PolyLine(this.parent, cloneVec3List(this.points), mat4.clone(this.model), this.materialName);

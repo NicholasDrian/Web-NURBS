@@ -65,6 +65,9 @@ export class InstancedMesh extends Geometry {
   public onSelectionMoved(): void {
     throw new Error("Method not implemented.");
   }
+  public bakeSelectionTransform(): void {
+    throw new Error("Method not implemented.");
+  }
 
   public clone(): Geometry {
     return new InstancedMesh(

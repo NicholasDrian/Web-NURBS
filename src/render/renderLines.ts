@@ -55,6 +55,15 @@ export class RenderLines extends Renderable {
 
   }
 
+  updateVerts(verts: Vec3[]) {
+    const vertexList: number[] = []
+    for (const vert of verts) {
+      vertexList.push(...vert, 1);
+    }
+    const vertexArray: Float32Array = new Float32Array(vertexList);
+    INSTANCE.getRenderer().getDevice().queue.writeBuffer(this.vertexBuffer, 0, vertexArray);
+  }
+
   public draw(pass: GPURenderPassEncoder): void {
     if (this.parent.isHidden()) return;
     pass.setBindGroup(0, this.bindGroup);
