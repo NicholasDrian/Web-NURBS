@@ -202,39 +202,49 @@ export class ControlCage1D extends Geometry {
         res.push(this.verts[i]);
       }
     }
-    this.points.updateTransforms(res.map((pos: Vec3) => {
-      return swizzleYZ(mat4.mul(mat4.translation(pos), controlPointModel));
-    }));
+
+    this.updatePoints(res);
     this.renderLines.updateVerts(res);
     return cloneVec3List(res);
   }
 
   public bakeSelectionTransform(): void {
-    if (!this.hasSubSelection()) {
-      return;
-    }
-    const newVerts: Vec3[] = [];
-    var t: Mat4 = INSTANCE.getMover().getTransform();
-    const model: Mat4 = this.getModelRecursive();
-    t = mat4.mul(mat4.mul(mat4.inverse(model), t), model);
-    const indices: number[] = [];
-    for (let i = 0; i < this.verts.length; i++) {
-      if (this.accumulatedSubSelection[i]) {
-        newVerts.push(vec3.transformMat4(this.verts[i], t));
-      } else {
-        newVerts.push(this.verts[i]);
+
+    if (this.isSelected()) {
+      this.updatePoints(this.verts);
+    } else if (this.hasSubSelection()) {
+
+      let t: Mat4 = INSTANCE.getMover().getTransform();
+      const model: Mat4 = this.getModelRecursive();
+      t = mat4.mul(mat4.mul(mat4.inverse(model), t), model);
+
+      const newVerts: Vec3[] = [];
+      const indices: number[] = [];
+      for (let i = 0; i < this.verts.length; i++) {
+        if (this.accumulatedSubSelection[i]) {
+          newVerts.push(vec3.transformMat4(this.verts[i], t));
+        } else {
+          newVerts.push(this.verts[i]);
+        }
+        indices.push(i, i + 1);
       }
-      indices.push(i, i + 1);
+      indices.pop();
+      indices.pop();
+      this.verts = newVerts;
+      this.renderLines.updateVerts(newVerts);
+      this.lineBBH = new LineBoundingBoxHeirarchy(this, this.verts, indices);
+      this.pointBBH = new PointBoundingBoxHeirarchy(this, this.verts);
+      this.updatePoints(this.verts);
     }
-    indices.pop();
-    indices.pop();
-    this.points.updateTransforms(newVerts.map((pos: Vec3) => {
-      return swizzleYZ(mat4.mul(mat4.translation(pos), controlPointModel));
+  }
+
+  private updatePoints(points: Vec3[]): void {
+    const model: Mat4 = this.getModelRecursive();
+    const translation: Vec3 = mat4.getTranslation(model);
+    const modelNoTranslation: Mat4 = mat4.mul(mat4.translation(vec3.scale(translation, -1)), model);
+    this.points.updateTransforms(points.map((pos: Vec3) => {
+      return swizzleYZ(mat4.mul(mat4.translation(pos), mat4.mul(mat4.inverse(modelNoTranslation), controlPointModel)));
     }));
-    this.renderLines.updateVerts(newVerts);
-    this.verts = newVerts;
-    this.lineBBH = new LineBoundingBoxHeirarchy(this, this.verts, indices);
-    this.pointBBH = new PointBoundingBoxHeirarchy(this, this.verts);
   }
 
   public isSubSelected(subID: number): boolean {
@@ -255,10 +265,11 @@ export class ControlCage1D extends Geometry {
 
   public getSubSelectionBoundingBox(): BoundingBox {
     const res: BoundingBox = new BoundingBox();
+    const model: Mat4 = this.getModelRecursive();
     if (!this.hasSubSelection()) return res;
     for (let i = 0; i < this.verts.length; i++) {
       if (this.accumulatedSubSelection[i]) {
-        res.addVec3(this.verts[i]);
+        res.addVec3(vec3.transformMat4(this.verts[i], model));
       }
     }
     return res;

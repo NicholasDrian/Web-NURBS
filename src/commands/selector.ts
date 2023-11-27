@@ -176,11 +176,7 @@ export class Selector {
     const scene: Scene = INSTANCE.getScene();
     for (const geo of this.selection) {
       scene.getBoundingBoxHeirarchy().remove(geo);
-      if (geo.isSelected()) {
-        geo.transform(transform);
-      } else {
-        geo.bakeSelectionTransform();
-      }
+      geo.bakeSelectionTransform();
       scene.getBoundingBoxHeirarchy().add(geo);
     }
   }

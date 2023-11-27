@@ -224,8 +224,6 @@ export class SceneBoundingBoxHeirarchy {
 
   public remove(geo: Geometry): void {
     // TODO: shrink bbx
-    console.log("removing", geo.getID(), "from:");
-    this.print();
     this.root.remove(geo);
   }
 

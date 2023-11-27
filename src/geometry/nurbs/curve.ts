@@ -62,7 +62,9 @@ export class Curve extends Geometry {
   }
 
   public bakeSelectionTransform(): void {
-    console.log("curve baking");
+    if (this.isSelected()) {
+      this.model = mat4.mul(INSTANCE.getMover().getTransform(), this.model);
+    }
     this.controlCage!.bakeSelectionTransform();
   }
 
