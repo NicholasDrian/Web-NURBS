@@ -184,8 +184,8 @@ export class Mover {
     this.surfaces.setOverlay(true);
 
     // cleanup construction curves
-    spinnerInner.destroy();
-    spinnerOuter.destroy();
+    spinnerInner.delete();
+    spinnerOuter.delete();
 
   }
 

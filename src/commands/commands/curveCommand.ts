@@ -35,7 +35,7 @@ export class CurveCommand extends Command {
     if (this.mode === CurveCommandMode.AddPoints) {
       switch (input) {
         case "0":
-          this.curve?.destroy();
+          this.curve?.delete();
           this.finished = true;
           this.clicker.destroy();
           break;
@@ -44,7 +44,7 @@ export class CurveCommand extends Command {
           break;
         case "":
           if (this.curve != null) {
-            if (this.curve.getControlPointCount() < 3) this.curve.destroy();
+            if (this.curve.getControlPointCount() < 3) this.curve.delete();
             else {
               this.curve.removeLastControlPoint();
               INSTANCE.getScene().addGeometry(this.curve);

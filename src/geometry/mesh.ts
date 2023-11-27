@@ -43,31 +43,38 @@ export class Mesh extends Geometry {
     this.subSelection[subID] = true;
     this.renderMesh.updateSubSelection(this.subSelection);
   }
+
   public removeFromSubSelection(subID: number): void {
     this.subSelection[subID] = false;
     this.renderMesh.updateSubSelection(this.subSelection);
   }
+
   public isSubSelected(subID: number): boolean {
     return this.subSelection[subID];
   }
+
   public clearSubSelection(): void {
     this.subSelection.map(() => { return false; });
     this.renderMesh.updateSubSelection(this.subSelection);
   }
+
   public getSubSelectionBoundingBox(): BoundingBox {
-    throw new Error("Method not implemented.");
+    return new BoundingBox();
+    // TODO: sub seledction
   }
+
   public onSelectionMoved(): void {
-    throw new Error("Method not implemented.");
+    // TODO: sub seledction
   }
+
   public bakeSelectionTransform(): void {
-    throw new Error("Method not implemented.");
+    this.model = mat4.mul(INSTANCE.getMover().getTransform(), this.model);
+    // TODO: sub seledction
   }
 
   public setConstantScreenSpaceSize(on: boolean) {
     this.renderMesh.setConstantScreenSpaceSize(on);
   }
-
 
   public clone(): Geometry {
     return new Mesh(this.parent, cloneVec3List(this.verts), cloneVec3List(this.normals), [...this.indices], mat4.clone(this.model), this.materialName);

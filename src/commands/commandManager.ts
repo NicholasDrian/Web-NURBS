@@ -8,12 +8,10 @@ import { CircleCommand } from "./commands/circleCommand";
 import { ConstructionPlaneCommand } from "./commands/constructionPlaneCommand";
 import { CopyCommand } from "./commands/copyCommand";
 import { CurveCommand } from "./commands/curveCommand";
-import { LineCommand } from "./commands/lineCommand";
 import { LoftCommand } from "./commands/loftCommand";
 import { MirrorCommand } from "./commands/mirrorCommand";
 import { MoveCommand } from "./commands/moveCommand";
 import { PollarArrayCommand } from "./commands/polarArrayCommand";
-import { PolyLineCommand } from "./commands/polylineCommand";
 import { RevolveCommand } from "./commands/revolveCommand";
 import { RotateCommand } from "./commands/rotateCommand";
 import { Scale1Command } from "./commands/scale1Command";
@@ -55,12 +53,6 @@ export class CommandManager {
           break;
         case "camera": case "cam":
           this.currentCommand = new CameraCommand();
-          break;
-        case "line": case "ln":
-          this.currentCommand = new LineCommand();
-          break;
-        case "polyline": case "pl":
-          this.currentCommand = new PolyLineCommand();
           break;
         case "curve": case "c":
           this.currentCommand = new CurveCommand();

@@ -52,7 +52,7 @@ export class CircleCommand extends Command {
           const radius: number = parseFloat(input);
           if (!isNaN(radius)) {
             const normal: Vec3 = vec3.normalize(vec3.sub(this.v2!, this.v3));
-            if (this.curve) this.curve.destroy();
+            if (this.curve) this.curve.delete();
             this.curve = createCircleCenterNormalRadius(this.v1!, normal, radius);
             this.done();
           }
@@ -147,7 +147,7 @@ export class CircleCommand extends Command {
           )
         );
         const radius: number = vec3.distance(this.v1!, this.v2);
-        if (this.curve) this.curve.destroy();
+        if (this.curve) this.curve.delete();
         this.curve = createCircleCenterNormalRadius(this.v1!, normal, radius);
       }
     }
@@ -170,7 +170,7 @@ export class CircleCommand extends Command {
       if (!vec3.equals(this.v1, point)) this.v2 = point;
     } else if (!this.v3) {
       if (!vec3.equals(this.v1, point) && !vec3.equals(this.v2, point)) {
-        if (this.curve) this.curve.destroy();
+        if (this.curve) this.curve.delete();
         this.curve = createCircleThreePoints(this.v1, this.v2, point);
         this.done();
       }
@@ -178,7 +178,7 @@ export class CircleCommand extends Command {
   }
   private handleMouseMoveThreePoints(point: Vec3): void {
     if (this.v2 && !vec3.equals(this.v2, point) && !vec3.equals(this.v1!, point)) {
-      if (this.curve) this.curve.destroy();
+      if (this.curve) this.curve.delete();
       this.curve = createCircleThreePoints(this.v1!, this.v2, point);
     }
   }
@@ -202,7 +202,7 @@ export class CircleCommand extends Command {
       if (!vec3.equals(this.v1, point)) {
         const radius: number = vec3.distance(this.v1, point);
         const normal: Vec3 = vec3.normalize(vec3.sub(this.v2, this.v3));
-        if (this.curve) this.curve.destroy();
+        if (this.curve) this.curve.delete();
         this.curve = createCircleCenterNormalRadius(this.v1, normal, radius);
         this.done();
       }
@@ -213,7 +213,7 @@ export class CircleCommand extends Command {
       if (!vec3.equals(this.v1!, point)) {
         const radius: number = vec3.distance(this.v1!, point);
         const normal: Vec3 = vec3.normalize(vec3.sub(this.v2!, this.v3));
-        if (this.curve) this.curve.destroy();
+        if (this.curve) this.curve.delete();
         this.curve = createCircleCenterNormalRadius(this.v1!, normal, radius);
       }
     }

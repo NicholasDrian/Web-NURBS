@@ -128,15 +128,15 @@ export class Selector {
       geo.unHover();
       if (subID !== undefined) {
         if (geo.isSubSelected(subID)) {
-          INSTANCE.getSelector().removeFromSubSelection(geo, subID);
+          this.removeFromSubSelection(geo, subID);
         } else {
-          INSTANCE.getSelector().addToSubSelection(geo, subID);
+          this.addToSubSelection(geo, subID);
         }
       } else {
         if (geo.isSelected()) {
-          INSTANCE.getSelector().removeFromSelection(geo);
+          this.removeFromSelection(geo);
         } else {
-          INSTANCE.getSelector().addToSelection(geo);
+          this.addToSelection(geo);
         }
       }
     }

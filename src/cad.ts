@@ -12,7 +12,6 @@ import { SettingsManager } from "./settings/settingsManager";
 import { MaterialManager } from "./materials/materialManager";
 import { Selector } from "./commands/selector";
 
-import { addTestSceneLine } from "./tests/testSceneLine";
 import { addTestSceneComplex } from "./tests/testSceneComplex";
 import { addTestSceneCurve } from "./tests/testSceneCurve"
 import { addTestSceneArc } from "./tests/testSceneArc";
@@ -73,7 +72,6 @@ class CAD {
 
     addTestSceneComplex();
     // addTestSceneRevolve();
-    // addTestSceneLine();
     //    addTestSceneCurve();
     //    addTestSceneArc();
 

@@ -1,13 +1,14 @@
 import { mat4, Mat4, vec3, Vec3, vec4, Vec4 } from "wgpu-matrix";
 import { INSTANCE } from "../../cad";
 import { MaterialName } from "../../materials/material";
+import { RenderLines } from "../../render/renderLines";
 import { cloneVec4List } from "../../utils/clone";
 import { BoundingBox } from "../boundingBox";
 import { ControlCage1D } from "../controlCage1D";
 import { Frustum } from "../frustum";
 import { Geometry } from "../geometry";
 import { Intersection } from "../intersection";
-import { PolyLine } from "../polyLine";
+import { LineBoundingBoxHeirarchy } from "../lineBoundingBoxHeirarchy";
 import { Ray } from "../ray";
 import { basisFuncs, calcBezierAlphas, genericKnotVector, span } from "./utils";
 
@@ -15,7 +16,8 @@ export class Curve extends Geometry {
   public static readonly SAMPLES_PER_EDGE = 20;
 
   private controlCage: ControlCage1D | null;
-  private polyline: PolyLine | null;
+  private lines: RenderLines | null;
+  private linesBBH: LineBoundingBoxHeirarchy | null;
 
   constructor(
     parent: Geometry | null,
@@ -31,7 +33,8 @@ export class Curve extends Geometry {
       this.knots = genericKnotVector(this.weightedControlPoints.length, this.degree);
     }
     this.controlCage = null;
-    this.polyline = null;
+    this.lines = null;
+    this.linesBBH = null;
     this.updateSamples();
   }
 
@@ -79,8 +82,7 @@ export class Curve extends Geometry {
 
   public delete(): void {
     this.controlCage!.delete();
-    this.polyline!.delete();
-    INSTANCE.getScene().removeGeometry(this);
+    INSTANCE.getScene().removeLines(this.lines!);
   }
 
   public getKnots(): number[] {
@@ -98,7 +100,7 @@ export class Curve extends Geometry {
   public intersect(ray: Ray): Intersection | null {
     if (this.isHidden()) return null;
     return this.controlCage!.intersect(ray) ||
-      this.polyline!.intersect(ray);
+      this.linesBBH!.almostIntersect(ray, 10);
   }
 
   public getBoundingBox(): BoundingBox {
@@ -107,11 +109,6 @@ export class Curve extends Geometry {
 
   public getDegree(): number {
     return this.degree;
-  }
-
-  public destroy(): void {
-    this.controlCage!.delete();
-    this.polyline!.delete();
   }
 
   public addControlPoint(point: Vec3, weight: number) {
@@ -147,19 +144,24 @@ export class Curve extends Geometry {
   private updateSamples(updateCage: boolean = true): void {
 
     if (updateCage) this.controlCage?.delete();
-    this.polyline?.delete();
+    if (this.lines) INSTANCE.getScene().removeLines(this.lines);
 
-    const samples: Vec3[] = [];
     const sampleCount: number = Curve.SAMPLES_PER_EDGE * (this.weightedControlPoints.length - 1);
+    const samples: Vec3[] = [];
+    const indices: number[] = [];
     for (let i = 0; i <= sampleCount; i++) {
       samples.push(this.sample(i / sampleCount));
+      indices.push(i, i + 1);
     }
+    indices.pop();
+    indices.pop();
 
     const controlPointArray: Vec3[] = this.weightedControlPoints.map((point: Vec4) => {
       return vec3.create(point[0] / point[3], point[1] / point[3], point[2] / point[3]);
     })
 
-    this.polyline = new PolyLine(this, samples);
+    this.lines = new RenderLines(this, samples, indices, []);
+    this.linesBBH = new LineBoundingBoxHeirarchy(this, samples, indices);
     if (updateCage) this.controlCage = new ControlCage1D(this, controlPointArray);
 
   }
@@ -214,7 +216,7 @@ export class Curve extends Geometry {
 
   public isWithinFrustum(frustum: Frustum, inclusive: boolean): boolean {
     if (this.isHidden()) return false;
-    return this.polyline!.isWithinFrustum(frustum, inclusive);
+    return this.linesBBH!.isWithinFrustum(frustum, inclusive);
   }
 
   public elevateDegree(n: number): void {

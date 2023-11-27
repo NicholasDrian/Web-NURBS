@@ -1,7 +1,6 @@
 import { mat4, vec3, Vec3 } from "wgpu-matrix";
 import { INSTANCE } from "../cad";
 import { Intersection } from "../geometry/intersection";
-import { Line } from "../geometry/line";
 import { Lines } from "../geometry/lines";
 import { Plane } from "../geometry/plane";
 import { Ray } from "../geometry/ray";
@@ -13,8 +12,8 @@ export class ConstructionPlane {
 
   private majorLines: Lines | null;
   private minorLines: Lines | null;
-  private xAxis: Line | null;
-  private yAxis: Line | null;
+  private xAxis: Lines | null;
+  private yAxis: Lines | null;
 
   constructor(private majorCount: number = 10,
     private minorCount: number = 10,
@@ -72,8 +71,8 @@ export class ConstructionPlane {
     if (this.yAxis) this.yAxis.delete();
     this.majorLines = new Lines(majorVerts, majorIndices, null, mat4.identity(), "lighter grey");
     this.minorLines = new Lines(minorVerts, minorIndices, null, mat4.identity(), "mid grey");
-    this.xAxis = new Line(null, vec3.create(0, 0, 0), vec3.create(halfSize, 0, 0), undefined, "red");
-    this.yAxis = new Line(null, vec3.create(0, 0, 0), vec3.create(0, halfSize, 0), undefined, "green");
+    this.xAxis = new Lines([vec3.create(0, 0, 0), vec3.create(halfSize, 0, 0)], [0, 1], null, mat4.identity(), "red");
+    this.yAxis = new Lines([vec3.create(0, 0, 0), vec3.create(0, halfSize, 0)], [0, 1], null, mat4.identity(), "green");
   }
 
 
