@@ -75,7 +75,6 @@ export class Mesh extends Geometry {
 
   public delete(): void {
     INSTANCE.getScene().removeMesh(this.renderMesh);
-    INSTANCE.getScene().removeGeometry(this);
   }
 
   public getVerts(): Vec3[] {
@@ -98,10 +97,6 @@ export class Mesh extends Geometry {
   public isWithinFrustum(frustum: Frustum, inclusive: boolean): boolean {
     if (this.isHidden()) return false;
     return this.boundingBoxHeirarchy.isWithinFrustum(frustum, inclusive);
-  }
-
-  public destroy(): void {
-    INSTANCE.getScene().removeMesh(this.renderMesh);
   }
 
   public getBoundingBox(): BoundingBox {

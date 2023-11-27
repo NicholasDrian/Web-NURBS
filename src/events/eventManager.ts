@@ -2,6 +2,7 @@ import { OperatingMode } from "../mode"
 import { INSTANCE } from "../cad"
 import { MouseHandler } from "./mouseHandler";
 
+
 export class EventManager {
 
   private mouseHandler: MouseHandler;
@@ -11,6 +12,7 @@ export class EventManager {
     this.mouseHandler = new MouseHandler();
 
     onmousemove = (event: MouseEvent) => {
+      console.log(event);
       this.mouseHandler.onMouseMove(event);
     };
 

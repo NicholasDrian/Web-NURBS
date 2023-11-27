@@ -3,6 +3,7 @@ import { INSTANCE } from "../../cad";
 import { MaterialName } from "../../materials/material";
 import { cloneVec4ListList } from "../../utils/clone";
 import { BoundingBox } from "../boundingBox";
+import { ControlCage2D } from "../controlCage2D";
 import { Frustum } from "../frustum";
 import { Geometry } from "../geometry";
 import { Intersection } from "../intersection";
@@ -17,10 +18,7 @@ import { basisFuncs, span } from "./utils";
 export class Surface extends Geometry {
 
   private mesh: Mesh | null;
-  private edgeLowU: Curve | null;
-  private edgeHighU: Curve | null;
-  private edgeLowV: Curve | null;
-  private edgeHighV: Curve | null;
+  private controlCage: ControlCage2D | null;
 
   constructor(
     private weightedControlPoints: Vec4[][],
@@ -34,43 +32,62 @@ export class Surface extends Geometry {
   ) {
     super(parent, model, material);
     this.mesh = null;
-    this.edgeLowU = null;
-    this.edgeHighU = null;
-    this.edgeLowV = null;
-    this.edgeHighV = null;
+    this.controlCage = null;
     this.update();
   }
 
   public addToSubSelection(subID: number): void {
-    throw new Error("Method not implemented.");
+    this.controlCage!.addToSubSelection(subID);
   }
+
   public removeFromSubSelection(subID: number): void {
-    throw new Error("Method not implemented.");
+    this.controlCage!.removeFromSubSelection(subID);
   }
+
   public isSubSelected(subID: number): boolean {
-    throw new Error("Method not implemented.");
+    return this.controlCage!.isSubSelected(subID);
   }
+
   public clearSubSelection(): void {
-    throw new Error("Method not implemented.");
+    this.controlCage!.clearSubSelection();
   }
+
   public getSubSelectionBoundingBox(): BoundingBox {
-    throw new Error("Method not implemented.");
+    return this.controlCage!.getSubSelectionBoundingBox();
   }
+
   public onSelectionMoved(): void {
-    throw new Error("Method not implemented.");
+    console.log("surface on selection moved");
+    if (this.controlCage!.hasSubSelection()) {
+      const newVerts: Vec3[][] = this.controlCage!.getVertsSubSelectionTransformed();
+      for (let i = 0; i < this.weightedControlPoints.length; i++) {
+        for (let j = 0; j < this.weightedControlPoints[0].length; j++) {
+          const newVert: Vec3 = newVerts[i][j];
+          const weight: number = this.weightedControlPoints[i][j][3];
+          this.weightedControlPoints[i][j] = vec4.create(
+            newVert[0] * weight,
+            newVert[1] * weight,
+            newVert[2] * weight,
+            weight
+          );
+        }
+      }
+      this.update(false);
+    }
   }
+
   public bakeSelectionTransform(): void {
-    throw new Error("Method not implemented.");
+    console.log("surface bake");
+    if (this.isSelected()) {
+      this.model = mat4.mul(INSTANCE.getMover().getTransform(), this.model);
+    }
+    this.controlCage!.bakeSelectionTransform();
   }
 
 
   public delete(): void {
-    this.mesh?.destroy();
-    this.edgeLowU?.destroy();
-    this.edgeHighU?.destroy();
-    this.edgeLowV?.destroy();
-    this.edgeHighV?.destroy();
-    INSTANCE.getScene().removeGeometry(this);
+    this.mesh?.delete();
+    this.controlCage?.delete();
   }
 
   public clone(): Geometry {
@@ -92,19 +109,20 @@ export class Surface extends Geometry {
 
   public intersect(ray: Ray): Intersection | null {
     if (this.isHidden()) return null;
-    return this.mesh!.intersect(ray);
+    return this.controlCage!.intersect(ray) ||
+      this.mesh!.intersect(ray);
   }
 
   public override getTypeName(): string {
     return "Surface";
   }
 
-  private update(): void {
-    this.mesh?.destroy();
-    this.edgeLowU?.destroy();
-    this.edgeHighU?.destroy();
-    this.edgeLowV?.destroy();
-    this.edgeHighV?.destroy();
+  private update(updateCage: boolean = true): void {
+
+    const startTime: number = Date.now();
+
+    if (updateCage) this.controlCage?.delete();
+    this.mesh?.delete();
 
     const sampleCountU: number = Curve.SAMPLES_PER_EDGE * (this.weightedControlPoints.length - 1);
     const sampleCountV: number = Curve.SAMPLES_PER_EDGE * (this.weightedControlPoints[0].length - 1);
@@ -153,6 +171,14 @@ export class Surface extends Geometry {
     }
 
     this.mesh = new Mesh(this, meshVerts, meshNormals, meshIndices);
+    if (updateCage) this.controlCage = new ControlCage2D(this, this.weightedControlPoints.map((points: Vec4[]) => {
+      return points.map((point: Vec3) => {
+        return vec3.create(point[0] / point[3], point[1] / point[3], point[2] / point[3]);
+      })
+    }));
+
+    console.log("surface resample took", (Date.now() - startTime) / 1000, "seconds");
+
   }
 
   public isWithinFrustum(frustum: Frustum, inclusive: boolean): boolean {

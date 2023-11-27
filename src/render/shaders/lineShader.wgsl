@@ -80,21 +80,11 @@ fn fragmentMain(inputs: VertexOutput) -> FragOutputs {
 
   var scaledFragCoords: vec2<f32> = inputs.position.xy / STRIPE_WIDTH;
   if (inputs.selectedness > 0) {
-      var evenX: bool = modf(scaledFragCoords.x).fract < 0.5;
-      var evenY: bool = modf(scaledFragCoords.y).fract < 0.5;
-      if ((evenX && !evenY) || (evenY && !evenX)) {
-        fragColor = (1 - inputs.selectedness) * fragColor + (inputs.selectedness) * SELECTED_COLOR;
-      }
+   fragColor = (1 - inputs.selectedness) * fragColor + (inputs.selectedness) * SELECTED_COLOR;
    
   }
   if ((flags & HOVER_BIT) == HOVER_BIT) {
-
-      var evenX: bool = modf(scaledFragCoords.x).fract < 0.5;
-      var evenY: bool = modf(scaledFragCoords.y).fract < 0.5;
-      if ((evenX && !evenY) || (evenY && !evenX)) {
-        fragColor = vec4<f32>(0.0, 0.0, 1.0, 1.0);
-      }
-
+   fragColor = vec4<f32>(0.0, 0.0, 1.0, 1.0);
   }
 
   var output: FragOutputs;

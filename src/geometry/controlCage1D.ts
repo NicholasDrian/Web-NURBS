@@ -51,6 +51,8 @@ export class ControlCage1D extends Geometry {
   private subSelectedVertCount: number;
   private subSelectedSegmentCount: number;
 
+  private indices: number[];
+
   constructor(
     parent: Geometry | null,
     private verts: Vec3[],
@@ -83,13 +85,13 @@ export class ControlCage1D extends Geometry {
     INSTANCE.getScene().addRenderMeshInstanced(this.points);
 
 
-    const indices: number[] = [];
-    for (let i = 0; i < this.verts.length - 1; i++) { indices.push(i, i + 1); }
-    this.renderLines = new RenderLines(this, this.verts, indices, this.accumulatedSubSelection);
+    this.indices = [];
+    for (let i = 0; i < this.verts.length - 1; i++) { this.indices.push(i, i + 1); }
+    this.renderLines = new RenderLines(this, this.verts, this.indices, this.accumulatedSubSelection);
     INSTANCE.getScene().addRenderLines(this.renderLines);
 
     this.pointBBH = new PointBoundingBoxHeirarchy(this, this.verts);
-    this.lineBBH = new LineBoundingBoxHeirarchy(this, this.verts, indices);
+    this.lineBBH = new LineBoundingBoxHeirarchy(this, this.verts, this.indices);
 
   }
 
@@ -218,21 +220,13 @@ export class ControlCage1D extends Geometry {
       const model: Mat4 = this.getModelRecursive();
       t = mat4.mul(mat4.mul(mat4.inverse(model), t), model);
 
-      const newVerts: Vec3[] = [];
-      const indices: number[] = [];
       for (let i = 0; i < this.verts.length; i++) {
         if (this.accumulatedSubSelection[i]) {
-          newVerts.push(vec3.transformMat4(this.verts[i], t));
-        } else {
-          newVerts.push(this.verts[i]);
+          this.verts[i] = vec3.transformMat4(this.verts[i], t);
         }
-        indices.push(i, i + 1);
       }
-      indices.pop();
-      indices.pop();
-      this.verts = newVerts;
-      this.renderLines.updateVerts(newVerts);
-      this.lineBBH = new LineBoundingBoxHeirarchy(this, this.verts, indices);
+      this.renderLines.updateVerts(this.verts);
+      this.lineBBH = new LineBoundingBoxHeirarchy(this, this.verts, this.indices);
       this.pointBBH = new PointBoundingBoxHeirarchy(this, this.verts);
       this.updatePoints(this.verts);
     }

@@ -68,10 +68,10 @@ class CAD {
     this.selector = new Selector();
     this.mover = new Mover();
 
-    //addTestSceneComplex();
+    addTestSceneComplex();
     // addTestSceneRevolve();
     // addTestSceneLine();
-    addTestSceneCurve();
+    //    addTestSceneCurve();
     //    addTestSceneArc();
 
   }
