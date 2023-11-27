@@ -192,7 +192,9 @@ export class ControlCage1D extends Geometry {
       return cloneVec3List(this.verts);
     }
     const res: Vec3[] = [];
-    const t: Mat4 = INSTANCE.getMover().getTransform();
+    var t: Mat4 = INSTANCE.getMover().getTransform();
+    const model: Mat4 = this.getModelRecursive();
+    t = mat4.mul(mat4.mul(mat4.inverse(model), t), model);
     for (let i = 0; i < this.verts.length; i++) {
       if (this.accumulatedSubSelection[i]) {
         res.push(vec3.transformMat4(this.verts[i], t));
@@ -212,7 +214,9 @@ export class ControlCage1D extends Geometry {
       return;
     }
     const newVerts: Vec3[] = [];
-    const t: Mat4 = INSTANCE.getMover().getTransform();
+    var t: Mat4 = INSTANCE.getMover().getTransform();
+    const model: Mat4 = this.getModelRecursive();
+    t = mat4.mul(mat4.mul(mat4.inverse(model), t), model);
     const indices: number[] = [];
     for (let i = 0; i < this.verts.length; i++) {
       if (this.accumulatedSubSelection[i]) {
