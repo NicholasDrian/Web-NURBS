@@ -18,6 +18,7 @@ import { addTestSceneCurve } from "./tests/testSceneCurve"
 import { addTestSceneArc } from "./tests/testSceneArc";
 import { Mover } from "./widgets/mover";
 import { addTestSceneRevolve } from "./tests/testSceneRevolve";
+import { EventQueue } from "./events/eventQueue";
 
 /*
   * Browser Based NURBS Modeling Software
@@ -29,6 +30,7 @@ import { addTestSceneRevolve } from "./tests/testSceneRevolve";
 
 class CAD {
 
+  private eventQueue!: EventQueue;
   private renderer!: Renderer;
   private scene!: Scene;
   private eventManager!: EventManager;
@@ -46,6 +48,7 @@ class CAD {
 
   public async init() {
 
+    this.eventQueue = new EventQueue();
     this.settingsManager = new SettingsManager();
     this.commandManager = new CommandManager();
     this.cli = new CLI();
@@ -170,6 +173,10 @@ class CAD {
 
   public getMover(): Mover {
     return this.mover;
+  }
+
+  public getEventQueue(): EventQueue {
+    return this.eventQueue;
   }
 
 }

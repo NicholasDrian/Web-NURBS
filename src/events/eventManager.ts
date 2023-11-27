@@ -12,44 +12,57 @@ export class EventManager {
     this.mouseHandler = new MouseHandler();
 
     onmousemove = (event: MouseEvent) => {
-      console.log(event);
-      this.mouseHandler.onMouseMove(event);
+
+      INSTANCE.getEventQueue().pushEvent(() => {
+        this.mouseHandler.onMouseMove(event);
+      });
+
     };
 
     onresize = () => {
-      INSTANCE.getRenderer().updateScreenSize();
+      INSTANCE.getEventQueue().pushEvent(() => {
+        INSTANCE.getRenderer().updateScreenSize();
+      });
     }
 
     onkeydown = (event: KeyboardEvent) => {
-      if (event.code == "Tab") {
-        if (INSTANCE.getMode() == OperatingMode.Navigation) {
-          INSTANCE.setMode(OperatingMode.Command);
+      INSTANCE.getEventQueue().pushEvent(() => {
+        if (event.code == "Tab") {
+          if (INSTANCE.getMode() == OperatingMode.Navigation) {
+            INSTANCE.setMode(OperatingMode.Command);
+          } else {
+            INSTANCE.getCli().clearInput();
+            INSTANCE.setMode(OperatingMode.Navigation);
+          }
+          // prevent tab from chaging focus
+          event.preventDefault();
+          event.stopPropagation();
         } else {
-          INSTANCE.getCli().clearInput();
-          INSTANCE.setMode(OperatingMode.Navigation);
+          if (INSTANCE.getMode() == OperatingMode.Command) INSTANCE.getCli().processKeyDownEvent(event);
+          else if (event.code == "Delete" || event.code == "Backspace") {
+            INSTANCE.getScene().deleteSelected();
+          }
+          INSTANCE.getMover().onkeydown(event);
         }
-        // prevent tab from chaging focus
-        event.preventDefault();
-        event.stopPropagation();
-      } else {
-        if (INSTANCE.getMode() == OperatingMode.Command) INSTANCE.getCli().processKeyDownEvent(event);
-        else if (event.code == "Delete" || event.code == "Backspace") {
-          INSTANCE.getScene().deleteSelected();
-        }
-        INSTANCE.getMover().onkeydown(event);
-      }
+      });
     };
 
     onfocus = () => {
-      INSTANCE.getStats().reset();
+      INSTANCE.getEventQueue().pushEvent(() => {
+        INSTANCE.getStats().reset();
+      });
     }
 
     onmousedown = (event: MouseEvent) => {
-      this.mouseHandler.onMouseDown(event);
+      INSTANCE.getEventQueue().pushEvent(() => {
+        this.mouseHandler.onMouseDown(event);
+      });
     }
 
     onmouseup = (event: MouseEvent) => {
-      this.mouseHandler.onMouseUp(event);
+      INSTANCE.getEventQueue().pushEvent(() => {
+        this.mouseHandler.onMouseUp(event);
+      });
     }
   }
 
