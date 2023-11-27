@@ -86,7 +86,6 @@ export class InstancedMesh extends Geometry {
 
   public delete(): void {
     INSTANCE.getScene().removeMeshInstanced(this.renderMeshInstanced);
-    INSTANCE.getScene().removeGeometry(this);
   }
 
   public isWithinFrustum(frustum: Frustum, inclusive: boolean): boolean {

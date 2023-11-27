@@ -135,7 +135,11 @@ class BBHNode {
   public print(): void {
     let str: string = "";
     for (let i = 0; i < this.depth; i++) str += "->";
-    if (this.geometry) str += `${this.geometry.length}geometry`;
+    if (this.geometry) {
+      for (const geo of this.geometry) {
+        str += `[${geo.getID()},${geo.getTypeName()}]`;
+      }
+    }
     else str += "node";
     console.log(str);
     this.child1?.print();
@@ -149,7 +153,10 @@ class BBHNode {
 
     if (this.isLeaf()) {
       for (let i = 0; i < this.geometry!.length; i++) {
-        if (this.geometry![i] === geo) this.geometry!.splice(i, 1);
+        if (this.geometry![i] === geo) {
+          this.geometry!.splice(i, 1);
+          console.log("removed");
+        }
       }
     } else {
       this.child1!.remove(geo);
@@ -217,6 +224,8 @@ export class SceneBoundingBoxHeirarchy {
 
   public remove(geo: Geometry): void {
     // TODO: shrink bbx
+    console.log("removing", geo.getID(), "from:");
+    this.print();
     this.root.remove(geo);
   }
 

@@ -33,18 +33,21 @@ export class Selector {
   }
 
   public addToSubSelection(geo: Geometry, subID: number): void {
+    while (!INSTANCE.getScene().containsGeometry(geo) && geo.getParent()) geo = geo.getParent()!;
     this.selection.add(geo);
     geo.addToSubSelection(subID);
     INSTANCE.getMover().updatedSelection();
   }
 
   public removeFromSubSelection(geo: Geometry, subID: number): void {
+    while (!INSTANCE.getScene().containsGeometry(geo) && geo.getParent()) geo = geo.getParent()!;
     geo.removeFromSubSelection(subID);
     INSTANCE.getMover().updatedSelection();
   }
 
   public addToSelection(...geometry: Geometry[]): void {
     for (let geo of geometry) {
+      while (!INSTANCE.getScene().containsGeometry(geo) && geo.getParent()) geo = geo.getParent()!;
       this.selection.add(geo);
       geo.select();
     }
@@ -53,6 +56,7 @@ export class Selector {
 
   public removeFromSelection(...geometry: Geometry[]): void {
     for (let geo of geometry) {
+      while (!INSTANCE.getScene().containsGeometry(geo) && geo.getParent()) geo = geo.getParent()!;
       this.selection.delete(geo);
       geo.unSelect();
     }
@@ -81,10 +85,6 @@ export class Selector {
       if (intersection.geometry === null) continue; // construction plane intersection
 
       let geo: Geometry = intersection.geometry;
-      if (!sub) {
-        while (geo.getParent() !== null) geo = geo.getParent()!;
-      }
-
       geometryAtPixel.push([geo, intersection.objectSubID]);
 
       const li = document.createElement("li");
@@ -172,7 +172,7 @@ export class Selector {
     return this.selection;
   }
 
-  transformSelected(transform: Mat4) {
+  public transformSelected(transform: Mat4) {
     const scene: Scene = INSTANCE.getScene();
     for (const geo of this.selection) {
       scene.getBoundingBoxHeirarchy().remove(geo);

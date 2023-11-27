@@ -281,7 +281,6 @@ export class ControlCage1D extends Geometry {
   public delete(): void {
     INSTANCE.getScene().removeLines(this.renderLines);
     INSTANCE.getScene().removeMeshInstanced(this.points);
-    INSTANCE.getScene().removeGeometry(this);
   }
 
   public clone(): Geometry {

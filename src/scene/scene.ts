@@ -38,8 +38,12 @@ export class Scene {
 
   }
 
-  getRootGeometry(): IterableIterator<Geometry> {
+  public getRootGeometry(): IterableIterator<Geometry> {
     return this.rootGeometry.values()
+  }
+
+  public containsGeometry(geo: Geometry): boolean {
+    return this.geometry.has(geo);
   }
 
   public getConstructionPlane(): ConstructionPlane {

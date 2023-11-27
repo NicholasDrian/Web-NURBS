@@ -7,7 +7,6 @@ import { ControlCage1D } from "../controlCage1D";
 import { Frustum } from "../frustum";
 import { Geometry } from "../geometry";
 import { Intersection } from "../intersection";
-import { Points } from "../points";
 import { PolyLine } from "../polyLine";
 import { Ray } from "../ray";
 import { basisFuncs, calcBezierAlphas, genericKnotVector, span } from "./utils";
@@ -37,19 +36,19 @@ export class Curve extends Geometry {
   }
 
   public addToSubSelection(subID: number): void {
-    throw new Error("shouldnt need this");
+    this.controlCage!.addToSubSelection(subID);
   }
   public removeFromSubSelection(subID: number): void {
-    throw new Error("shouldnt need this");
+    this.controlCage!.removeFromSubSelection(subID);
   }
   public isSubSelected(subID: number): boolean {
-    throw new Error("shouldnt need this");
+    return this.controlCage!.isSubSelected(subID);
   }
   public clearSubSelection(): void {
     this.controlCage!.clearSubSelection();
   }
   public getSubSelectionBoundingBox(): BoundingBox {
-    throw new Error("Method not implemented.");
+    return this.controlCage!.getSubSelectionBoundingBox();
   }
   public onSelectionMoved(): void {
     if (this.controlCage!.hasSubSelection()) {
@@ -63,6 +62,7 @@ export class Curve extends Geometry {
   }
 
   public bakeSelectionTransform(): void {
+    console.log("curve baking");
     this.controlCage!.bakeSelectionTransform();
   }
 
@@ -144,10 +144,8 @@ export class Curve extends Geometry {
 
   private updateSamples(updateCage: boolean = true): void {
 
-
-
-    if (updateCage && this.controlCage) this.controlCage.delete();
-    if (this.polyline) this.polyline.delete();
+    if (updateCage) this.controlCage?.delete();
+    this.polyline?.delete();
 
     const samples: Vec3[] = [];
     const sampleCount: number = Curve.SAMPLES_PER_EDGE * (this.weightedControlPoints.length - 1);
@@ -159,7 +157,7 @@ export class Curve extends Geometry {
       return vec3.create(point[0] / point[3], point[1] / point[3], point[2] / point[3]);
     })
 
-    this.polyline = new PolyLine(this, samples,);
+    this.polyline = new PolyLine(this, samples);
     if (updateCage) this.controlCage = new ControlCage1D(this, controlPointArray);
 
   }

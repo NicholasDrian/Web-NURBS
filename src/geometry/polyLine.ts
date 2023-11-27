@@ -111,7 +111,6 @@ export class PolyLine extends Geometry {
 
   public override delete(): void {
     INSTANCE.getScene().removeLines(this.renderLines!);
-    INSTANCE.getScene().removeGeometry(this);
   }
 
   private update(): void {

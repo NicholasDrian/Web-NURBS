@@ -657,11 +657,8 @@ export class Mover {
     this.xyzScaler.setModel(mat4.mul(flipper, Mover.toXYPlane));
   }
 
-
   public getTransform(): Mat4 {
     return mat4.mul(this.currentModel, mat4.inverse(this.originalModel));
   }
-
-
 
 }

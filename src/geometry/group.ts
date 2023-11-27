@@ -59,7 +59,6 @@ export class Group extends Geometry {
     for (const child of this.children) {
       child.delete();
     }
-    INSTANCE.getScene().removeGeometry(this);
   }
 
   public clone(): Geometry {
