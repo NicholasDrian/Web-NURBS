@@ -19,6 +19,7 @@ import { Scale2Command } from "./commands/scale2Command";
 import { ScaleCommand } from "./commands/scaleCommand";
 import { ShearCommand } from "./commands/shearCommand";
 import { SnapsCommand } from "./commands/snapsCommand";
+import { SphereCommand } from "./commands/sphereCommand";
 import { WindowCommand } from "./commands/windowCommand";
 import { ControlCageOffCommand, ControlCageOnCommand } from "./oneTimeCommands/toggleControlCageCommand";
 import { toggleDarkMode } from "./oneTimeCommands/toggleDarkModeCommand";
@@ -111,6 +112,9 @@ export class CommandManager {
           break;
         case "hidw controls": case "hc":
           ControlCageOffCommand();
+          break;
+        case "sphere": case "sp":
+          this.currentCommand = new SphereCommand();
           break;
         default: INSTANCE.getLog().log("Invalid Command");
       }
