@@ -224,9 +224,11 @@ export class Ray {
     const d2121: number = vec3.dot(v21, v21);
 
     const denom: number = d2121 * d4343 - d4321 * d4321;
+    if (denom === 0) return vec3.clone(start);
     var mua: number = (d1343 * d4321 - d1321 * d4343) / denom;
 
-    return vec3.add(start, vec3.scale(v21, mua));
+    const res: Vec3 = vec3.add(start, vec3.scale(v21, mua));
+    return res;
 
   }
 

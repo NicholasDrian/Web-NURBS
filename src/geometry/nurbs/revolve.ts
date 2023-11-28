@@ -54,6 +54,7 @@ export const revolve = function(axis: Ray, curve: Curve, theta: number): Surface
     const W0: number = weights[j];
 
     const O: Vec3 = axis.closestPointToPoint(P0);
+    if (isNaN(O[0])) alert(1);
     var X: Vec3 = vec3.sub(P0, O);
     const r: number = vec3.length(X);
 
@@ -64,6 +65,7 @@ export const revolve = function(axis: Ray, curve: Curve, theta: number): Surface
     }
 
     const Y: Vec3 = vec3.cross(axis.getDirection(), X);
+    if (isNaN(Y[0])) alert(2);
 
     outControls[0].push(P0);
     outWeights[0].push(W0);
@@ -73,7 +75,9 @@ export const revolve = function(axis: Ray, curve: Curve, theta: number): Surface
 
     for (let i = 0; i < narcs; i++) {
       const P2: Vec3 = vec3.add(O, vec3.add(vec3.scale(X, r * cosCash[i]), vec3.scale(Y, r * sinCash[i])));
+      if (isNaN(P2[0])) alert(3);
       const T2: Vec3 = vec3.sub(vec3.scale(Y, cosCash[i]), vec3.scale(X, sinCash[i]));
+      if (isNaN(T2[0])) alert(4);
       const ray: Ray = new Ray(P0, T0);
       outControls[index + 1].push(ray.closestPointOnLine(P2, vec3.add(P2, T2)));
       outWeights[index + 1].push(wm * weights[j]);
@@ -96,6 +100,12 @@ export const revolve = function(axis: Ray, curve: Curve, theta: number): Surface
         ...vec3.scale(outControls[i][j], outWeights[i][j]),
         outWeights[i][j]
       ));
+      if (isNaN(outWeights[i][j])) {
+        alert(5);
+      }
+      if (isNaN(outControls[i][j][0])) {
+        alert(6);
+      }
     }
     outWeightedControls.push(temp);
   }

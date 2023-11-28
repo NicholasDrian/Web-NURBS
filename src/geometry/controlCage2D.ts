@@ -224,7 +224,7 @@ export class ControlCage2D extends Geometry {
 
     let vert1Index: number;
     let vert2Index: number;
-    if (id > this.u * (this.v - 1)) {
+    if (id >= this.u * (this.v - 1)) {
       // vertical
       id -= this.u * (this.v - 1);
       vert1Index = id;
@@ -279,7 +279,10 @@ export class ControlCage2D extends Geometry {
   public getSubSelectionBoundingBox(): BoundingBox {
     const res: BoundingBox = new BoundingBox();
     const model: Mat4 = this.getModelRecursive();
-    if (!this.hasSubSelection()) return res;
+    if (!this.hasSubSelection()) {
+      console.log("early return");
+      return res;
+    }
     for (let i = 0; i < this.u * this.v; i++) {
       if (this.accumulatedSubSelection[i]) {
         res.addVec3(vec3.transformMat4(this.verts[i], model));

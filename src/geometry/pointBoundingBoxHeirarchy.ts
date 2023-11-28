@@ -48,14 +48,18 @@ class PointBoundingBoxHeirarchyNode {
       this.child2 = null;
     } else {
       this.indices = null;
-      const child1Indices: number[] = [];
-      const child2Indices: number[] = [];
+      var child1Indices: number[] = [];
+      var child2Indices: number[] = [];
       for (const index of indices) {
         if (this.verts[index][this.axis] < average[this.axis]) {
           child1Indices.push(index);
         } else {
           child2Indices.push(index);
         }
+      }
+      if (child1Indices.length === 0 || child2Indices.length === 0) {
+        child1Indices = indices.slice(0, indices.length / 2);
+        child2Indices = indices.slice(indices.length / 2, -1);
       }
       this.child1 = new PointBoundingBoxHeirarchyNode(this.geometry, this.verts, child1Indices, this.depth + 1);
       this.child2 = new PointBoundingBoxHeirarchyNode(this.geometry, this.verts, child2Indices, this.depth + 1);
@@ -93,6 +97,18 @@ class PointBoundingBoxHeirarchyNode {
     return this.indices! !== null;
   }
 
+  public print(): void {
+    var str: string = "";
+    for (let i = 0; i < this.depth; i++) str += "->";
+    if (this.isLeaf()) {
+      str += this.indices!.length.toString();
+      console.log(str);
+    } else {
+      console.log(str);
+      this.child1!.print();
+      this.child2!.print();
+    }
+  }
 }
 
 export class PointBoundingBoxHeirarchy {
@@ -106,8 +122,14 @@ export class PointBoundingBoxHeirarchy {
     verts: Vec3[]
   ) {
     const indices: number[] = [];
-    for (let i = 0; i < indices.length; i++) indices.push(i);
+    for (let i = 0; i < verts.length; i++) indices.push(i);
     this.root = new PointBoundingBoxHeirarchyNode(this.geometry, verts, indices);
+  }
+
+  public print(): void {
+    console.log("========point bbh========");
+    this.root.print();
+    console.log("=========================");
   }
 
   public almostIntersect(ray: Ray, pixels: number): Intersection | null {

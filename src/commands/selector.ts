@@ -175,6 +175,7 @@ export class Selector {
   public transformSelected(transform: Mat4) {
     const scene: Scene = INSTANCE.getScene();
     for (const geo of this.selection) {
+      scene.getBoundingBoxHeirarchy().print();
       scene.getBoundingBoxHeirarchy().remove(geo);
       geo.bakeSelectionTransform();
       scene.getBoundingBoxHeirarchy().add(geo);

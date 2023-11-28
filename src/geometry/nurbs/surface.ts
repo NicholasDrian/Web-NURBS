@@ -100,7 +100,7 @@ export class Surface extends Geometry {
   }
 
   public getBoundingBox(): BoundingBox {
-    return this.mesh!.getBoundingBox();
+    return this.controlCage!.getBoundingBox();
   }
 
   public intersect(ray: Ray): Intersection | null {
