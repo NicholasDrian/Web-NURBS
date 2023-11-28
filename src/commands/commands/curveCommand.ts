@@ -63,6 +63,7 @@ export class CurveCommand extends Command {
           if (degree) {
             this.degree = degree;
             this.curve?.changeDegree(Math.min(this.curve.getControlPointCount() - 1, this.degree));
+            this.curve?.showControls(true);
           }
           break;
       }
@@ -78,6 +79,7 @@ export class CurveCommand extends Command {
     this.clicker.onMouseMove();
     if (this.curve && this.clicker.getPoint()) {
       this.curve.updateLastControlPoint(this.clicker.getPoint()!, 1);
+      this.curve.showControls(true);
     }
   }
 
@@ -109,9 +111,10 @@ export class CurveCommand extends Command {
         null,
         [vec4.create(...point, 1), vec4.create(...point, 1)],
         1
-      )
+      );
     }
     this.clicker.reset();
+    this.curve.showControls(true);
   }
 
 

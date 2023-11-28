@@ -146,36 +146,35 @@ export class Selector {
 
   public selectInRectangle(left: number, right: number, top: number, bottom: number, inclusive: boolean, sub: boolean): void {
     const frustum: Frustum = new Frustum(left, right, top, bottom);
-    if (sub) {
-      throw new Error("todo");
-    } else {
-      const within: Geometry[] = INSTANCE.getScene().getBoundingBoxHeirarchy().getWithinFrustum(frustum, sub, inclusive);
-      for (const geo of within) {
-        this.addToSelection(geo);
-      }
+    // TODO: subselection with frustum
+    //if (sub) {
+    //} else {
+    const within: Geometry[] = INSTANCE.getScene().getBoundingBoxHeirarchy().getWithinFrustum(frustum, sub, inclusive);
+    for (const geo of within) {
+      this.addToSelection(geo);
     }
+    //}
   }
 
   public unSelectInRectangle(left: number, right: number, top: number, bottom: number, inclusive: boolean, sub: boolean): void {
     const frustum: Frustum = new Frustum(left, right, top, bottom);
-    if (sub) {
-      throw new Error("todo");
-    } else {
-      const within: Geometry[] = INSTANCE.getScene().getBoundingBoxHeirarchy().getWithinFrustum(frustum, sub, inclusive);
-      for (const geo of within) {
-        this.removeFromSelection(geo);
-      }
+    // TODO: subselection with frustum
+    //if (sub) {
+    //} else {
+    const within: Geometry[] = INSTANCE.getScene().getBoundingBoxHeirarchy().getWithinFrustum(frustum, sub, inclusive);
+    for (const geo of within) {
+      this.removeFromSelection(geo);
     }
+    //}
   }
 
   public getSelection(): Set<Geometry> {
     return this.selection;
   }
 
-  public transformSelected(transform: Mat4) {
+  public transformSelected() {
     const scene: Scene = INSTANCE.getScene();
     for (const geo of this.selection) {
-      scene.getBoundingBoxHeirarchy().print();
       scene.getBoundingBoxHeirarchy().remove(geo);
       geo.bakeSelectionTransform();
       scene.getBoundingBoxHeirarchy().add(geo);

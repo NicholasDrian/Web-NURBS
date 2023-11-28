@@ -93,6 +93,8 @@ export class ControlCage1D extends Geometry {
     this.pointBBH = new PointBoundingBoxHeirarchy(this, this.verts);
     this.lineBBH = new LineBoundingBoxHeirarchy(this, this.verts, this.indices);
 
+    this.hide();
+
   }
 
   public showControls(on: boolean): void {
@@ -113,6 +115,7 @@ export class ControlCage1D extends Geometry {
   }
 
   public intersect(ray: Ray): Intersection | null {
+    if (this.isHidden()) return null;
     let intersection: Intersection | null = this.pointBBH.almostIntersect(ray, 10);
     if (intersection === null) {
       intersection = this.lineBBH.almostIntersect(ray, 10);

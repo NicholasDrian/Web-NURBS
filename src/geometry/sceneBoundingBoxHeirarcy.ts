@@ -155,7 +155,7 @@ class BBHNode {
       for (let i = 0; i < this.geometry!.length; i++) {
         if (this.geometry![i] === geo) {
           this.geometry!.splice(i, 1);
-          console.log("removed", geo.getTypeName(), geo.getID());
+          //console.log("removed", geo.getTypeName(), geo.getID());
         }
       }
     } else {
@@ -179,7 +179,7 @@ class BBHNode {
         this.geometry!.push(geo);
         this.setup(this.geometry!, this.depth);
       }
-      console.log("added", geo.getTypeName(), geo.getID());
+      //console.log("added", geo.getTypeName(), geo.getID());
     } else {
       // non leaf node
       const nodeCenter: number = this.boundingBox.getCenter()[this.axis];
@@ -220,13 +220,13 @@ export class SceneBoundingBoxHeirarchy {
   }
 
   public add(geo: Geometry): void {
-    console.log("adding", geo.getTypeName(), geo.getID());
+    //console.log("adding", geo.getTypeName(), geo.getID());
     this.root.add(geo);
   }
 
   public remove(geo: Geometry): void {
     // TODO: shrink bbx
-    console.log("removing", geo.getTypeName(), geo.getID());
+    //console.log("removing", geo.getTypeName(), geo.getID());
     this.root.remove(geo);
   }
 
