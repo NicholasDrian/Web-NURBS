@@ -66,6 +66,7 @@ fn fragmentMain(inputs: FragInputs) -> FragOutputs {
 
   var fragColor: vec4<f32> = vec4<f32>(0.0, 0.0, 0.0, 1.0);
   var scaledFragCoords: vec2<f32> = inputs.fragCoords.xy / STRIPE_WIDTH;
+  var depth: f32 = inputs.fragCoords.z * 0.9999999;
   if ((flags & SELECTED_BIT) == SELECTED_BIT) {
     
       var evenX: bool = modf(scaledFragCoords.x).fract < 0.5;
@@ -73,6 +74,7 @@ fn fragmentMain(inputs: FragInputs) -> FragOutputs {
       if ((evenX && !evenY) || (evenY && !evenX)) {
         fragColor = vec4<f32>(1.0, 1.0, 0.0, 1.0);
       }
+    depth *= 0.9999999;
    
   }
   if ((flags & HOVER_BIT) == HOVER_BIT) {
@@ -82,11 +84,12 @@ fn fragmentMain(inputs: FragInputs) -> FragOutputs {
       if ((evenX && !evenY) || (evenY && !evenX)) {
         fragColor = vec4<f32>(0.0, 0.0, 1.0, 1.0);
       }
+    depth *= 0.9999999;
 
   }
   var output: FragOutputs;
   output.color = fragColor;
-  output.depth = inputs.fragCoords.z * 0.9999;
+  output.depth = depth;
   return output;
 }
 

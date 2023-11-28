@@ -77,19 +77,21 @@ fn fragmentMain(inputs: VertexOutput) -> FragOutputs {
   if (fragColor.y < 0){ fragColor.y += 1;}
   if (fragColor.z < 0){ fragColor.z += 1;}
 
+  var depth: f32 = inputs.position.z * 0.9999999;
 
   var scaledFragCoords: vec2<f32> = inputs.position.xy / STRIPE_WIDTH;
   if (inputs.selectedness > 0) {
    fragColor = (1 - inputs.selectedness) * fragColor + (inputs.selectedness) * SELECTED_COLOR;
-   
+    depth *= 0.9999999;
   }
   if ((flags & HOVER_BIT) == HOVER_BIT) {
    fragColor = vec4<f32>(0.0, 0.0, 1.0, 1.0);
+    depth *= 0.9999999;
   }
 
   var output: FragOutputs;
   output.color = fragColor;
-  output.depth = inputs.position.z * 0.99999999;
+  output.depth = depth;
   return output;
 }
 
