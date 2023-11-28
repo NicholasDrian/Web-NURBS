@@ -57,6 +57,7 @@ export class ControlCage2D extends Geometry {
   private verts: Vec3[];
   private indices: number[];
 
+
   constructor(
     parent: Geometry | null,
     points: Vec3[][],
@@ -116,6 +117,8 @@ export class ControlCage2D extends Geometry {
 
   }
 
+  public showControls(on: boolean): void {
+  }
 
   public getBoundingBox(): BoundingBox {
     const res: BoundingBox = new BoundingBox();

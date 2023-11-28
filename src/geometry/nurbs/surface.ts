@@ -34,6 +34,11 @@ export class Surface extends Geometry {
     this.update();
   }
 
+  public showControls(on: boolean): void {
+    if (on) this.controlCage!.show();
+    else this.controlCage!.hide();
+  }
+
   public addToSubSelection(subID: number): void {
     this.controlCage!.addToSubSelection(subID);
   }

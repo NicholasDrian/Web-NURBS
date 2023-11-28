@@ -30,17 +30,23 @@ export class Group extends Geometry {
   public isSubSelected(subID: number): boolean {
     throw new Error("Method not implemented.");
   }
+
   public clearSubSelection(): void {
-    throw new Error("todo");
+    for (const geo of this.children) geo.clearSubSelection();
   }
   public getSubSelectionBoundingBox(): BoundingBox {
-    throw new Error("Method not implemented.");
+    const res: BoundingBox = new BoundingBox();
+    for (const geo of this.children) res.addBoundingBox(geo.getSubSelectionBoundingBox());
+    return res;
   }
   public onSelectionMoved(): void {
-    throw new Error("Method not implemented.");
+    for (const geo of this.children) geo.onSelectionMoved();
   }
   public bakeSelectionTransform(): void {
-    throw new Error("Method not implemented.");
+    for (const geo of this.children) geo.bakeSelectionTransform();
+  }
+  public showControls(on: boolean): void {
+    for (const geo of this.children) geo.showControls(on);
   }
 
   public override getBoundingBox(): BoundingBox {

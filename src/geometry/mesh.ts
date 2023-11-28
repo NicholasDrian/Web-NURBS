@@ -72,6 +72,10 @@ export class Mesh extends Geometry {
     // TODO: sub seledction
   }
 
+  public showControls(on: boolean): void {
+    throw new Error("Method not implemented.");
+  }
+
   public setConstantScreenSpaceSize(on: boolean) {
     this.renderMesh.setConstantScreenSpaceSize(on);
   }

@@ -36,6 +36,8 @@ export abstract class Geometry {
   public abstract isSubSelected(subID: number): boolean;
   public abstract getSubSelectionBoundingBox(): BoundingBox;
 
+  public abstract showControls(on: boolean): void;
+
   public abstract onSelectionMoved(): void;
   public abstract bakeSelectionTransform(): void;
 

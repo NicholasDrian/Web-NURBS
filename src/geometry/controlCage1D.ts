@@ -95,6 +95,9 @@ export class ControlCage1D extends Geometry {
 
   }
 
+  public showControls(on: boolean): void {
+  }
+
 
   public getBoundingBox(): BoundingBox {
     const res: BoundingBox = new BoundingBox();

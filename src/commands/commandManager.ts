@@ -20,6 +20,7 @@ import { ScaleCommand } from "./commands/scaleCommand";
 import { ShearCommand } from "./commands/shearCommand";
 import { SnapsCommand } from "./commands/snapsCommand";
 import { WindowCommand } from "./commands/windowCommand";
+import { ControlCageOffCommand, ControlCageOnCommand } from "./oneTimeCommands/toggleControlCageCommand";
 import { toggleDarkMode } from "./oneTimeCommands/toggleDarkModeCommand";
 
 
@@ -104,6 +105,12 @@ export class CommandManager {
           break;
         case "rotate": case "r":
           this.currentCommand = new RotateCommand();
+          break;
+        case "show controls": case "sc":
+          ControlCageOnCommand();
+          break;
+        case "hidw controls": case "hc":
+          ControlCageOffCommand();
           break;
         default: INSTANCE.getLog().log("Invalid Command");
       }

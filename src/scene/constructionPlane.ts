@@ -1,19 +1,25 @@
 import { mat4, vec3, Vec3 } from "wgpu-matrix";
 import { INSTANCE } from "../cad";
+import { Group } from "../geometry/group";
 import { Intersection } from "../geometry/intersection";
-import { Lines } from "../geometry/lines";
 import { Plane } from "../geometry/plane";
 import { Ray } from "../geometry/ray";
 import { MaterialName } from "../materials/material";
+import { RenderLines } from "../render/renderLines";
 
 
 // TODO: draw this first, disable depth buffer while drawing
 export class ConstructionPlane {
 
-  private majorLines: Lines | null;
-  private minorLines: Lines | null;
-  private xAxis: Lines | null;
-  private yAxis: Lines | null;
+  private majorLines: RenderLines | null;
+  private minorLines: RenderLines | null;
+  private xAxis: RenderLines | null;
+  private yAxis: RenderLines | null;
+
+  private majorLinesParent: Group;
+  private minorLinesParent: Group;
+  private xAxisParent: Group;
+  private yAxisParent: Group;
 
   constructor(private majorCount: number = 10,
     private minorCount: number = 10,
@@ -22,6 +28,10 @@ export class ConstructionPlane {
     this.minorLines = null;
     this.xAxis = null;
     this.yAxis = null;
+    this.minorLinesParent = new Group([], null, undefined, "mid grey");
+    this.majorLinesParent = new Group([], null, undefined, "lighter grey");
+    this.xAxisParent = new Group([], null, undefined, "red");
+    this.yAxisParent = new Group([], null, undefined, "green");
     this.setup();
   }
 
@@ -35,6 +45,8 @@ export class ConstructionPlane {
     const minorVerts: Vec3[] = [];
     const majorIndices: number[] = [];
     const minorIndices: number[] = [];
+    const majorSubSelection: boolean[] = [];
+    const minorSubSelection: boolean[] = [];
 
     var majorIndex: number = 0;
     var minorIndex: number = 0;
@@ -52,6 +64,7 @@ export class ConstructionPlane {
           vec3.create(-halfSize, start + i * this.cellSize, z),
           vec3.create(midOrEnd, start + i * this.cellSize,),
         );
+        majorSubSelection.push(false, false, false, false);
         majorIndices.push(majorIndex, majorIndex + 1, majorIndex + 2, majorIndex + 3);
         majorIndex += 4;
       } else { // minor line
@@ -61,18 +74,25 @@ export class ConstructionPlane {
           vec3.create(-halfSize, start + i * this.cellSize, z),
           vec3.create(midOrEnd, start + i * this.cellSize, z),
         );
+        minorSubSelection.push(false, false, false, false);
         minorIndices.push(minorIndex, minorIndex + 1, minorIndex + 2, minorIndex + 3);
         minorIndex += 4;
       }
     }
-    if (this.majorLines) this.majorLines.delete();
-    if (this.minorLines) this.minorLines.delete();
-    if (this.xAxis) this.xAxis.delete();
-    if (this.yAxis) this.yAxis.delete();
-    this.majorLines = new Lines(majorVerts, majorIndices, null, mat4.identity(), "lighter grey");
-    this.minorLines = new Lines(minorVerts, minorIndices, null, mat4.identity(), "mid grey");
-    this.xAxis = new Lines([vec3.create(0, 0, 0), vec3.create(halfSize, 0, 0)], [0, 1], null, mat4.identity(), "red");
-    this.yAxis = new Lines([vec3.create(0, 0, 0), vec3.create(0, halfSize, 0)], [0, 1], null, mat4.identity(), "green");
+    if (this.majorLines) INSTANCE.getScene().removeLines(this.majorLines);
+    if (this.minorLines) INSTANCE.getScene().removeLines(this.minorLines);
+    if (this.xAxis) INSTANCE.getScene().removeLines(this.xAxis);
+    if (this.yAxis) INSTANCE.getScene().removeLines(this.yAxis);
+
+    this.majorLines = new RenderLines(this.majorLinesParent, majorVerts, majorIndices, majorSubSelection);
+    this.minorLines = new RenderLines(this.minorLinesParent, minorVerts, minorIndices, minorSubSelection);
+    this.xAxis = new RenderLines(this.xAxisParent, [vec3.create(0, 0, 0), vec3.create(halfSize, 0, 0)], [0, 1], [false, false]);
+    this.yAxis = new RenderLines(this.yAxisParent, [vec3.create(0, 0, 0), vec3.create(0, halfSize, 0)], [0, 1], [false, false]);
+
+    INSTANCE.getScene().addRenderLines(this.majorLines);
+    INSTANCE.getScene().addRenderLines(this.minorLines);
+    INSTANCE.getScene().addRenderLines(this.xAxis);
+    INSTANCE.getScene().addRenderLines(this.yAxis);
   }
 
 
@@ -125,10 +145,10 @@ export class ConstructionPlane {
   }
 
   public setMajorMaterial(mat: MaterialName) {
-    this.majorLines!.setMaterial(mat);
+    this.majorLinesParent!.setMaterial(mat);
   }
   public setMinorMaterial(mat: MaterialName) {
-    this.minorLines!.setMaterial(mat);
+    this.minorLinesParent!.setMaterial(mat);
   }
 
   public setMinorCount(count: number): void {
