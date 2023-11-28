@@ -34,16 +34,16 @@ class MeshBoundingBoxHeirarchyNode {
     this.axis = this.depth % 3;
     this.boundingBox = new BoundingBox();
 
-    /*
-    for (let index of indices) {
-      this.boundingBox.addVec3(this.verts[index]);
-    }
-    */
+    var average: Vec3 = vec3.create(0, 0, 0);
     for (const tri of triangles) {
       this.boundingBox.addVec3(this.verts[this.indices[tri * 3]]);
       this.boundingBox.addVec3(this.verts[this.indices[tri * 3 + 1]]);
       this.boundingBox.addVec3(this.verts[this.indices[tri * 3 + 2]]);
+      average = vec3.add(average, this.verts[this.indices[tri * 3]]);
+      average = vec3.add(average, this.verts[this.indices[tri * 3 + 1]]);
+      average = vec3.add(average, this.verts[this.indices[tri * 3 + 2]]);
     }
+    average = vec3.scale(average, 1 / (3 * triangles.length));
 
     if (triangles.length <= MeshBoundingBoxHeirarchy.MAX_TRIS_PER_LEAF) {
       // leaf
@@ -63,7 +63,7 @@ class MeshBoundingBoxHeirarchyNode {
               this.verts[this.indices[tri * 3 + 1]],
               this.verts[this.indices[tri * 3 + 2]])
           ), 1 / 3);
-        if (center[this.axis] < this.boundingBox.getCenter()[this.axis]) {
+        if (center[this.axis] < average[this.axis]) {
           child1Tris.push(tri);
         } else {
           child2Tris.push(tri);
@@ -166,18 +166,20 @@ export class MeshBoundingBoxHeirarchy {
   private root: MeshBoundingBoxHeirarchyNode;
 
   constructor(private mesh: Geometry, verts: Vec3[], indices: number[]) {
+
+    // BUG: need to filter out identical triangles
+    // to avoid infinite loop
+
     // degenerates breaks the bbh
-    const reducedIndices: number[] = [];
     const triangles: number[] = [];
     for (let i = 0; i < indices.length; i += 3) {
       const d1: number = vec3.distance(verts[indices[i]], verts[indices[i + 1]]);
       const d2: number = vec3.distance(verts[indices[i + 1]], verts[indices[i + 2]]);
       const d3: number = vec3.distance(verts[indices[i + 2]], verts[indices[i]]);
       if (d1 === 0 || d2 === 0 || d3 === 0) continue;
-      reducedIndices.push(indices[i], indices[i + 1], indices[i + 2]);
       triangles.push(i / 3);
     }
-    this.root = new MeshBoundingBoxHeirarchyNode(this.mesh, verts, reducedIndices, triangles);
+    this.root = new MeshBoundingBoxHeirarchyNode(this.mesh, verts, indices, triangles);
   }
 
   public print(): void {

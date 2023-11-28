@@ -157,6 +157,7 @@ export class ControlCage2D extends Geometry {
     } else {
       // Point Sub ID
       if (!this.vertexSubSelection[subID]) {
+        console.log("subSelect vert", subID);
         this.vertexSubSelection[subID] = true;
         this.subSelectedVertCount++;
         this.vertSelectionChanged(subID);
@@ -278,12 +279,9 @@ export class ControlCage2D extends Geometry {
   public getSubSelectionBoundingBox(): BoundingBox {
     const res: BoundingBox = new BoundingBox();
     const model: Mat4 = this.getModelRecursive();
-    console.log(1);
     if (!this.hasSubSelection()) return res;
-    console.log(2);
     for (let i = 0; i < this.u * this.v; i++) {
       if (this.accumulatedSubSelection[i]) {
-        console.log(3);
         res.addVec3(vec3.transformMat4(this.verts[i], model));
       }
     }

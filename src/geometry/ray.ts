@@ -210,6 +210,7 @@ export class Ray {
   }
 
   public closestPointOnLine(start: Vec3, end: Vec3): Vec3 {
+
     const p: Vec3 = vec3.add(this.origin, this.direction);
 
     const v13: Vec3 = vec3.sub(start, this.origin);
@@ -222,7 +223,8 @@ export class Ray {
     const d4343: number = vec3.dot(v43, v43);
     const d2121: number = vec3.dot(v21, v21);
 
-    var mua: number = (d1343 * d4321 - d1321 * d4343) / (d2121 * d4343 - d4321 * d4321);
+    const denom: number = d2121 * d4343 - d4321 * d4321;
+    var mua: number = (d1343 * d4321 - d1321 * d4343) / denom;
 
     return vec3.add(start, vec3.scale(v21, mua));
 

@@ -5,8 +5,6 @@ import { Surface } from "./surface";
 
 export const revolve = function(axis: Ray, curve: Curve, theta: number): Surface {
 
-  // TODO: think about model
-
   if (theta < 0 || theta > Math.PI * 2) throw new Error("Invalid params");
 
   const outKnots: number[] = [];
@@ -58,7 +56,13 @@ export const revolve = function(axis: Ray, curve: Curve, theta: number): Surface
     const O: Vec3 = axis.closestPointToPoint(P0);
     var X: Vec3 = vec3.sub(P0, O);
     const r: number = vec3.length(X);
-    X = vec3.scale(X, 1 / r);
+
+    if (X[0] === 0 && X[1] === 0 && X[2] === 0) {
+      X = vec3.create(1, 0, 0);
+    } else {
+      X = vec3.scale(X, 1 / r);
+    }
+
     const Y: Vec3 = vec3.cross(axis.getDirection(), X);
 
     outControls[0].push(P0);
@@ -71,7 +75,6 @@ export const revolve = function(axis: Ray, curve: Curve, theta: number): Surface
       const P2: Vec3 = vec3.add(O, vec3.add(vec3.scale(X, r * cosCash[i]), vec3.scale(Y, r * sinCash[i])));
       const T2: Vec3 = vec3.sub(vec3.scale(Y, cosCash[i]), vec3.scale(X, sinCash[i]));
       const ray: Ray = new Ray(P0, T0);
-
       outControls[index + 1].push(ray.closestPointOnLine(P2, vec3.add(P2, T2)));
       outWeights[index + 1].push(wm * weights[j]);
       outControls[index + 2].push(P2);
@@ -87,10 +90,14 @@ export const revolve = function(axis: Ray, curve: Curve, theta: number): Surface
 
   const outWeightedControls: Vec4[][] = [];
   for (let i = 0; i < outControls.length; i++) {
-    outWeightedControls.push([]);
+    const temp: Vec4[] = [];
     for (let j = 0; j < outControls[0].length; j++) {
-      outWeightedControls[i].push(vec4.create(...vec3.scale(outControls[i][j], outWeights[i][j]), outWeights[i][j]));
+      temp.push(vec4.create(
+        ...vec3.scale(outControls[i][j], outWeights[i][j]),
+        outWeights[i][j]
+      ));
     }
+    outWeightedControls.push(temp);
   }
 
   return new Surface(outWeightedControls, outKnots, [...curve.getKnots()], curve.getDegree(), 2);

@@ -50,9 +50,9 @@ class LineBoundingBoxHeirarchyNode {
       // non leaf
       this.lines = null;
 
-      const child1Lines: number[] = [];
-      const child2Lines: number[] = [];
-
+      let child1Lines: number[] = [];
+      let child2Lines: number[] = [];
+      let centered: number = 0;
       for (const line of lines) {
         const center: Vec3 = vec3.scale(
           vec3.add(
@@ -60,11 +60,16 @@ class LineBoundingBoxHeirarchyNode {
             this.verts[this.indices[2 * line + 1]]),
           0.5
         );
+        if (vec3.equals(center, average)) centered++;
         if (center[this.axis] < average[this.axis]) {
           child1Lines.push(line);
         } else {
           child2Lines.push(line);
         }
+      }
+      if (centered === lines.length) {
+        child1Lines = lines.slice(0, lines.length / 2);
+        child2Lines = lines.slice(lines.length / 2, -1);
       }
       this.child1 = new LineBoundingBoxHeirarchyNode(this.geometry, this.verts, this.indices, child1Lines, this.depth + 1);
       this.child2 = new LineBoundingBoxHeirarchyNode(this.geometry, this.verts, this.indices, child2Lines, this.depth + 1);
@@ -160,18 +165,60 @@ export class LineBoundingBoxHeirarchy {
     verts: Vec3[],
     indices: number[]) {
 
-    // remove degenerate edges, they can cause infinite loop.
-    let reducedIndices: number[] = [];
-    const lines: number[] = [];
+    /*
+
+    // filter out degenerate and duplicate lines
+    let filteredIndices: [number, number][] = [];
     for (let i = 0; i < indices.length; i += 2) {
-      const a: Vec3 = verts[indices[i]];
-      const b: Vec3 = verts[indices[i + 1]];
-      if (a[0] !== b[0] || a[1] !== b[1] || a[2] !== b[2]) {
-        lines.push(i / 2);
-        reducedIndices.push(indices[i], indices[i + 1]);
+      filteredIndices.push([indices[i], indices[i + 1]]);
+    }
+
+    // first filter out degens
+    let idx: number = 0;
+    for (let i = 0; i < filteredIndices.length; i++) {
+      const pointA: Vec3 = verts[filteredIndices[i][0]];
+      const pointB: Vec3 = verts[filteredIndices[i][1]];
+      if (pointA[0] != pointB[0] || pointA[1] != pointB[1] || pointA[2] != pointB[2]) {
+        filteredIndices[idx++] = filteredIndices[i];
       }
     }
-    this.root = new LineBoundingBoxHeirarchyNode(this.geometry, verts, reducedIndices, lines);
+    filteredIndices = filteredIndices.slice(0, idx);
+
+    // second filter out duplicates
+    filteredIndices.sort((a: [number, number], b: [number, number]) => {
+      const aStart: Vec3 = verts[a[0]];
+      const aEnd: Vec3 = verts[a[1]];
+      const bStart: Vec3 = verts[b[0]];
+      const bEnd: Vec3 = verts[b[1]];
+      if (aStart[0] != bStart[0]) return aStart[0] - bStart[0];
+      if (aStart[1] != bStart[1]) return aStart[1] - bStart[1];
+      if (aStart[2] != bStart[2]) return aStart[2] - bStart[2];
+      if (aEnd[0] != bEnd[0]) return aEnd[0] - bEnd[0];
+      if (aEnd[1] != bEnd[1]) return aEnd[1] - bEnd[1];
+      return aEnd[2] - bEnd[2];
+    });
+    idx = 1;
+    for (let i = 1; i < filteredIndices.length; i++) {
+      if (
+        !vec3.equals(verts[filteredIndices[i][0]], verts[filteredIndices[i - 1][0]]) ||
+        !vec3.equals(verts[filteredIndices[i][1]], verts[filteredIndices[i - 1][1]])
+      ) {
+        filteredIndices[idx++] = filteredIndices[i];
+      }
+    }
+    filteredIndices.slice(0, idx);
+
+    // cant change line order and sutch
+
+    const flattenedIndices: number[] = [];
+    for (let p of filteredIndices) flattenedIndices.push(...p);
+    const lines: number[] = [];
+    for (let i = 0; i < flattenedIndices.length / 2; i++) lines.push(i);
+    */
+
+    const lines: number[] = [];
+    for (let i = 0; i < indices.length / 2; i++) lines.push(i);
+    this.root = new LineBoundingBoxHeirarchyNode(this.geometry, verts, indices, lines);
   }
 
   public print(): void {

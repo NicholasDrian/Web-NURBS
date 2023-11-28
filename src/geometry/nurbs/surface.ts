@@ -13,8 +13,6 @@ import { Curve } from "./curve";
 import { basisFuncs, span } from "./utils";
 
 
-
-
 export class Surface extends Geometry {
 
   private mesh: Mesh | null;
@@ -57,7 +55,6 @@ export class Surface extends Geometry {
   }
 
   public onSelectionMoved(): void {
-    console.log("surface on selection moved");
     if (this.controlCage!.hasSubSelection()) {
       const newVerts: Vec3[][] = this.controlCage!.getVertsSubSelectionTransformed();
       for (let i = 0; i < this.weightedControlPoints.length; i++) {
@@ -77,7 +74,6 @@ export class Surface extends Geometry {
   }
 
   public bakeSelectionTransform(): void {
-    console.log("surface bake");
     if (this.isSelected()) {
       this.model = mat4.mul(INSTANCE.getMover().getTransform(), this.model);
     }
@@ -176,8 +172,6 @@ export class Surface extends Geometry {
         return vec3.create(point[0] / point[3], point[1] / point[3], point[2] / point[3]);
       })
     }));
-
-    console.log("surface resample took", (Date.now() - startTime) / 1000, "seconds");
 
   }
 

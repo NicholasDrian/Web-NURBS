@@ -1,12 +1,11 @@
 import { Mat4, mat4, vec3, Vec3 } from "wgpu-matrix";
 import { INSTANCE } from "../../cad";
-import { Geometry } from "../../geometry/geometry";
 import { Intersection } from "../../geometry/intersection";
 import { Curve } from "../../geometry/nurbs/curve";
 import { revolve } from "../../geometry/nurbs/revolve";
 import { Surface } from "../../geometry/nurbs/surface";
 import { Ray } from "../../geometry/ray";
-import { angleBetween } from "../../utils/math";
+import { angleBetween, getRotationTransform } from "../../utils/math";
 import { Clicker } from "../clicker";
 import { Command } from "../command";
 
@@ -114,20 +113,15 @@ export class RevolveCommand extends Command {
           theta = 2 * Math.PI - theta;
         }
 
-        if (theta == 0 || isNaN(theta)) return;
-
         if (this.flipped) theta = Math.PI * 2 - theta;
+
+        if (theta === 0 || isNaN(theta)) return;
 
         for (const curve of this.curves) {
           const revolution: Surface = revolve(this.axis!, curve, theta);
           if (this.flipped) {
-            var model: Mat4 = revolution.getModel();
-            // TODO: use new rotate math function for this.
-            const translation: Vec3 = this.axis!.getOrigin();
-            model = mat4.translate(model, vec3.scale(translation, -1));
-            model = mat4.axisRotate(model, this.axis!.getDirection(), Math.PI * 2 - theta);
-            model = mat4.translate(model, translation);
-            revolution.setModel(model);
+            const rotation: Mat4 = getRotationTransform(this.axis!, Math.PI * 2 - theta);
+            revolution.setModel(mat4.mul(rotation, revolution.getModel()));
           }
           INSTANCE.getScene().addGeometry(revolution);
         }
@@ -171,19 +165,15 @@ export class RevolveCommand extends Command {
           theta = 2 * Math.PI - theta;
         }
 
-        if (theta == 0 || isNaN(theta)) return;
-
         if (this.flipped) theta = Math.PI * 2 - theta;
+
+        if (isNaN(theta) || theta === 0) return;
 
         for (const curve of this.curves) {
           const revolution: Surface = revolve(this.axis!, curve, theta);
           if (this.flipped) {
-            var model: Mat4 = revolution.getModel();
-            const translation: Vec3 = this.axis!.getOrigin();
-            model = mat4.translate(model, vec3.scale(translation, -1));
-            model = mat4.axisRotate(model, this.axis!.getDirection(), Math.PI * 2 - theta);
-            model = mat4.translate(model, translation);
-            revolution.setModel(model);
+            const rotation: Mat4 = getRotationTransform(this.axis!, Math.PI * 2 - theta);
+            revolution.setModel(mat4.mul(rotation, revolution.getModel()));
           }
           this.surfaces.push(revolution);
         }

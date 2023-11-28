@@ -68,9 +68,11 @@ export class MouseHandler {
         }
       } else { // drag
         if (!INSTANCE.getMover().isActive()) {
-          if (!this.shiftDown) INSTANCE.getSelector().reset();
-          const inclusive: boolean = this.drag!.isLeftward();
-          INSTANCE.getSelector().selectInRectangle(...this.drag!.getBounds(), inclusive, this.metaDown);
+          if (this.drag) { // should be set unless i inspected element
+            if (!this.shiftDown) INSTANCE.getSelector().reset();
+            const inclusive: boolean = this.drag!.isLeftward();
+            INSTANCE.getSelector().selectInRectangle(...this.drag!.getBounds(), inclusive, this.metaDown);
+          }
         }
       }
       this.drag?.destroy();

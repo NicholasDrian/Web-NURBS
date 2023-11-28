@@ -155,7 +155,6 @@ class BBHNode {
       for (let i = 0; i < this.geometry!.length; i++) {
         if (this.geometry![i] === geo) {
           this.geometry!.splice(i, 1);
-          console.log("removed", geo.getID(), geo.getTypeName());
         }
       }
     } else {
@@ -224,7 +223,6 @@ export class SceneBoundingBoxHeirarchy {
 
   public remove(geo: Geometry): void {
     // TODO: shrink bbx
-    console.log("removing", geo.getID(), geo.getTypeName());
     this.root.remove(geo);
   }
 
@@ -252,7 +250,6 @@ export class SceneBoundingBoxHeirarchy {
   public getWithinFrustum(frustum: Frustum, sub: boolean, inclusive: boolean): Geometry[] {
     return this.root.getWithinFrustum(frustum, sub, inclusive);
   }
-
 
   public print(): void {
     console.log("==========Scene-BBH===========");

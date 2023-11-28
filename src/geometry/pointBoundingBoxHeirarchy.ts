@@ -1,4 +1,5 @@
-import { mat4, vec3, Vec3 } from "wgpu-matrix";
+import { Mat4, mat4, vec3, Vec3 } from "wgpu-matrix";
+import { cloneVec3List } from "../utils/clone";
 import { BoundingBox } from "./boundingBox";
 import { Geometry } from "./geometry";
 import { Intersection } from "./intersection";
@@ -39,7 +40,9 @@ class PointBoundingBoxHeirarchyNode {
     }
     average = vec3.scale(average, 1 / (indices.length));
 
-    if (indices.length < PointBoundingBoxHeirarchy.MAX_POINTS_PER_LEAF) {
+    if (indices.length < PointBoundingBoxHeirarchy.MAX_POINTS_PER_LEAF ||
+      this.boundingBox.hasNoVolume()
+    ) {
       this.indices = indices;
       this.child1 = null;
       this.child2 = null;
@@ -103,14 +106,17 @@ export class PointBoundingBoxHeirarchy {
     verts: Vec3[]
   ) {
     const indices: number[] = [];
-    for (let i = 0; i < verts.length; i++) indices.push(i);
+    for (let i = 0; i < indices.length; i++) indices.push(i);
     this.root = new PointBoundingBoxHeirarchyNode(this.geometry, verts, indices);
   }
 
   public almostIntersect(ray: Ray, pixels: number): Intersection | null {
 
-    const objectSpaceRay: Ray = Ray.transform(ray, mat4.inverse(this.geometry.getModelRecursive()));
-    return this.root.almostIntersect(objectSpaceRay, pixels);
+    const model: Mat4 = this.geometry.getModelRecursive();
+    const objectSpaceRay: Ray = Ray.transform(ray, mat4.inverse(model));
+    var res: Intersection | null = this.root.almostIntersect(objectSpaceRay, pixels);
+    if (res) res.point = vec3.transformMat4(res.point, model);
+    return res;
 
   }
 

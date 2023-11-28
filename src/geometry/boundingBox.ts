@@ -42,6 +42,12 @@ export class BoundingBox {
     this.zMax = Math.max(this.zMax, bb.zMax);
   }
 
+  public hasNoVolume(): boolean {
+    return this.xMin === this.xMax &&
+      this.yMin === this.yMax &&
+      this.zMin === this.zMax;
+  }
+
   public getCenter(): Vec3 {
     const res: Vec3 = vec3.create(
       (this.xMin + this.xMax) / 2,

@@ -149,8 +149,10 @@ export class Curve extends Geometry {
     const sampleCount: number = Curve.SAMPLES_PER_EDGE * (this.weightedControlPoints.length - 1);
     const samples: Vec3[] = [];
     const indices: number[] = [];
+    const subSelection: boolean[] = [];
     for (let i = 0; i <= sampleCount; i++) {
       samples.push(this.sample(i / sampleCount));
+      subSelection.push(false);
       indices.push(i, i + 1);
     }
     indices.pop();
@@ -158,9 +160,11 @@ export class Curve extends Geometry {
 
     const controlPointArray: Vec3[] = this.weightedControlPoints.map((point: Vec4) => {
       return vec3.create(point[0] / point[3], point[1] / point[3], point[2] / point[3]);
-    })
+    });
 
-    this.lines = new RenderLines(this, samples, indices, []);
+
+    this.lines = new RenderLines(this, samples, indices, subSelection);
+    INSTANCE.getScene().addRenderLines(this.lines);
     this.linesBBH = new LineBoundingBoxHeirarchy(this, samples, indices);
     if (updateCage) this.controlCage = new ControlCage1D(this, controlPointArray);
 
