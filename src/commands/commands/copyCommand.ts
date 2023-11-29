@@ -1,4 +1,4 @@
-import { mat4, vec3, Vec3 } from "wgpu-matrix";
+import { Mat4, mat4, vec3, Vec3 } from "wgpu-matrix";
 import { INSTANCE } from "../../cad";
 import { Geometry } from "../../geometry/geometry";
 import { Intersection } from "../../geometry/intersection";
@@ -16,7 +16,7 @@ export class CopyCommand extends Command {
   private mode: CopyCommandMode;
   private pointToCopyFrom: Vec3 | null;
   private clicker: Clicker;
-  private objectToCopy: Map<Geometry, Geometry>;
+  private geometry: Map<Geometry, Mat4>;
 
   constructor() {
     super();
@@ -24,7 +24,7 @@ export class CopyCommand extends Command {
     this.mode = CopyCommandMode.SelectPointToCopyFrom;
     this.pointToCopyFrom = null;
     this.clicker = new Clicker();
-    this.objectToCopy = new Map<Geometry, Geometry>;
+    this.geometry = new Map<Geometry, Mat4>;
 
     const selection: Set<Geometry> = INSTANCE.getSelector().getSelection();
     if (selection.size === 0) {
@@ -32,13 +32,17 @@ export class CopyCommand extends Command {
       return;
     }
     for (const geometry of selection) {
-      this.objectToCopy.set(geometry, geometry.clone());
+      this.geometry.set(geometry.clone(), geometry.getModelRecursive());
     }
 
   }
 
   handleInputString(input: string): void {
     if (input == "0") {
+      for (let geo of this.geometry.keys()) {
+        geo.delete();
+      }
+      this.geometry.clear();
       this.done();
     }
 
@@ -60,9 +64,9 @@ export class CopyCommand extends Command {
         this.clicker.reset();
         break;
       case CopyCommandMode.SelectPointToCopyTo:
-        const translation: Vec3 = vec3.sub(intersection.point, this.pointToCopyFrom!);
-        for (const [object, copy] of this.objectToCopy) {
-          copy.setModel(mat4.translate(object.getModel(), translation));
+        const translation: Mat4 = mat4.translation(vec3.sub(intersection.point, this.pointToCopyFrom!));
+        for (const [copy, model] of this.geometry) {
+          copy.setModel(mat4.mul(translation, model));
         }
         this.done();
         break;
@@ -80,9 +84,9 @@ export class CopyCommand extends Command {
     if (this.mode == CopyCommandMode.SelectPointToCopyTo) {
       const point: Vec3 | null = this.clicker.getPoint();
       if (point) {
-        const translation: Vec3 = vec3.sub(point, this.pointToCopyFrom!);
-        for (const [object, copy] of this.objectToCopy) {
-          copy.setModel(mat4.translate(object.getModel(), translation));
+        const translation: Mat4 = mat4.translation(vec3.sub(point, this.pointToCopyFrom!));
+        for (const [copy, model] of this.geometry) {
+          copy.setModel(mat4.translate(translation, model));
         }
       }
     }
@@ -105,7 +109,7 @@ export class CopyCommand extends Command {
 
   done() {
     this.clicker.destroy();
-    for (const copy of this.objectToCopy.values()) {
+    for (const copy of this.geometry.keys()) {
       INSTANCE.getScene().addGeometry(copy);
     }
     this.finished = true;
