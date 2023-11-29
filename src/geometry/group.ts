@@ -1,5 +1,4 @@
 import { Mat4, mat4 } from "wgpu-matrix";
-import { INSTANCE } from "../cad";
 import { MaterialName } from "../materials/material";
 import { BoundingBox } from "./boundingBox";
 import { Frustum } from "./frustum";

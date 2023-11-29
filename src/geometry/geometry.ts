@@ -129,6 +129,7 @@ export abstract class Geometry {
 
   public getColorBuffer(): GPUBuffer {
 
+    console.log(this.materialName);
     if (this.materialName) {
       const mat: Material | undefined = INSTANCE.getMaterialManager().getMaterial(this.materialName);
       if (mat && mat.getColor()) {

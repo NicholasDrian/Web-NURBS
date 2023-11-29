@@ -93,6 +93,7 @@ fn fragmentMain(inputs: VertexOutput) -> FragOutputs {
 
   var output: FragOutputs;
   output.color = fragColor;
+  output.color = color;
   output.depth = depth;
   return output;
 }
