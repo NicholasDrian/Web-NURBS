@@ -22,10 +22,11 @@ export class WindowManager {
   }
 
   private setupDefaultWindows(): void {
-    this.addWindow("materials", [10, 10], [210, 400]);
+    this.addWindow("materials", [10, 10], [210, 510]);
     this.addWindow("stats", [220, 10], [410, 220]);
     this.addWindow("snaps", [420, 10], [550, 100]);
   }
+
   public getWindows(): Map<string, CADWindow> {
     return this.windows;
   }

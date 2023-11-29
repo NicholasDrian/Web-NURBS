@@ -1,0 +1,92 @@
+
+
+:root {
+  --light-red: rgba(220, 200, 200, 1.0);
+  --dark-red: rgba(100, 0, 0, 1.0);
+  --blue: rgba(50, 50, 255,1);
+  --transparent-black: rgba(0, 0, 0, 0.4);
+  --black: rgba(0, 0, 0, 1);
+  --transparent-white: rgba(255, 255, 255, 0.4);
+
+  --floating-window-text-color: var(--light-red);
+  --floating-window-border-color: var(--light-red);
+  --floating-window-background-color: var(--transparent-black);
+
+  font-family: 'Lucida Console', monospace;
+  user-select: none;
+
+}
+
+input {
+  background-color: var(--floating-window-background-color);
+  border-color: var(--floating-window-border-color);
+  color: var(--floating-window-text-color);
+}
+button {
+  background-color: var(--floating-window-background-color);
+  border-color: var(--blue);
+  color: var(--floating-window-text-color);
+  
+}
+
+li:hover {
+  border-style: solid;
+  border-width: thin;
+  border-color: var(--floating-window-border-color);
+  border-radius: 0.3rem;
+}
+
+html, body {
+  width:  100%;
+  height: 100%;
+  margin: 0;
+  overflow: hidden;
+}
+
+ul, li {
+  margin: 0;
+  padding: 0;
+}
+
+.floating-window {
+  position: absolute;
+  border-style: solid;
+  border-width: thin;
+  border-color: var(--floating-window-border-color);
+  color: var(--floating-window-text-color);
+  background-color: var(--floating-window-background-color);
+  font-size: 14px;
+  border-radius: 0.5rem;
+  padding: 5px;
+  overflow-y: scroll;
+  height: auto;
+}
+#cli {
+  font-size: 18px;
+  height: 20px;
+  width: calc(100% - 30px);
+  left: 10px;
+  bottom: 10px;
+}
+#screen {
+  /* not sure why this is flipped */
+  transform:scaleX(-1);
+}
+#selection-rectangle {
+  border-radius: 0px;
+  opacity: 0.5;  
+  margin: 0px;
+  padding: 0px;
+}
+
+
+
+
+
+
+
+
+
+
+
+

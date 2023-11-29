@@ -59,6 +59,7 @@ export class MaterialsWindow extends CADWindow {
     res.setAttribute("min", min.toString());
     res.setAttribute("max", max.toString());
     res.setAttribute("step", "0.01");
+    res.style.width = "12em";
     res.setAttribute("value", initialValue.toString());
     res.setAttribute("id", id);
     return res;
@@ -66,6 +67,7 @@ export class MaterialsWindow extends CADWindow {
 
   private renderMaterial(): void {
 
+    const name: string = this.selectedMaterial!.getName();
     const color: Vec4 = this.selectedMaterial!.getColor();
     const emissive: Vec4 = this.selectedMaterial!.getEmissive();
     const ambientIntensity: number = this.selectedMaterial!.getAmbientIntensity();
@@ -74,8 +76,6 @@ export class MaterialsWindow extends CADWindow {
     const specularIntensity: number = this.selectedMaterial!.getSpecularIntensity();
 
     this.element.innerHTML = "<b><u>Materials:</u></b><br>";
-
-    const fields: HTMLElement = document.createElement("ul");
 
     this.element.innerHTML += "<br><b>Color:<b>";
     this.element.innerHTML += "<br>R:";
@@ -109,22 +109,34 @@ export class MaterialsWindow extends CADWindow {
     this.element.innerHTML += "<br><b>Specular Intensity:<b>";
     this.element.appendChild(this.createSlider("specularIntensity", 0, 1, specularIntensity));
 
-    this.element.oninput = function(ev: Event) {
-      const thisWindow: MaterialsWindow = <MaterialsWindow>INSTANCE.getWindowManager().getWindows().get("materials");
-      thisWindow.updatedMaterial();
-      ev.stopPropagation();
-    }
+    this.element.innerHTML += "<br><b>Name: <b>";
+    const nameField: HTMLInputElement = document.createElement("input");
+    nameField.setAttribute("value", name);
+    nameField.style.width = "9em";
+    nameField.setAttribute("id", "name field");
+    this.element.appendChild(nameField);
 
-    const backButton: HTMLElement = document.createElement("li");
+    const nameSubmitButton: HTMLElement = document.createElement("button");
+    nameSubmitButton.innerHTML = "<b>Save Name</b>";
+    nameSubmitButton.style.width = "13em";
+    nameSubmitButton.onclick = function(ev: MouseEvent) {
+      const thisWindow: MaterialsWindow = <MaterialsWindow>INSTANCE.getWindowManager().getWindows().get("materials");
+      thisWindow.updatedName();
+      ev.stopPropagation();
+    };
+    this.element.appendChild(nameSubmitButton);
+
+
+    const backButton: HTMLElement = document.createElement("button");
     backButton.innerHTML = "<b>Back</b>";
     backButton.onclick = function(ev: MouseEvent) {
       const thisWindow: MaterialsWindow = <MaterialsWindow>INSTANCE.getWindowManager().getWindows().get("materials");
       thisWindow.setSelectedMaterial(null);
       ev.stopPropagation();
     };
-    fields.appendChild(backButton);
+    this.element.appendChild(backButton);
 
-    const deleteButton: HTMLElement = document.createElement("li");
+    const deleteButton: HTMLElement = document.createElement("button");
     deleteButton.innerHTML = "<b>Delete</b>"
     deleteButton.onclick = function(ev: MouseEvent) {
       const thisWindow: MaterialsWindow = <MaterialsWindow>INSTANCE.getWindowManager().getWindows().get("materials");
@@ -133,10 +145,24 @@ export class MaterialsWindow extends CADWindow {
       thisWindow.setSelectedMaterial(null);
       ev.stopPropagation();
     };
-    fields.appendChild(deleteButton);
+    this.element.appendChild(deleteButton);
 
-    this.element.appendChild(fields);
+    this.element.oninput = function(ev: Event) {
+      const thisWindow: MaterialsWindow = <MaterialsWindow>INSTANCE.getWindowManager().getWindows().get("materials");
+      thisWindow.updatedMaterial();
+      ev.stopPropagation();
+    }
+  }
 
+  public updatedName(): void {
+    const name: string = (<HTMLInputElement>document.getElementById("name field")).value
+    if (name == "") {
+      alert("Invalid Name");
+      return;
+    }
+    INSTANCE.getMaterialManager().removeMaterial(this.selectedMaterial!.getName());
+    this.selectedMaterial!.setName(name);
+    INSTANCE.getMaterialManager().addMaterial(this.selectedMaterial!.getName(), this.selectedMaterial!);
   }
 
   public updatedMaterial() {

@@ -32,6 +32,10 @@ export class Material {
     this.updateBuffer();
   }
 
+  public setName(name: string): void {
+    this.name = name;
+  }
+
   private updateBuffer(): void {
     const data: Float32Array = new Float32Array([
       ...this.color,
