@@ -38,9 +38,9 @@ fn applySelectionTransformNormal(p: vec4<f32>) -> vec4<f32> {
 
 struct VertexOutput {
   @builtin(position) fragCoord : vec4<f32>,
-  @location(0) @interpolate(linear) normal : vec4<f32>,
-  @location(1) @interpolate(linear) selectedness: f32,
-  @location(2) @interpolate(linear) position: vec4<f32>,
+    @location(0) @interpolate(linear) normal : vec4<f32>,
+    @location(1) @interpolate(linear) selectedness: f32,
+    @location(2) @interpolate(linear) position: vec4<f32>,
 }
 
 @vertex
@@ -58,7 +58,7 @@ fn vertexMain(
     var dist: f32 = distance(worldSpacePosition.xyz, cameraPos.xzy);
     // TODO: dist should actually be dist in forward direction
     var scaledObjectSpacePosition: vec4<f32> = vec4<f32>(objectSpacePosition.xzy * dist, objectSpacePosition.w);
-    worldSpacePosition = applySelectionTransform(model * scaledObjectSpacePosition.xzyw);
+    worldSpacePosition = applySelectionTransform(model * scaledObjectSpacePosition);
   } 
 
   var selectedness: f32 = 0;
@@ -74,31 +74,53 @@ fn vertexMain(
 }
 
 
+fn calculateLighting(position: vec4<f32>, normal: vec3<f32>, color: vec4<f32>) -> vec4<f32> {
+  var toCamera: vec3<f32> = cameraPos.xyz - position.xyz;
+  var d: f32 = dot(toCamera, normal);
+
+  var flippedNormal: vec3<f32> = normal;
+
+  if (d < 0) {
+    flippedNormal *= -1;
+    d *= -1;
+  } 
+  
+
+
+
+
+
+
+
+
+  let aboveLightStrength: f32 = dot(flippedNormal, vec3<f32>(0,1,0)) * 0.5 + 0.5;
+
+  return aboveLightStrength * color;
+}
 
 
 @fragment
 fn fragmentMain(inputs: VertexOutput) -> @location(0) vec4f {
 
   var normalizedNormal: vec3<f32> = normalize(inputs.normal.xyz);
-  var fragColor: vec4<f32> = color;
+  var fragColor: vec4<f32> = calculateLighting(inputs.position, normalizedNormal, color);
 
-  fragColor = (fragColor * 0.5) + (inputs.normal * 0.5);
 
   var scaledFragCoords: vec2<f32> = inputs.fragCoord.xy / STRIPE_WIDTH;
   if (inputs.selectedness > 0) {
-      var evenX: bool = modf(scaledFragCoords.x).fract < 0.5;
-      var evenY: bool = modf(scaledFragCoords.y).fract < 0.5;
-      if ((evenX && !evenY) || (evenY && !evenX)) {
-        fragColor = vec4<f32>(1.0, 1.0, 0.0, 1.0);
-      }
+    var evenX: bool = modf(scaledFragCoords.x).fract < 0.5;
+    var evenY: bool = modf(scaledFragCoords.y).fract < 0.5;
+    if ((evenX && !evenY) || (evenY && !evenX)) {
+      fragColor = vec4<f32>(1.0, 1.0, 0.0, 1.0);
+    }
   }
 
   if ((flags & HOVER_BIT) == HOVER_BIT) {
-      var evenX: bool = modf(scaledFragCoords.x).fract < 0.5;
-      var evenY: bool = modf(scaledFragCoords.y).fract < 0.5;
-      if ((evenX && !evenY) || (evenY && !evenX)) {
-        fragColor = vec4<f32>(0.0, 0.0, 1.0, 1.0);
-      }
+    var evenX: bool = modf(scaledFragCoords.x).fract < 0.5;
+    var evenY: bool = modf(scaledFragCoords.y).fract < 0.5;
+    if ((evenX && !evenY) || (evenY && !evenX)) {
+      fragColor = vec4<f32>(0.0, 0.0, 1.0, 1.0);
+    }
 
   }
   fragColor.w = 0.5;

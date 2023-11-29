@@ -44,7 +44,7 @@ fn vertexMain(
   var worldSpacePosition = applySelectionTransform(toWorldSpace(objectSpacePosition, instanceID));
 
   if ((flags & CONSTANT_SCREEN_SIZE_BIT) != 0) {
-    var dist: f32 = distance(worldSpacePosition.xyz, cameraPos.xzy);
+    var dist: f32 = distance(worldSpacePosition.xyz, cameraPos.xyz);
     // TODO: dist should actually be dist in forward direction
     var scaledObjectSpacePosition: vec4<f32> = vec4<f32>(objectSpacePosition.xzy * dist, objectSpacePosition.w);
     worldSpacePosition = applySelectionTransform(toWorldSpace(scaledObjectSpacePosition, instanceID));

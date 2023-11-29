@@ -1,6 +1,6 @@
-import { mat4, Mat4, Vec3, Vec4 } from "wgpu-matrix";
+import { mat4, Mat4, vec3, Vec3, Vec4 } from "wgpu-matrix";
 import { INSTANCE } from "../cad";
-import { swizzleYZ } from "../utils/math";
+import { swizzleYZ, swizzleYZVec3 } from "../utils/math";
 
 enum ShadingMode {
   Default,
@@ -51,10 +51,9 @@ export class GlobalUniforms {
       entries: [
         {
           binding: 0, // camera pos
-          visibility: GPUShaderStage.VERTEX,
+          visibility: GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT,
           buffer: {}
-        },
-        {
+        }, {
           binding: 1, // camer view proj
           visibility: GPUShaderStage.VERTEX,
           buffer: {}
@@ -103,7 +102,9 @@ export class GlobalUniforms {
 
 
   public tick(): void {
-    this.device.queue.writeBuffer(this.cameraPositionBuffer, 0, <Float32Array>INSTANCE.getScene().getCamera().getPosition());
+    this.device.queue.writeBuffer(this.cameraPositionBuffer, 0, <Float32Array>swizzleYZVec3(
+      vec3.clone(INSTANCE.getScene().getCamera().getPosition()))
+    );
     this.device.queue.writeBuffer(this.cameraViewProjBuffer, 0, INSTANCE.getScene().getCamera().getViewProj());
 
     const selectionTrasform: Mat4 = INSTANCE.getMover().getTransform();
