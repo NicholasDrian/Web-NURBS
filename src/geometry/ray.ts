@@ -1,4 +1,4 @@
-import { Mat4, vec3, Vec3, vec4, Vec4 } from "wgpu-matrix";
+import { mat4, Mat4, vec3, Vec3, vec4, Vec4 } from "wgpu-matrix";
 import { INSTANCE } from "../cad";
 import { Scene } from "../scene/scene";
 import { BoundingBox } from "./boundingBox";

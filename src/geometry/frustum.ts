@@ -39,17 +39,31 @@ export class Frustum {
   }
 
   public transform(transform: Mat4): void {
-    // NOTE: seems to break when scaling non uniformly?
-    // normals are not scalable *face palm*
+
+    // if frustum becomes inverted, un invert it
+
     this.origin = vec4.transformMat4(vec4.create(...this.origin, 1), transform);
     this.topLeft = Ray.transform(this.topLeft, transform);
     this.topRight = Ray.transform(this.topRight, transform);
     this.bottomLeft = Ray.transform(this.bottomLeft, transform);
     this.bottomRight = Ray.transform(this.bottomRight, transform);
+
+    const forward: Vec3 = vec3.add(
+      vec3.add(this.topLeft.getDirection(), this.topRight.getDirection()),
+      vec3.add(this.bottomLeft.getDirection(), this.bottomRight.getDirection())
+    )
+
     this.up = vec3.normalize(vec3.cross(this.topLeft.getDirection(), this.topRight.getDirection()));
     this.right = vec3.normalize(vec3.cross(this.topRight.getDirection(), this.bottomRight.getDirection()));
     this.down = vec3.normalize(vec3.cross(this.bottomRight.getDirection(), this.bottomLeft.getDirection()));
     this.left = vec3.normalize(vec3.cross(this.bottomLeft.getDirection(), this.topLeft.getDirection()));
+
+    if (vec3.dot(this.up, forward) < 0) {
+      [this.up, this.down] = [this.down, this.up];
+    }
+    if (vec3.dot(this.left, forward) < 0) {
+      [this.left, this.right] = [this.right, this.left];
+    }
 
   }
 
