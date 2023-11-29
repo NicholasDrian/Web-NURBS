@@ -1,25 +1,49 @@
+import { INSTANCE } from "../../cad";
+import { Geometry } from "../../geometry/geometry";
 import { Intersection } from "../../geometry/intersection";
 import { Command } from "../command";
 
 export class SetMaterialCommand extends Command {
 
+  private finished: boolean;
+
+  constructor() {
+    super();
+    this.finished = false;
+    const selection: Set<Geometry> = INSTANCE.getSelector().getSelection();
+    if (selection.size === 0) {
+      this.done();
+    }
+  }
+
   handleInputString(input: string): void {
-    throw new Error("Method not implemented.");
+    if (input == "0") this.done();
+    else {
+      const selection: Set<Geometry> = INSTANCE.getSelector().getSelection();
+      for (const geo of selection) geo.setMaterial(input);
+      this.done();
+    }
   }
+
   handleClickResult(intersection: Intersection): void {
-    throw new Error("Method not implemented.");
   }
+
   handleClick(): void {
-    throw new Error("Method not implemented.");
   }
+
   handleMouseMove(): void {
-    throw new Error("Method not implemented.");
   }
+
   getInstructions(): string {
-    throw new Error("Method not implemented.");
+    return "0:Exit  Enter material name.  $";
   }
+
   isFinished(): boolean {
-    throw new Error("Method not implemented.");
+    return this.finished;
+  }
+
+  private done() {
+    this.finished = true;
   }
 
 }
