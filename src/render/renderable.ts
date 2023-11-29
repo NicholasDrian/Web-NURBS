@@ -1,4 +1,4 @@
-import { Mat4 } from "wgpu-matrix";
+import { mat4, Mat4 } from "wgpu-matrix";
 import { INSTANCE } from "../cad";
 import { Geometry } from "../geometry/geometry";
 import { swizzleYZ } from "../utils/math";
@@ -12,7 +12,8 @@ export abstract class Renderable {
   protected flags: Int32Array;
   protected objectIDBuffer: GPUBuffer;
   protected flagsBuffer: GPUBuffer;
-  protected modelBuffer: GPUBuffer;
+  protected modelBufferPoints: GPUBuffer;
+  protected modelBufferNormals: GPUBuffer;
   protected bindGroup!: GPUBindGroup;
   protected subSelectionBuffer: GPUBuffer | null;
 
@@ -23,11 +24,17 @@ export abstract class Renderable {
   ) {
 
     //model
-    this.modelBuffer = INSTANCE.getRenderer().getDevice().createBuffer({
-      label: "mvp",
+    this.modelBufferPoints = INSTANCE.getRenderer().getDevice().createBuffer({
+      label: "model points",
       size: 64,
       usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
     });
+    this.modelBufferNormals = INSTANCE.getRenderer().getDevice().createBuffer({
+      label: "model normals",
+      size: 64,
+      usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+    });
+
 
 
     // id
@@ -97,9 +104,12 @@ export abstract class Renderable {
   }
 
   protected updateModel(): void {
-    const model: Mat4 = this.parent.getModelRecursive();
-    swizzleYZ(model);
-    INSTANCE.getRenderer().getDevice().queue.writeBuffer(this.modelBuffer, 0, <Float32Array>model);
+    const modelForPoints: Mat4 = this.parent.getModelRecursive();
+    const modelForNormals: Mat4 = mat4.transpose(mat4.inverse(modelForPoints));
+    INSTANCE.getRenderer().getDevice().queue
+      .writeBuffer(this.modelBufferPoints, 0, <Float32Array>swizzleYZ(modelForPoints));
+    INSTANCE.getRenderer().getDevice().queue
+      .writeBuffer(this.modelBufferNormals, 0, <Float32Array>swizzleYZ(modelForNormals));
   }
 
   protected updateBindGroup(): void {
@@ -109,18 +119,21 @@ export abstract class Renderable {
       entries: [
         {
           binding: 0,
-          resource: { buffer: this.modelBuffer },
+          resource: { buffer: this.modelBufferPoints },
         }, {
           binding: 1,
-          resource: { buffer: this.parent.getColorBuffer() },
+          resource: { buffer: this.modelBufferNormals },
         }, {
           binding: 2,
-          resource: { buffer: this.flagsBuffer }
+          resource: { buffer: this.parent.getColorBuffer() },
         }, {
           binding: 3,
-          resource: { buffer: this.objectIDBuffer }
+          resource: { buffer: this.flagsBuffer }
         }, {
           binding: 4,
+          resource: { buffer: this.objectIDBuffer }
+        }, {
+          binding: 5,
           resource: { buffer: this.subSelectionBuffer! }
         }
       ]

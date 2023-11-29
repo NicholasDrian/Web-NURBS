@@ -165,23 +165,27 @@ export class Renderer {
       label: "bind group layout",
       entries: [
         {
-          binding: 0, // mvp
+          binding: 0, // model points
           visibility: GPUShaderStage.VERTEX,
           buffer: {}
         }, {
-          binding: 1, // color
+          binding: 1, // model normals
+          visibility: GPUShaderStage.VERTEX,
+          buffer: {},
+        }, {
+          binding: 2, // color
           visibility: GPUShaderStage.FRAGMENT,
           buffer: {},
         }, {
-          binding: 2, // flags
+          binding: 3, // flags
           visibility: GPUShaderStage.VERTEX | GPUShaderStage.FRAGMENT,
           buffer: {},
         }, {
-          binding: 3, // id
+          binding: 4, // id
           visibility: GPUShaderStage.FRAGMENT,
           buffer: {},
         }, {
-          binding: 4, // subSelectionBuffer
+          binding: 5, // subSelectionBuffer
           visibility: GPUShaderStage.VERTEX,
           buffer: { type: "read-only-storage" },
         }

@@ -1,12 +1,12 @@
 import { Intersection } from "../../geometry/intersection";
 import { Command } from "../command";
 
-export class GroupCommand extends Command {
+export class CreateMaterialCommand extends Command {
 
   handleInputString(input: string): void {
     throw new Error("Method not implemented.");
   }
-  handleClickResult(input: Intersection): void {
+  handleClickResult(intersection: Intersection): void {
     throw new Error("Method not implemented.");
   }
   handleClick(): void {
@@ -21,6 +21,5 @@ export class GroupCommand extends Command {
   isFinished(): boolean {
     throw new Error("Method not implemented.");
   }
-
 
 }

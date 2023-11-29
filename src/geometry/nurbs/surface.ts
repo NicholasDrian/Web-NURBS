@@ -58,6 +58,9 @@ export class Surface extends Geometry {
   public getSubSelectionBoundingBox(): BoundingBox {
     return this.controlCage!.getSubSelectionBoundingBox();
   }
+  public getControlCage(): ControlCage2D {
+    return this.controlCage!;
+  }
 
   public onSelectionMoved(): void {
     if (this.controlCage!.hasSubSelection()) {

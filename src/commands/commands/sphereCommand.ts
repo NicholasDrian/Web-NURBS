@@ -102,6 +102,7 @@ export class SphereCommand extends Command {
       const translation: Mat4 = mat4.translation(this.temp!);
       const scale: Mat4 = mat4.uniformScaling(radius);
       this.sphere.setModel(mat4.mul(translation, scale));
+      this.sphere.getControlCage().updatePoints();
 
     } else if (this.mode === SphereCommandMode.PointB) {
       const center: Vec3 = vec3.scale(vec3.add(this.temp!, pos), 0.5);

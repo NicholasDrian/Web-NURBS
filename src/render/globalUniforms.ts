@@ -1,4 +1,4 @@
-import { Vec3, Vec4 } from "wgpu-matrix";
+import { mat4, Mat4, Vec3, Vec4 } from "wgpu-matrix";
 import { INSTANCE } from "../cad";
 import { swizzleYZ } from "../utils/math";
 
@@ -12,6 +12,7 @@ export class GlobalUniforms {
   private cameraPositionBuffer: GPUBuffer;
   private cameraViewProjBuffer: GPUBuffer;
   private selectionTransformBuffer: GPUBuffer;
+  private selectionTransformBufferInverseTranspose: GPUBuffer;
   private resolutionBuffer: GPUBuffer;
 
   private layout: GPUBindGroupLayout;
@@ -31,7 +32,12 @@ export class GlobalUniforms {
       usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
     });
     this.selectionTransformBuffer = this.device.createBuffer({
-      label: "selection buffer",
+      label: "selection transform buffer",
+      size: 64,
+      usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
+    });
+    this.selectionTransformBufferInverseTranspose = this.device.createBuffer({
+      label: "selection trasform buffer inverse transpose",
       size: 64,
       usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
     });
@@ -57,7 +63,11 @@ export class GlobalUniforms {
           visibility: GPUShaderStage.VERTEX,
           buffer: {}
         }, {
-          binding: 3, // resolution buffer
+          binding: 3, // selection transform inverse traspose
+          visibility: GPUShaderStage.VERTEX,
+          buffer: {}
+        }, {
+          binding: 4, // resolution buffer
           visibility: GPUShaderStage.FRAGMENT,
           buffer: {}
         }
@@ -78,6 +88,9 @@ export class GlobalUniforms {
           resource: { buffer: this.selectionTransformBuffer }
         }, {
           binding: 3,
+          resource: { buffer: this.selectionTransformBufferInverseTranspose }
+        }, {
+          binding: 4,
           resource: { buffer: this.resolutionBuffer }
         }
       ]
@@ -92,7 +105,14 @@ export class GlobalUniforms {
   public tick(): void {
     this.device.queue.writeBuffer(this.cameraPositionBuffer, 0, <Float32Array>INSTANCE.getScene().getCamera().getPosition());
     this.device.queue.writeBuffer(this.cameraViewProjBuffer, 0, INSTANCE.getScene().getCamera().getViewProj());
-    this.device.queue.writeBuffer(this.selectionTransformBuffer, 0, <Float32Array>swizzleYZ(INSTANCE.getMover().getTransform()));
+
+    const selectionTrasform: Mat4 = INSTANCE.getMover().getTransform();
+    const selectionTrasformInverseTraspose: Mat4 = mat4.transpose(mat4.inverse(selectionTrasform));
+
+    this.device.queue.writeBuffer(this.selectionTransformBuffer,
+      0, <Float32Array>swizzleYZ(selectionTrasform));
+    this.device.queue.writeBuffer(this.selectionTransformBufferInverseTranspose,
+      0, <Float32Array>swizzleYZ(selectionTrasformInverseTraspose));
 
     const resolutionArray: Float32Array = new Float32Array([window.innerWidth, window.innerHeight]);
     this.device.queue.writeBuffer(this.resolutionBuffer, 0, resolutionArray);

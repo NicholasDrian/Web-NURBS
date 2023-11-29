@@ -331,7 +331,8 @@ export class ControlCage2D extends Geometry {
 
   }
 
-  private updatePoints(points: Vec3[]) {
+  public updatePoints(points?: Vec3[]) {
+    if (points === undefined) points = this.verts;
     const model: Mat4 = this.getModelRecursive();
     const translation: Vec3 = mat4.getTranslation(model);
     const modelNoTranslation: Mat4 = mat4.mul(mat4.translation(vec3.scale(translation, -1)), model);
