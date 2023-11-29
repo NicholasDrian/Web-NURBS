@@ -1,7 +1,7 @@
 import { Intersection } from "../../geometry/intersection";
 import { Command } from "../command";
 
-export class CreateMaterialCommand extends Command {
+export class SetMaterialCommand extends Command {
 
   handleInputString(input: string): void {
     throw new Error("Method not implemented.");

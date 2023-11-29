@@ -17,10 +17,12 @@ import { RotateCommand } from "./commands/rotateCommand";
 import { Scale1Command } from "./commands/scale1Command";
 import { Scale2Command } from "./commands/scale2Command";
 import { ScaleCommand } from "./commands/scaleCommand";
+import { SetMaterialCommand } from "./commands/setMaterialCommand";
 import { ShearCommand } from "./commands/shearCommand";
 import { SnapsCommand } from "./commands/snapsCommand";
 import { SphereCommand } from "./commands/sphereCommand";
 import { WindowCommand } from "./commands/windowCommand";
+import { hide, hideSwap, show } from "./oneTimeCommands/hideCommands";
 import { ControlCageOffCommand, ControlCageOnCommand } from "./oneTimeCommands/toggleControlCageCommand";
 import { toggleDarkMode } from "./oneTimeCommands/toggleDarkModeCommand";
 
@@ -115,6 +117,18 @@ export class CommandManager {
           break;
         case "sphere": case "sp":
           this.currentCommand = new SphereCommand();
+          break;
+        case "set material": case "sm":
+          this.currentCommand = new SetMaterialCommand();
+          break;
+        case "show": case "sh":
+          show();
+          break;
+        case "hide": case "h":
+          hide();
+          break;
+        case "hide swap": case "hs":
+          hideSwap();
           break;
         default: INSTANCE.getLog().log("Invalid Command");
       }

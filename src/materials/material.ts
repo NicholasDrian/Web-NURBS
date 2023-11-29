@@ -52,8 +52,44 @@ export class Material {
     return this.name;
   }
 
-  public getColor(): Vec4 | null {
+  public getColor(): Vec4 {
     return this.color;
+  }
+  public getEmissive(): Vec4 {
+    return this.emissive;
+  }
+  public getAmbientIntensity(): number {
+    return this.ambientIntensity;
+  }
+  public getPseudoDiffuseIntensity(): number {
+    return this.pseudoDiffuseIntensity;
+  }
+  public getSpecularity(): number {
+    return this.specularity;
+  }
+  public getSpecularIntensity(): number {
+    return this.specularIntensity;
+  }
+
+  public updateEmissive(val: Vec4): void {
+    this.emissive = val;
+    this.updateBuffer();
+  }
+  public updateAmbientIntensity(val: number): void {
+    this.ambientIntensity = val;
+    this.updateBuffer();
+  }
+  public updatePseudoDiffuseIntensity(val: number): void {
+    this.pseudoDiffuseIntensity = val;
+    this.updateBuffer();
+  }
+  public updateSpecularity(val: number): void {
+    this.specularity = val;
+    this.updateBuffer();
+  }
+  public updateSpecularIntensity(val: number): void {
+    this.specularIntensity = val;
+    this.updateBuffer();
   }
 
 
