@@ -1,8 +1,8 @@
 
 // local uniforms;
-@group(0) @binding(0) var<uniform> model : mat4x4<f32>;
-@group(0) @binding(1) var<uniform> modelInverseTranspose : mat4x4<f32>;
-@group(0) @binding(2) var<uniform> color : vec4<f32>;
+@group(0) @binding(0) var<uniform> model: mat4x4<f32>;
+@group(0) @binding(1) var<uniform> modelInverseTranspose: mat4x4<f32>;
+@group(0) @binding(2) var<uniform> material: Material;
 @group(0) @binding(3) var<uniform> flags: i32;
 @group(0) @binding(4) var<uniform> id: i32;
 @group(0) @binding(5) var<storage, read> subSelection: array<u32>;
@@ -74,28 +74,32 @@ fn vertexMain(
 }
 
 
-fn calculateLighting(position: vec4<f32>, normal: vec3<f32>, color: vec4<f32>) -> vec4<f32> {
-  var toCamera: vec3<f32> = cameraPos.xyz - position.xyz;
-  var d: f32 = dot(toCamera, normal);
+struct Material {
+  color: vec4<f32>,
+  emissive: vec4<f32>,
+  ambientIntensity: f32,
+  pseudoDiffuseIntensity: f32,
+  specularity: f32,
+  specularIntensity: f32,
+}
+
+fn calculateLighting(position: vec4<f32>, normal: vec3<f32>, material: Material) -> vec4<f32> {
+  var toCamera: vec3<f32> = normalize(cameraPos.xyz - position.xyz);
 
   var flippedNormal: vec3<f32> = normal;
-
-  if (d < 0) {
+  if (dot(toCamera, normal) < 0) {
     flippedNormal *= -1;
-    d *= -1;
   } 
-  
 
+  let normalizedLightIntensity: f32 = dot(flippedNormal, vec3<f32>(0,1,0)) * 0.5 + 0.5;
 
+  let reflectedLight: vec3<f32> = reflect(vec3<f32>(0,1,0), normal);
 
+  let pseudoDiffuse: vec4<f32> = material.color * normalizedLightIntensity * material.pseudoDiffuseIntensity;
+  let ambient: vec4<f32> = material.color * material.ambientIntensity;
+  let specular: vec4<f32> = material.color * pow(max(dot(reflectedLight, toCamera) * -0.5 + 0.5, 0), material.specularity) * material.specularIntensity;
 
-
-
-
-
-  let aboveLightStrength: f32 = dot(flippedNormal, vec3<f32>(0,1,0)) * 0.5 + 0.5;
-
-  return aboveLightStrength * color;
+  return pseudoDiffuse + ambient + specular + material.emissive;
 }
 
 
@@ -103,7 +107,7 @@ fn calculateLighting(position: vec4<f32>, normal: vec3<f32>, color: vec4<f32>) -
 fn fragmentMain(inputs: VertexOutput) -> @location(0) vec4f {
 
   var normalizedNormal: vec3<f32> = normalize(inputs.normal.xyz);
-  var fragColor: vec4<f32> = calculateLighting(inputs.position, normalizedNormal, color);
+  var fragColor: vec4<f32> = calculateLighting(inputs.position, normalizedNormal, material);
 
 
   var scaledFragCoords: vec2<f32> = inputs.fragCoord.xy / STRIPE_WIDTH;

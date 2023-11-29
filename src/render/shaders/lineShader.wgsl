@@ -74,10 +74,7 @@ struct FragOutputs {
 fn fragmentMain(inputs: VertexOutput) -> FragOutputs {
 
   // set up frag color
-  var fragColor: vec4<f32> = color - vec4<f32>(0.5, 0.5, 0.5, 0);
-  if (fragColor.x < 0){ fragColor.x += 1;}
-  if (fragColor.y < 0){ fragColor.y += 1;}
-  if (fragColor.z < 0){ fragColor.z += 1;}
+  var fragColor: vec4<f32> = color;
 
   var depth: f32 = inputs.position.z * 0.9999999;
 
@@ -93,7 +90,7 @@ fn fragmentMain(inputs: VertexOutput) -> FragOutputs {
 
   var output: FragOutputs;
   output.color = fragColor;
-  output.color = color;
+  output.color = fragColor;
   output.depth = depth;
   return output;
 }

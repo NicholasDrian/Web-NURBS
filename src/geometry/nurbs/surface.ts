@@ -123,8 +123,6 @@ export class Surface extends Geometry {
 
   private update(updateCage: boolean = true): void {
 
-    const startTime: number = Date.now();
-
     if (updateCage) this.controlCage?.delete();
     this.mesh?.delete();
 
