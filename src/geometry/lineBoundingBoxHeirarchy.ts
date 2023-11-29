@@ -48,7 +48,6 @@ class LineBoundingBoxHeirarchyNode {
 
       let child1Lines: number[] = [];
       let child2Lines: number[] = [];
-      let centered: number = 0;
       for (const line of lines) {
         const center: Vec3 = vec3.scale(
           vec3.add(
@@ -181,6 +180,7 @@ export class LineBoundingBoxHeirarchy {
 
   public isWithinFrustum(frustum: Frustum, inclusive: boolean): boolean {
     frustum.transform(mat4.inverse(this.geometry.getModelRecursive()));
+    console.log(frustum);
     const res: boolean = this.root.isWithinFrustum(frustum, inclusive);
     frustum.transform(this.geometry.getModelRecursive());
     return res;

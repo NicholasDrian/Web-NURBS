@@ -21,8 +21,6 @@ export class Ray {
     }).toString()}`);
   }
 
-
-
   public getOrigin(): Vec3 {
     return this.origin;
   }
@@ -34,8 +32,6 @@ export class Ray {
   public at(time: number): Vec3 {
     return vec3.add(this.origin, vec3.scale(this.direction, time));
   }
-
-
 
   public intersectPlane(plane: Plane, allowNegative: boolean = false): number | null {
     const numerator: number = vec3.dot(vec3.sub(plane.getOrigin(), this.origin), plane.getNormal());

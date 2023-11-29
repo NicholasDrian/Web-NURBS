@@ -51,7 +51,7 @@ export class Frustum {
     const forward: Vec3 = vec3.add(
       vec3.add(this.topLeft.getDirection(), this.topRight.getDirection()),
       vec3.add(this.bottomLeft.getDirection(), this.bottomRight.getDirection())
-    )
+    );
 
     this.up = vec3.normalize(vec3.cross(this.topLeft.getDirection(), this.topRight.getDirection()));
     this.right = vec3.normalize(vec3.cross(this.topRight.getDirection(), this.bottomRight.getDirection()));
@@ -59,10 +59,12 @@ export class Frustum {
     this.left = vec3.normalize(vec3.cross(this.bottomLeft.getDirection(), this.topLeft.getDirection()));
 
     if (vec3.dot(this.up, forward) < 0) {
-      [this.up, this.down] = [this.down, this.up];
+      this.up = vec3.scale(this.up, -1);
+      this.down = vec3.scale(this.down, -1);
     }
     if (vec3.dot(this.left, forward) < 0) {
-      [this.left, this.right] = [this.right, this.left];
+      this.left = vec3.scale(this.left, -1);
+      this.right = vec3.scale(this.right, -1);
     }
 
   }
