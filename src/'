@@ -1,4 +1,3 @@
-import { INSTANCE } from "../../cad";
 import { Intersection } from "../../geometry/intersection";
 import { Curve } from "../../geometry/nurbs/curve";
 import { Command } from "../command";
@@ -7,8 +6,8 @@ enum BlendCurvesCommandMode {
   SelectCurve1,
   SelectCurve2,
   Menu,
-  AdjustEnd1,
-  AdjustEnd2,
+  AdjustCurve1,
+  AdjustCurve2,
 }
 
 export class BlendCurvesCommand extends Command {
@@ -41,20 +40,7 @@ export class BlendCurvesCommand extends Command {
   }
 
   getInstructions(): string {
-    switch (this.mode) {
-      case BlendCurvesCommandMode.SelectCurve1:
-        return "0:Exit  Select first curve to blend.  $";
-      case BlendCurvesCommandMode.SelectCurve2:
-        return "0:Exit  Select second curve to blend.  $";
-      case BlendCurvesCommandMode.Menu:
-        return "0:Exit  1:FlipCurve1  2:FlipCurve2  3:AdjustEnd1  4:AdjustEnd2  $";
-      case BlendCurvesCommandMode.AdjustEnd1:
-        return "0:Exit  Click to place control point.  $";
-      case BlendCurvesCommandMode.AdjustEnd2:
-        return "0:Exit  Click to place control point.  $";
-      default:
-        throw new Error("case not implemented");
-    }
+    throw new Error("Method not implemented.");
   }
 
   isFinished(): boolean {
@@ -63,9 +49,7 @@ export class BlendCurvesCommand extends Command {
 
   private done(): void {
     this.finished = true;
-    if (this.curve) {
-      INSTANCE.getScene().addGeometry(this.curve);
-    }
+
   }
 
 }
