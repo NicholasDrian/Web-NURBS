@@ -26,15 +26,22 @@ export class Clicker {
     cursor.show();
   }
 
-  public onMouseMove(): void {
+  public onMouseMove(types?: string[]): void {
 
     if (this.clicked) return; // currently selecting from dropdown
 
     const mousePos: [number, number] = INSTANCE.getEventManager().getMouseHandler().getMousePos();
     const ray: Ray = INSTANCE.getScene().getCamera().getRayAtPixel(mousePos[0], mousePos[1]);
-    const i: Intersection | null = ray.intersectScene(INSTANCE.getScene());
-    if (i) {
-      this.point = i.point;
+    var intersections: Intersection[] = INSTANCE.getScene().getBoundingBoxHeirarchy().firstIntersectionsWithinMargin(ray, 5);
+
+    if (types) {
+      intersections = intersections.filter((intersection: Intersection) => {
+        return types.includes(intersection.description);
+      });
+    }
+
+    if (intersections.length !== 0) {
+      this.point = intersections[0].point;
       cursor.setPosition(INSTANCE.getScene().getCamera().getPixelAtPoint(this.point));
       cursor.show();
     } else {

@@ -74,7 +74,7 @@ export class Sweep2Command extends Command {
   }
 
   handleMouseMove(): void {
-    this.clicker.onMouseMove(["curve"]);
+    this.clicker.onMouseMove();
   }
 
   getInstructions(): string {
@@ -88,7 +88,6 @@ export class Sweep2Command extends Command {
       case Sweep2CommandMode.SelectCrossSection2:
         return "0:Exit  Select cross section 2.  $";
       case Sweep2CommandMode.Preview:
-        return `0:Exit  1:PreserveHeight(${this.preserveHeight ? "True" : "False"})  $`;
       default:
         throw new Error("case not handled");
     }
@@ -100,23 +99,7 @@ export class Sweep2Command extends Command {
 
   private generateSurface(): void {
     this.surface?.delete();
-    // Match degrees
-
-
-    // Align directions
-
-
-    // duplicate curve1 controls across pipes 
-
-
-    // duplicate curve2 controls accross pipes 
-
-
-    // lerp controls
-
-
-    // loft
-
+    // TODO:
   }
 
   private done(): void {

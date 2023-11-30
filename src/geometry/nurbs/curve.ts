@@ -38,6 +38,15 @@ export class Curve extends Geometry {
     this.updateSamples();
   }
 
+  public reverse(): void {
+    this.weightedControlPoints.reverse();
+    this.knots.reverse();
+    for (let i = this.knots.length - 1; i >= 0; i--) {
+      this.knots[i] -= this.knots[0];
+      this.knots[i] *= -1;
+    }
+  }
+
   public showControls(on: boolean): void {
     if (on) this.controlCage!.show();
     else this.controlCage!.hide();

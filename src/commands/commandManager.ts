@@ -23,8 +23,10 @@ import { SetMaterialCommand } from "./commands/setMaterialCommand";
 import { ShearCommand } from "./commands/shearCommand";
 import { SnapsCommand } from "./commands/snapsCommand";
 import { SphereCommand } from "./commands/sphereCommand";
+import { Sweep2Command } from "./commands/sweep2Command";
 import { WindowCommand } from "./commands/windowCommand";
 import { hide, hideSwap, show } from "./oneTimeCommands/hideCommands";
+import { reverseCurveCommand } from "./oneTimeCommands/reverseCurveCommand";
 import { ControlCageOffCommand, ControlCageOnCommand } from "./oneTimeCommands/toggleControlCageCommand";
 import { toggleDarkMode } from "./oneTimeCommands/toggleDarkModeCommand";
 
@@ -137,6 +139,12 @@ export class CommandManager {
           break;
         case "extrude curve": case "e":
           this.currentCommand = new ExtruedCurveCommand();
+          break;
+        case "sweep2": case "sw2":
+          this.currentCommand = new Sweep2Command();
+          break;
+        case "reverse curve": case "rc":
+          reverseCurveCommand();
           break;
         default: INSTANCE.getLog().log("Invalid Command");
       }
