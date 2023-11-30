@@ -137,7 +137,7 @@ export class PointBoundingBoxHeirarchy {
     const model: Mat4 = this.geometry.getModelRecursive();
     const objectSpaceRay: Ray = Ray.transform(ray, mat4.inverse(model));
     var res: Intersection | null = this.root.almostIntersect(objectSpaceRay, pixels);
-    if (res) res.point = vec3.transformMat4(res.point, model);
+    res?.transform(model);
     return res;
 
   }

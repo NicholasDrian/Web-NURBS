@@ -13,7 +13,7 @@ export class Material {
     private emissive: Vec4 = vec4.create(0, 0, 0, 0),
     private ambientIntensity: number = 0.1,
     private pseudoDiffuseIntensity: number = 0.7,
-    private specularity: number = 8,
+    private specularity: number = 12,
     private specularIntensity: number = 0.3,
   ) {
 
