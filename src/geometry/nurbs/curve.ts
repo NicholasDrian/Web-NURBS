@@ -43,6 +43,27 @@ export class Curve extends Geometry {
     else this.controlCage!.hide();
   }
 
+  public getStartRay(): Ray {
+    const p1: Vec4 = this.weightedControlPoints[0];
+    const p2: Vec4 = this.weightedControlPoints[1];
+    const startPoint: Vec3 = vec3.create(p1[0] / p1[3], p1[1] / p1[3], p1[2] / p1[3]);
+    const nextPoint: Vec3 = vec3.create(p2[0] / p2[3], p2[1] / p2[3], p2[2] / p2[3]);
+    const model: Mat4 = this.getModelRecursive();
+    vec3.transformMat4(startPoint, model, startPoint);
+    vec3.transformMat4(nextPoint, model, nextPoint);
+    return new Ray(startPoint, vec3.sub(startPoint, nextPoint));
+  }
+  public getEndRay(): Ray {
+    const p1: Vec4 = this.weightedControlPoints[this.getControlPointCount() - 1];
+    const p2: Vec4 = this.weightedControlPoints[this.getControlPointCount() - 2];
+    const endPoint: Vec3 = vec3.create(p1[0] / p1[3], p1[1] / p1[3], p1[2] / p1[3]);
+    const prevPoint: Vec3 = vec3.create(p2[0] / p2[3], p2[1] / p2[3], p2[2] / p2[3]);
+    const model: Mat4 = this.getModelRecursive();
+    vec3.transformMat4(endPoint, model, endPoint);
+    vec3.transformMat4(prevPoint, model, prevPoint);
+    return new Ray(endPoint, vec3.sub(endPoint, prevPoint));
+  }
+
   public addToSubSelection(subID: number): void {
     this.controlCage!.addToSubSelection(subID);
   }
@@ -104,8 +125,18 @@ export class Curve extends Geometry {
 
   public intersect(ray: Ray): Intersection | null {
     if (this.isHidden()) return null;
-    return this.controlCage!.intersect(ray) ||
-      this.linesBBH!.almostIntersect(ray, 10);
+
+    let intersection: Intersection | null = this.controlCage!.intersect(ray);
+    if (intersection) {
+      intersection.description = "control cage";
+      return intersection;
+    }
+
+    intersection = this.linesBBH!.almostIntersect(ray, 10);
+    if (intersection) {
+      intersection.description = "curve";
+    }
+    return intersection;
   }
 
   public getBoundingBox(): BoundingBox {

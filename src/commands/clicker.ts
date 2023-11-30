@@ -55,10 +55,7 @@ export class Clicker {
     var intersections: Intersection[] = INSTANCE.getScene().getBoundingBoxHeirarchy().firstIntersectionsWithinMargin(ray, 5);
     if (types) {
       intersections = intersections.filter((intersection: Intersection) => {
-        for (const type of types) {
-          if (intersection.description == type) return true;
-        }
-        return false;
+        return types.includes(intersection.description);
       });
     }
     if (intersections.length === 0) this.reset();

@@ -137,7 +137,7 @@ export class RevolveCommand extends Command {
   public override handleClick(): void {
     switch (this.mode) {
       case RevolveCommandMode.SelectCurves:
-        this.clicker.click(["line"]);
+        this.clicker.click(["curve"]);
         break;
       default:
         this.clicker.click();

@@ -76,7 +76,7 @@ export class LoftCommand extends Command {
   }
 
   handleClick(): void {
-    this.clicker.click(["line"]);
+    this.clicker.click(["curve"]);
   }
 
   handleMouseMove(): void {

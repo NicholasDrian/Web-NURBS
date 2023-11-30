@@ -3,6 +3,7 @@ import { Intersection } from "../geometry/intersection";
 import { Command } from "./command";
 import { ArcCommand } from "./commands/arcCommand";
 import { LinearArrayCommand } from "./commands/arrayCommand";
+import { BlendCurvesCommand } from "./commands/blendCurvesCommand";
 import { CameraCommand } from "./commands/cameraCommand";
 import { CircleCommand } from "./commands/circleCommand";
 import { ConstructionPlaneCommand } from "./commands/constructionPlaneCommand";
@@ -129,6 +130,9 @@ export class CommandManager {
           break;
         case "hide swap": case "hs":
           hideSwap();
+          break;
+        case "blend curves": case "bc":
+          this.currentCommand = new BlendCurvesCommand();
           break;
         default: INSTANCE.getLog().log("Invalid Command");
       }
