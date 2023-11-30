@@ -1,4 +1,3 @@
-
 import { vec3, vec4 } from "wgpu-matrix";
 import { INSTANCE } from "../cad";
 import { Curve } from "../geometry/nurbs/curve";

@@ -73,6 +73,27 @@ export class Curve extends Geometry {
     return new Ray(endPoint, vec3.sub(endPoint, prevPoint));
   }
 
+  getControlPoint(i: number) {
+    const pw: Vec4 = this.weightedControlPoints.at(i)!;
+    return vec3.transformMat4(vec3.create(pw[0] / pw[3], pw[1] / pw[3], pw[2] / pw[3]), this.getModelRecursive());
+  }
+
+  public getControlPoints(): Vec3[] {
+    const res: Vec3[] = [];
+    for (let i = 0; i < this.weightedControlPoints.length; i++) {
+      res.push(this.getControlPoint(i));
+    }
+    return res;
+  }
+
+  public getEndPoint(): Vec3 {
+    return this.getControlPoint(-1);
+  }
+
+  public getStartPoint(): Vec3 {
+    return this.getControlPoint(0);
+  }
+
   public addToSubSelection(subID: number): void {
     this.controlCage!.addToSubSelection(subID);
   }

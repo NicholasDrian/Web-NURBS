@@ -75,3 +75,32 @@ export const getRotationTransform = function(axis: Ray, theta: number): Mat4 {
   return mat4.mul(toPos, mat4.mul(rotation, toOrigin));
 }
 
+export const changeOfBasis = function(
+  fromX: Vec3, fromY: Vec3, fromZ: Vec3, fromO: Vec3,
+  toX: Vec3, toY: Vec3, toZ: Vec3, toO: Vec3,
+): Mat4 {
+  const from: Mat4 = mat4.create(
+    ...fromX, 0,
+    ...fromY, 0,
+    ...fromZ, 0,
+    ...fromO, 1
+  );
+  const to: Mat4 = mat4.create(
+    ...toX, 0,
+    ...toY, 0,
+    ...toZ, 0,
+    ...toO, 1
+  );
+  return mat4.mul(to, mat4.inverse(from));
+}
+
+
+export const lerp = function(a: number, b: number, r: number): number {
+  return a * (1 - r) + b * r;
+}
+
+
+
+
+
+

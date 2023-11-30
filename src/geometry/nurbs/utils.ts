@@ -1,6 +1,7 @@
 import { warn } from "console";
 import { Vec3, vec4, Vec4 } from "wgpu-matrix";
 import { bin } from "../../utils/math";
+import { Curve } from "./curve";
 
 export const span = function(knots: number[], u: number, p: number): number {
   const n: number = knots.length - p - 2;
@@ -85,4 +86,34 @@ export const calcBezierAlphas = function(startDegree: number, endDegree: number)
       bezierAlphas[i][j] = bezierAlphas[endDegree - i][startDegree - j];
   }
   return bezierAlphas;
+}
+
+const equals = function(a: number, b: number, e: number = 0.000001): boolean { return Math.abs(a - b) < e; };
+
+export const matchDegrees = function(curves: Curve[]): void {
+
+  let maxDegree: number = 0;
+  for (let curve of curves) maxDegree = Math.max(maxDegree, curve.getDegree());
+  for (let curve of curves) if (curve.getDegree() < maxDegree) curve.elevateDegree(maxDegree - curve.getDegree());
+
+}
+
+export const matchKnots = function(curves: Curve[]): void {
+
+  for (let curve of curves) curve.normalizeKnots();
+  for (let i = 0; i < curves[0].getKnotCount(); i++) {
+    var smallest: number = Number.POSITIVE_INFINITY;
+    var finished: boolean = true;
+    for (let curve of curves) {
+      if (i < curve.getKnotCount()) {
+        finished = false;
+        smallest = Math.min(smallest, curve.getKnots()[i]);
+      }
+    }
+    if (finished) break;
+    for (let curve of curves) {
+      if (!equals(curve.getKnots()[i], smallest)) curve.insertKnot(smallest);
+    }
+  }
+
 }

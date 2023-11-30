@@ -19,6 +19,7 @@ import { Mover } from "./widgets/mover";
 import { addTestSceneRevolve } from "./tests/testSceneRevolve";
 import { EventQueue } from "./events/eventQueue";
 import { addTestSceneSphere } from "./tests/testSceneSphere";
+import { addTestSceneSweep2 } from "./tests/testSceneSweep2";
 
 /*
   * Browser Based NURBS Modeling Software
@@ -73,7 +74,8 @@ class CAD {
 
     //addTestSceneComplex();
     //addTestSceneRevolve();
-    addTestSceneSphere();
+    // addTestSceneSphere();
+    addTestSceneSweep2();
     //addTestSceneCurve();
     //addTestSceneArc();
 

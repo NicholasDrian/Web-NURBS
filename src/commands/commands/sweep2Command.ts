@@ -1,7 +1,11 @@
+import { Mat4, Vec3, vec3, vec4, Vec4 } from "wgpu-matrix";
 import { INSTANCE } from "../../cad";
 import { Intersection } from "../../geometry/intersection";
 import { Curve } from "../../geometry/nurbs/curve";
+import { loft } from "../../geometry/nurbs/loft";
 import { Surface } from "../../geometry/nurbs/surface";
+import { matchDegrees, matchKnots } from "../../geometry/nurbs/utils";
+import { changeOfBasis, lerp } from "../../utils/math";
 import { Clicker } from "../clicker";
 import { Command } from "../command";
 
@@ -100,22 +104,149 @@ export class Sweep2Command extends Command {
 
   private generateSurface(): void {
     this.surface?.delete();
-    // Match degrees
 
+    // create clones
+    const p1: Curve = <Curve>this.pipe1!.clone();
+    const p2: Curve = <Curve>this.pipe2!.clone();
+    const c1: Curve = <Curve>this.crossSection1!.clone();
+    const c2: Curve = <Curve>this.crossSection2!.clone();
+
+    // Match degrees
+    matchDegrees([p1, p2]);
+    matchDegrees([c1, c2]);
+
+    // Match knots
+    matchKnots([p1, p2]);
+    matchKnots([c1, c2]);
 
     // Align directions
+    const face = (a: Curve, b: Curve, c: Curve) => {
+      // make a face b not c
+      const aEnd: Vec3 = a.getEndPoint();
+      const bStart: Vec3 = b.getStartPoint();
+      const bEnd: Vec3 = b.getEndPoint();
+      const cStart: Vec3 = c.getStartPoint();
+      const cEnd: Vec3 = c.getEndPoint();
+      const distB: number = Math.min(vec3.dist(aEnd, bEnd), vec3.dist(aEnd, bStart));
+      const distC: number = Math.min(vec3.dist(aEnd, cEnd), vec3.dist(aEnd, cStart));
+      if (distC < distB) a.reverse();
+    };
+    face(c1, p2, p1);
+    face(c2, p2, p1);
+    face(p1, c2, c1);
+    face(p2, c2, c1);
+
+    // create new controls 
+
+    const p1Controls: Vec3[] = p1.getControlPoints();
+    const p2Controls: Vec3[] = p2.getControlPoints();
+
+    const controls: Curve[] = [];
+
+    const c1Controls: Vec4[] = c1.getWeightedControlPoints();
+    const c2Controls: Vec4[] = c2.getWeightedControlPoints();
+
+    const fromO1Start: Vec3 = p1.getStartPoint();
+    const fromO2Start: Vec3 = p2.getStartPoint();
+    const fromY1Start: Vec3 = vec3.sub(fromO2Start, fromO1Start);
+    const fromY2Start: Vec3 = fromY1Start;
+    const fromX1Start: Vec3 = vec3.scale(p1.getStartRay().getDirection(), -1);
+    const fromX2Start: Vec3 = vec3.scale(p2.getStartRay().getDirection(), -1);
+    const fromZ1Start: Vec3 = vec3.cross(fromX1Start, fromY1Start);
+    const fromZ2Start: Vec3 = vec3.cross(fromX2Start, fromY2Start);
+
+    const fromO1End: Vec3 = p1.getEndPoint();
+    const fromO2End: Vec3 = p2.getEndPoint();
+    const fromY1End: Vec3 = vec3.sub(fromO2End, fromO1End);
+    const fromY2End: Vec3 = fromY1End;
+    const fromX1End: Vec3 = p1.getEndRay().getDirection();
+    const fromX2End: Vec3 = p2.getEndRay().getDirection();
+    const fromZ1End: Vec3 = vec3.cross(fromX1End, fromY1End);
+    const fromZ2End: Vec3 = vec3.cross(fromX2End, fromY2End);
+
+    const c1Ratios: number[] = [];
+    const c2Ratios: number[] = [];
+    for (let i = 0; i < c1.getControlPointCount(); i++) {
+      const c1StartDist: number = vec3.distance(c1Controls[i], c1Controls[0]);
+      const c1EndDist: number = vec3.distance(c1Controls[i], c1Controls.at(-1)!);
+      c1Ratios.push(c1StartDist / (c1StartDist + c1EndDist));
+
+      const c2StartDist: number = vec3.distance(c2Controls[i], c2Controls[0]);
+      const c2EndDist: number = vec3.distance(c2Controls[i], c2Controls.at(-1)!);
+      c2Ratios.push(c2StartDist / (c2StartDist + c2EndDist));
+    }
+
+    controls.push(c1);
+    for (let i = 1; i < p1.getControlPointCount() - 1; i++) {
+      const toO1: Vec3 = p1Controls[i];
+      const toO2: Vec3 = p2Controls[i];
+
+      const toY1: Vec3 = vec3.sub(toO2, toO1);
+      const toY2: Vec3 = toY1;
+
+      const x1Prev: Vec3 = vec3.normalize(vec3.sub(p1Controls[i], p1Controls[i - 1]));
+      const x2Prev: Vec3 = vec3.normalize(vec3.sub(p2Controls[i], p2Controls[i - 1]));
+      const x1Next: Vec3 = vec3.normalize(vec3.sub(p1Controls[i + 1], p1Controls[i]));
+      const x2Next: Vec3 = vec3.normalize(vec3.sub(p2Controls[i + 1], p2Controls[i]));
+      const toX1: Vec3 = vec3.normalize(vec3.add(x1Prev, x1Next));
+      const toX2: Vec3 = vec3.normalize(vec3.add(x2Prev, x2Next));
+
+      const toZ1: Vec3 = vec3.cross(toX1, toY1);
+      const toZ2: Vec3 = vec3.cross(toX2, toY2);
+
+      if (this.preserveHeight) {
+        vec3.normalize(toZ1, toZ1);
+        vec3.normalize(toZ2, toZ2);
+      }
+
+      const cob1Start: Mat4 = changeOfBasis(fromX1Start, fromY1Start, fromZ1Start, fromO1Start, toX1, toY1, toZ1, toO1);
+      const cob2Start: Mat4 = changeOfBasis(fromX2Start, fromY2Start, fromZ2Start, fromO2Start, toX2, toY2, toZ2, toO2);
+
+      const cob1End: Mat4 = changeOfBasis(fromX1End, fromY1End, fromZ1End, fromO1End, toX1, toY1, toZ1, toO1);
+      const cob2End: Mat4 = changeOfBasis(fromX2End, fromY2End, fromZ2End, fromO2End, toX2, toY2, toZ2, toO2);
+
+      const controlRow: Vec4[] = [];
+      for (let j = 0; j < c1.getControlPointCount(); j++) {
+        const c1p1: Vec3 = vec3.transformMat4(c1Controls[j], cob1Start);
+        const c1p2: Vec3 = vec3.transformMat4(c1Controls[j], cob2Start);
+        const c1Combined: Vec3 = vec3.lerp(c1p1, c1p2, c1Ratios[j]);
+
+        const c2p1: Vec3 = vec3.transformMat4(c2Controls[j], cob1End);
+        const c2p2: Vec3 = vec3.transformMat4(c2Controls[j], cob2End);
+        const c2Combined: Vec3 = vec3.lerp(c2p1, c2p2, c2Ratios[j]);
 
 
-    // duplicate curve1 controls across pipes 
+        const combined: Vec3 = vec3.lerp(c1Combined, c2Combined,
+          i / (p1.getControlPointCount() - 1)
+        );
+        const combinedWeight: number = lerp(
+          c1.getWeightedControlPoints()[j][3],
+          c2.getWeightedControlPoints()[j][3],
+          i / (p1.getControlPointCount() - 1)
+        );
+        controlRow.push(vec4.create(
+          combined[0] * combinedWeight,
+          combined[1] * combinedWeight,
+          combined[2] * combinedWeight,
+          combinedWeight
+        ));
 
-
-    // duplicate curve2 controls accross pipes 
-
-
-    // lerp controls
-
+      }
+      controls.push(new Curve(null, controlRow, c1.getDegree(), c1.getKnots()));
+    }
+    controls.push(c2);
 
     // loft
+    this.surface = loft(controls, p1.getDegree());
+    this.surface.showControls(true);
+
+
+    // clean up
+    p1.delete();
+    p2.delete();
+    for (const curve of controls) {
+      curve.delete();
+    }
 
   }
 

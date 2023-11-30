@@ -1,40 +1,24 @@
 import { Mat4, Vec3, vec3, vec4, Vec4 } from "wgpu-matrix";
 import { Curve } from "./curve";
 import { Surface } from "./surface";
-import { genericKnotVector } from "./utils";
+import { genericKnotVector, matchDegrees, matchKnots } from "./utils";
 
 
 
-const equals = function(a: number, b: number, e: number = 0.000001): boolean { return Math.abs(a - b) < e; };
 
 export const loft = function(curves: Curve[], degree: number): Surface {
-  // match degrees
-  const degreeU: number = Math.min(degree, curves.length - 1);
-  let degreeV: number = 0;
-  for (let curve of curves) degreeV = Math.max(degreeV, curve.getDegree());
-  for (let curve of curves) if (curve.getDegree() < degreeV) curve.elevateDegree(degreeV - curve.getDegree());
 
-  // match knots
-  for (let curve of curves) curve.normalizeKnots();
-  for (let i = 0; i < curves[0].getKnotCount(); i++) {
-    var smallest: number = Number.POSITIVE_INFINITY;
-    var finished: boolean = true;
-    for (let curve of curves) {
-      if (i < curve.getKnotCount()) {
-        finished = false;
-        smallest = Math.min(smallest, curve.getKnots()[i]);
-      }
-    }
-    if (finished) break;
-    for (let curve of curves) {
-      if (!equals(curve.getKnots()[i], smallest)) curve.insertKnot(smallest);
-    }
-  }
+  const duplicates: Curve[] = [];
+  for (const c of curves) duplicates.push(<Curve>c.clone());
 
-  //loft
+  const degreeU: number = Math.min(degree, duplicates.length - 1);
+  matchDegrees(duplicates);
+  matchKnots(duplicates);
+  let degreeV: number = duplicates[0].getDegree();
+
   const points: Vec4[][] = [];
-  for (let i = 0; i < curves.length; i++) {
-    const curve: Curve = curves[i];
+  for (let i = 0; i < duplicates.length; i++) {
+    const curve: Curve = duplicates[i];
     const curveControls: Vec4[] = curve.getWeightedControlPoints();
     points.push([]);
     for (let j = 0; j < curveControls.length; j++) {
@@ -55,7 +39,11 @@ export const loft = function(curves: Curve[], degree: number): Surface {
     }
   }
 
-  const knotsU: number[] = genericKnotVector(curves.length, degreeU);
+  const knotsU: number[] = genericKnotVector(duplicates.length, degreeU);
 
-  return new Surface(points, knotsU, curves[0].getKnots(), degreeU, degreeV);
+  const res: Surface = new Surface(points, knotsU, duplicates[0].getKnots(), degreeU, degreeV);
+
+  for (const c of duplicates) c.delete();
+
+  return res;
 }
