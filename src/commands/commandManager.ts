@@ -9,6 +9,7 @@ import { CircleCommand } from "./commands/circleCommand";
 import { ConstructionPlaneCommand } from "./commands/constructionPlaneCommand";
 import { CopyCommand } from "./commands/copyCommand";
 import { CurveCommand } from "./commands/curveCommand";
+import { ExtruedCurveCommand } from "./commands/extrudeCurveCommand";
 import { LoftCommand } from "./commands/loftCommand";
 import { MirrorCommand } from "./commands/mirrorCommand";
 import { MoveCommand } from "./commands/moveCommand";
@@ -133,6 +134,9 @@ export class CommandManager {
           break;
         case "blend curves": case "bc":
           this.currentCommand = new BlendCurvesCommand();
+          break;
+        case "extrude curve": case "e":
+          this.currentCommand = new ExtruedCurveCommand();
           break;
         default: INSTANCE.getLog().log("Invalid Command");
       }

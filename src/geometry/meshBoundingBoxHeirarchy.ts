@@ -166,11 +166,6 @@ export class MeshBoundingBoxHeirarchy {
   private root: MeshBoundingBoxHeirarchyNode;
 
   constructor(private mesh: Geometry, verts: Vec3[], indices: number[]) {
-
-    // BUG: need to filter out identical triangles
-    // to avoid possible infinite loop
-
-    // degenerates can break the bbh, maybe
     const triangles: number[] = [];
     for (let i = 0; i < indices.length; i += 3) { triangles.push(i / 3); }
     this.root = new MeshBoundingBoxHeirarchyNode(this.mesh, verts, indices, triangles);
