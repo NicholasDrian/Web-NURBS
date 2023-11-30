@@ -98,12 +98,16 @@ export class Curve extends Geometry {
   }
 
   public clone(): Geometry {
-    return new Curve(this.parent,
+    const res: Curve = new Curve(this.parent,
       cloneVec4List(this.weightedControlPoints),
       this.degree,
       [...this.knots],
       mat4.clone(this.model),
       this.materialName);
+    if (!this.controlCage!.isHidden()) {
+      res.showControls(true);
+    }
+    return res;
   }
 
   public delete(): void {

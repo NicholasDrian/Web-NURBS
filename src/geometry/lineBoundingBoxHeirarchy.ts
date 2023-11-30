@@ -180,7 +180,6 @@ export class LineBoundingBoxHeirarchy {
 
   public isWithinFrustum(frustum: Frustum, inclusive: boolean): boolean {
     frustum.transform(mat4.inverse(this.geometry.getModelRecursive()));
-    console.log(frustum);
     const res: boolean = this.root.isWithinFrustum(frustum, inclusive);
     frustum.transform(this.geometry.getModelRecursive());
     return res;

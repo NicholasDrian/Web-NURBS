@@ -95,12 +95,16 @@ export class Surface extends Geometry {
   }
 
   public clone(): Geometry {
-    return new Surface(cloneVec4ListList(
+    const res: Surface = new Surface(cloneVec4ListList(
       this.weightedControlPoints),
       [...this.uKnots], [...this.vKnots],
       this.degreeU, this.degreeV,
       this.parent, mat4.clone(this.model),
       this.materialName);
+    if (!this.controlCage!.isHidden()) {
+      res.showControls(true);
+    }
+    return res;
   }
 
   public getMesh(): Mesh {

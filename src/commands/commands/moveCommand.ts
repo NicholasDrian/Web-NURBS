@@ -5,7 +5,6 @@ import { Intersection } from "../../geometry/intersection";
 import { Clicker } from "../clicker";
 import { Command } from "../command";
 
-
 enum MoveCommandMode {
   SelectPointToMoveFrom,
   SelectPointToMoveTo,
@@ -17,7 +16,6 @@ export class MoveCommand extends Command {
   private mode: MoveCommandMode;
   private pointToMoveFrom: Vec3 | null;
   private clicker: Clicker;
-  private objectsToMove: Map<Geometry, Mat4>;
 
   constructor() {
     super();
@@ -25,26 +23,20 @@ export class MoveCommand extends Command {
     this.mode = MoveCommandMode.SelectPointToMoveFrom;
     this.pointToMoveFrom = null;
     this.clicker = new Clicker();
-    this.objectsToMove = new Map<Geometry, Mat4>;
 
     const selection: Set<Geometry> = INSTANCE.getSelector().getSelection();
     if (selection.size === 0) {
       this.done();
       return;
     }
-    for (const geo of selection) {
-      this.objectsToMove.set(
-        geo, geo.getModel()
-      );
-      INSTANCE.getScene().removeGeometry(geo);
-    }
   }
 
   handleInputString(input: string): void {
-    //TODO:
     if (input == "0") {
-      for (const [geo, transform] of this.objectsToMove) {
-        geo.setModel(transform);
+      INSTANCE.getMover().setTransform(mat4.identity());
+      const selection: Set<Geometry> = INSTANCE.getSelector().getSelection();
+      for (const geo of selection) {
+        geo.onSelectionMoved();
       }
       this.done();
     }
@@ -60,9 +52,9 @@ export class MoveCommand extends Command {
       case MoveCommandMode.SelectPointToMoveTo:
         const translation: Vec3 = vec3.sub(intersection.point, this.pointToMoveFrom!);
         const translationTransform: Mat4 = mat4.translation(translation);
-        for (const [geo, model] of this.objectsToMove) {
-          geo.setModel(mat4.mul(translationTransform, model));
-        }
+
+        INSTANCE.getMover().setTransform(translationTransform);
+
         this.done();
         break;
       default:
@@ -81,8 +73,10 @@ export class MoveCommand extends Command {
       if (point) {
         const translation: Vec3 = vec3.sub(point, this.pointToMoveFrom!);
         const translationTransform: Mat4 = mat4.translation(translation);
-        for (const [geo, model] of this.objectsToMove) {
-          geo.setModel(mat4.mul(translationTransform, model));
+        INSTANCE.getMover().setTransform(translationTransform);
+        const selection: Set<Geometry> = INSTANCE.getSelector().getSelection();
+        for (const geo of selection) {
+          geo.onSelectionMoved();
         }
       }
     }
@@ -105,7 +99,10 @@ export class MoveCommand extends Command {
   private done() {
     this.finished = true;
     this.clicker.destroy();
-    for (let geo of this.objectsToMove.keys()) {
+    const selection: Set<Geometry> = INSTANCE.getSelector().getSelection();
+    for (const geo of selection) {
+      INSTANCE.getScene().removeGeometry(geo);
+      geo.bakeSelectionTransform();
       INSTANCE.getScene().addGeometry(geo);
     }
     INSTANCE.getMover().updatedSelection();

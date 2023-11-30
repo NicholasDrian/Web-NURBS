@@ -661,4 +661,8 @@ export class Mover {
     return mat4.mul(this.currentModel, mat4.inverse(this.originalModel));
   }
 
+  public setTransform(t: Mat4): void {
+    this.currentModel = mat4.mul(t, this.originalModel);
+  }
+
 }
