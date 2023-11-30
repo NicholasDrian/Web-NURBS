@@ -110,6 +110,6 @@ export const revolve = function(axis: Ray, curve: Curve, theta: number): Surface
     outWeightedControls.push(temp);
   }
 
-  return new Surface(outWeightedControls, outKnots, [...curve.getKnots()], curve.getDegree(), 2);
+  return new Surface(outWeightedControls, outKnots, [...curve.getKnots()], 2, curve.getDegree());
 
 }

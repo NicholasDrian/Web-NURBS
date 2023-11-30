@@ -32,7 +32,7 @@ export class CopyCommand extends Command {
       return;
     }
     for (const geometry of selection) {
-      this.geometry.set(geometry.clone(), geometry.getModelRecursive());
+      this.geometry.set(geometry.clone(), geometry.getModel());
     }
 
   }

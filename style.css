@@ -2,7 +2,7 @@
 
 :root {
   --light-red: rgba(220, 200, 200, 1.0);
-  --dark-red: rgba(100, 0, 0, 1.0);
+  --dark-red: rgba(50, 0, 0, 1.0);
   --blue: rgba(100, 120, 255,1);
   --transparent-black: rgba(0, 0, 0, 0.4);
   --black: rgba(0, 0, 0, 1);
