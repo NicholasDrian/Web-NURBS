@@ -144,6 +144,7 @@ export class ControlCage1D extends Geometry {
       }
     } else {
       // Point Sub ID
+      console.log("sub selecting vert", subID);
       if (!this.vertexSubSelection[subID]) {
         this.vertexSubSelection[subID] = true;
         this.subSelectedVertCount++;

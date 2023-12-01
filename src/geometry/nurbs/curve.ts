@@ -158,6 +158,7 @@ export class Curve extends Geometry {
   }
 
   public intersect(ray: Ray): Intersection | null {
+
     if (this.isHidden()) return null;
 
     let intersection: Intersection | null = this.controlCage!.intersect(ray);

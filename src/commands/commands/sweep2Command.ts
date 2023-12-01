@@ -41,7 +41,15 @@ export class Sweep2Command extends Command {
       this.done();
     }
     if (this.mode === Sweep2CommandMode.Preview) {
-
+      switch (input) {
+        case "":
+          this.done();
+          break;
+        case "1":
+          this.preserveHeight = !this.preserveHeight;
+          this.generateSurface();
+          break;
+      }
     }
   }
 
@@ -66,6 +74,7 @@ export class Sweep2Command extends Command {
         this.crossSection2 = <Curve>intersection.geometry;
         this.crossSection2.select();
         this.generateSurface();
+        this.mode = Sweep2CommandMode.Preview;
         break;
       default:
         throw new Error("case not handled");
@@ -191,12 +200,23 @@ export class Sweep2Command extends Command {
       const toX1: Vec3 = vec3.normalize(vec3.add(x1Prev, x1Next));
       const toX2: Vec3 = vec3.normalize(vec3.add(x2Prev, x2Next));
 
-      const toZ1: Vec3 = vec3.cross(toX1, toY1);
-      const toZ2: Vec3 = vec3.cross(toX2, toY2);
+      var toZ1: Vec3 = vec3.cross(toX1, toY1);
+      var toZ2: Vec3 = vec3.cross(toX2, toY2);
 
       if (this.preserveHeight) {
-        vec3.normalize(toZ1, toZ1);
-        vec3.normalize(toZ2, toZ2);
+        toZ1 = vec3.normalize(toZ1);
+        toZ1 = vec3.scale(toZ1, lerp(
+          vec3.length(fromZ1Start),
+          vec3.length(fromZ1End),
+          i / (p1.getControlPointCount() - 1))
+        );
+
+        toZ2 = vec3.normalize(toZ2);
+        toZ2 = vec3.scale(toZ2, lerp(
+          vec3.length(fromZ2Start),
+          vec3.length(fromZ2End),
+          i / (p1.getControlPointCount() - 1)
+        ));
       }
 
       const cob1Start: Mat4 = changeOfBasis(fromX1Start, fromY1Start, fromZ1Start, fromO1Start, toX1, toY1, toZ1, toO1);

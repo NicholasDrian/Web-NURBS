@@ -29,15 +29,15 @@ export class MoveCommand extends Command {
       this.done();
       return;
     }
+    for (const geo of selection) {
+      INSTANCE.getScene().removeGeometry(geo);
+    }
   }
 
   handleInputString(input: string): void {
     if (input == "0") {
       INSTANCE.getMover().setTransform(mat4.identity());
-      const selection: Set<Geometry> = INSTANCE.getSelector().getSelection();
-      for (const geo of selection) {
-        geo.onSelectionMoved();
-      }
+      INSTANCE.getSelector().onSelectionMoved();
       this.done();
     }
   }
@@ -52,9 +52,8 @@ export class MoveCommand extends Command {
       case MoveCommandMode.SelectPointToMoveTo:
         const translation: Vec3 = vec3.sub(intersection.point, this.pointToMoveFrom!);
         const translationTransform: Mat4 = mat4.translation(translation);
-
         INSTANCE.getMover().setTransform(translationTransform);
-
+        INSTANCE.getSelector().onSelectionMoved();
         this.done();
         break;
       default:
@@ -67,6 +66,7 @@ export class MoveCommand extends Command {
   }
 
   handleMouseMove(): void {
+
     this.clicker.onMouseMove();
     if (this.mode == MoveCommandMode.SelectPointToMoveTo) {
       const point: Vec3 | null = this.clicker.getPoint();
@@ -75,9 +75,7 @@ export class MoveCommand extends Command {
         const translationTransform: Mat4 = mat4.translation(translation);
         INSTANCE.getMover().setTransform(translationTransform);
         const selection: Set<Geometry> = INSTANCE.getSelector().getSelection();
-        for (const geo of selection) {
-          geo.onSelectionMoved();
-        }
+        for (const geo of selection) { geo.onSelectionMoved(); }
       }
     }
   }
@@ -99,13 +97,28 @@ export class MoveCommand extends Command {
   private done() {
     this.finished = true;
     this.clicker.destroy();
+
     const selection: Set<Geometry> = INSTANCE.getSelector().getSelection();
     for (const geo of selection) {
+      INSTANCE.getScene().addGeometry(geo);
+    }
+    INSTANCE.getSelector().transformSelected();
+    INSTANCE.getMover().setTransform(mat4.identity());
+
+
+    //const selection: Set<Geometry> = INSTANCE.getSelector().getSelection();
+    //for (const geo of selection) geo.onSelectionMoved();
+    //INSTANCE.getMover().updatedSelection();
+    /*
+    const selection: Set<Geometry> = INSTANCE.getSelector().getSelection();
+    for (const geo of selection) {
+      console.log(geo);
       INSTANCE.getScene().removeGeometry(geo);
       geo.bakeSelectionTransform();
       INSTANCE.getScene().addGeometry(geo);
     }
     INSTANCE.getMover().updatedSelection();
+    */
   }
 
 }

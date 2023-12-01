@@ -10,7 +10,7 @@ import { loft } from "../geometry/nurbs/loft";
 import { Surface } from "../geometry/nurbs/surface";
 import { Plane } from "../geometry/plane";
 import { Ray } from "../geometry/ray";
-import { angleBetween, swizzleYZ } from "../utils/math";
+import { angleBetween } from "../utils/math";
 
 export class Mover {
 
@@ -615,7 +615,6 @@ export class Mover {
       this.originalModel = mat4.translate(mat4.identity(), selectionBB.getCenter());
       this.currentModel = mat4.clone(this.originalModel);
       this.surfaces.setModel(this.originalModel);
-
       this.flip();
       this.surfaces.show();
     }

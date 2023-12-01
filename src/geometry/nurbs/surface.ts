@@ -117,8 +117,18 @@ export class Surface extends Geometry {
 
   public intersect(ray: Ray): Intersection | null {
     if (this.isHidden()) return null;
-    return this.controlCage!.intersect(ray) ||
-      this.mesh!.intersect(ray);
+
+    let intersection: Intersection | null = this.controlCage!.intersect(ray);
+    if (intersection) {
+      intersection.description = "control cage";
+      return intersection;
+    }
+
+    intersection = this.mesh!.intersect(ray);
+    if (intersection) {
+      intersection.description = "surface";
+    }
+    return intersection;
   }
 
   public override getTypeName(): string {

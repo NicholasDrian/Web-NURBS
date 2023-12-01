@@ -84,6 +84,10 @@ export class Selector {
 
       if (intersection.geometry === null) continue; // construction plane intersection
 
+      if (intersection.description != "control cage") {
+        intersection.objectSubID = -1;
+      }
+
       let geo: Geometry = intersection.geometry;
       geometryAtPixel.push([geo, intersection.objectSubID]);
 
@@ -126,7 +130,7 @@ export class Selector {
   private doneTogglingSelectionAtPixel(geo: Geometry | null, subID?: number): void {
     if (geo !== null) {
       geo.unHover();
-      if (subID !== undefined) {
+      if (subID !== undefined && subID !== -1) {
         if (geo.isSubSelected(subID)) {
           this.removeFromSubSelection(geo, subID);
         } else {
@@ -147,25 +151,25 @@ export class Selector {
   public selectInRectangle(left: number, right: number, top: number, bottom: number, inclusive: boolean, sub: boolean): void {
     const frustum: Frustum = new Frustum(left, right, top, bottom);
     // TODO: subselection with frustum
-    //if (sub) {
-    //} else {
-    const within: Geometry[] = INSTANCE.getScene().getBoundingBoxHeirarchy().getWithinFrustum(frustum, sub, inclusive);
-    for (const geo of within) {
-      this.addToSelection(geo);
+    if (sub) {
+    } else {
+      const within: Geometry[] = INSTANCE.getScene().getBoundingBoxHeirarchy().getWithinFrustum(frustum, sub, inclusive);
+      for (const geo of within) {
+        this.addToSelection(geo);
+      }
     }
-    //}
   }
 
   public unSelectInRectangle(left: number, right: number, top: number, bottom: number, inclusive: boolean, sub: boolean): void {
     const frustum: Frustum = new Frustum(left, right, top, bottom);
     // TODO: subselection with frustum
-    //if (sub) {
-    //} else {
-    const within: Geometry[] = INSTANCE.getScene().getBoundingBoxHeirarchy().getWithinFrustum(frustum, sub, inclusive);
-    for (const geo of within) {
-      this.removeFromSelection(geo);
+    if (sub) {
+    } else {
+      const within: Geometry[] = INSTANCE.getScene().getBoundingBoxHeirarchy().getWithinFrustum(frustum, sub, inclusive);
+      for (const geo of within) {
+        this.removeFromSelection(geo);
+      }
     }
-    //}
   }
 
   public getSelection(): Set<Geometry> {
