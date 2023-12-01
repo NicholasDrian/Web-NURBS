@@ -40,8 +40,8 @@ class BBHNode {
       // not a leaf
       this.geometry = null;
       const center: number = this.boundingBox.getCenter()[this.axis];
-      const child1Geometry: Geometry[] = [];
-      const child2Geometry: Geometry[] = [];
+      var child1Geometry: Geometry[] = [];
+      var child2Geometry: Geometry[] = [];
       geometry.forEach((geo: Geometry) => {
         if (geo.getBoundingBox().getCenter()[this.axis] < center) {
           child1Geometry.push(geo);
@@ -49,6 +49,10 @@ class BBHNode {
           child2Geometry.push(geo);
         }
       });
+      if (child1Geometry.length === 0 || child2Geometry.length === 0) {
+        child1Geometry = geometry.slice(0, geometry.length / 2);
+        child2Geometry = geometry.slice(geometry.length / 2, geometry.length);
+      }
       this.child1 = new BBHNode(child1Geometry, depth + 1);
       this.child2 = new BBHNode(child2Geometry, depth + 1);
     }
