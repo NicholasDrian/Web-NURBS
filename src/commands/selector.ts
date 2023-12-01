@@ -6,6 +6,8 @@ import { Ray } from "../geometry/ray";
 import { Scene } from "../scene/scene";
 
 
+// TODO: make this use the clicker
+
 
 export class Selector {
 
@@ -70,7 +72,10 @@ export class Selector {
 
   public toggleSelectionAtPixel(x: number, y: number, sub: boolean): void {
 
-    if (this.selecting) return;
+    if (this.selecting) {
+      this.doneTogglingSelectionAtPixel(null);
+      return;
+    }
     this.selecting = true;
 
     const ray: Ray = INSTANCE.getScene().getCamera().getRayAtPixel(x, y);

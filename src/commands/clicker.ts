@@ -52,7 +52,7 @@ export class Clicker {
 
   public click(types?: string[]): void {
     if (this.clicked) {
-      // TODO: remove click dialog
+      this.reset();
       return;
     }
     this.clicked = true;
@@ -105,6 +105,7 @@ export class Clicker {
   }
 
   reset() {
+    console.log("reset");
     this.clicked = false;
     this.element.hidden = true;
   }
