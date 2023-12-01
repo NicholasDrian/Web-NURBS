@@ -437,6 +437,7 @@ export class Mover {
           this.moved = false;
           this.active = false;
           this.originalIntersectionPoint = null;
+          INSTANCE.getSelector().onSelectionMoved();
           INSTANCE.getSelector().transformSelected();
           this.updatedSelection();
           this.originalModel = this.currentModel;
@@ -512,12 +513,14 @@ export class Mover {
         this.active = false;
         this.element.hidden = true;
         this.originalIntersectionPoint = null;
+        INSTANCE.getSelector().onSelectionMoved();
         INSTANCE.getSelector().transformSelected();
         this.updatedSelection();
         this.originalModel = this.currentModel;
         return;
       }
       if (event.code == "Delete" || event.code == "Backspace" && this.element.innerHTML.at(-1) != ":") {
+        console.log("here");
         this.element.innerHTML = this.element.innerHTML.slice(0, -1);
       } else if (event.key.length === 1) {
         this.element.innerHTML += event.key;
@@ -578,6 +581,7 @@ export class Mover {
           this.currentModel = mat4.scale(this.originalModel, vec3.create(parsedInput, parsedInput, parsedInput));
           break;
       }
+      INSTANCE.getSelector().onSelectionMoved();
     }
   }
 
