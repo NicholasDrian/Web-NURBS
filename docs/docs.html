@@ -16,9 +16,16 @@
       color: rgba(235,215,215,1);
       margin: 10px;
       padding: 10px; 
+      max-width:1200px;
+      position:absolute;
+      left: 50%;
+      transform:translate(-50%, 0);
+
+left:50%
     }
     h1, h2, h3, h4, h5 {
       margin:5px;
+      text-align:center;
     }
     details {
       margin-left:10px;
@@ -34,12 +41,11 @@
     <h1 style="font-size:3em; text-align:center;">
       Web NURBS Docs
     </h1>
-    <h1 style="font-size:1.5em; text-align:center; ">
-      By Nick Drian
-    </h2>
 <br>
 <h1 style="margin-left:10px;">
+  <u>
   Overview:
+  </u>
 </h1 >
 <p>
   There are two modes of editing, one for moving around and another for entering commands. use Tab to toggle between these modes. You will know if you are in command mode because a CLI will appear at the bottom.
@@ -57,7 +63,9 @@
   To move things around, simple select them and the move icon will pop up. This icon can be clicked or dragged to move objects in many ways. It supports rotation about each axis, motion on each plane and each axis, uniform scaling, scaling on each plane and scaling on each axis. 
 </p>
 <h1 style="margin-left:10px;">
+  <u>
   Commands:
+  </u>
 </h1 >
     <details>
       <summary>Camera | cam</summary>
@@ -183,6 +191,8 @@
       <summary>ReverseCurve | rc</summary>
       TODO:
     </details>
+    </div>
 </body>
+
 
 </html>
