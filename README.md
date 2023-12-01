@@ -1,5 +1,5 @@
-#<b> Web NURBS<b>
-##Click <a href="https://nicholasdrian.github.io/WebCAD/"> <u>HERE</u> </a> to run Web NURBS
+# Web NURBS
+Click <a href="https://nicholasdrian.github.io/WebCAD/"> <u>HERE</u> </a> to run Web NURBS
 ## What is it?
 Web NURBS is 3D NURBS modeling software designed to run in your browser. It uses WebGPU, a modern repladement for WebGL. The program is written in about 12k lines of TypeScript and Web Graphics Shader Language. 
 
