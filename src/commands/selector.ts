@@ -79,7 +79,7 @@ export class Selector {
     this.selecting = true;
 
     const ray: Ray = INSTANCE.getScene().getCamera().getRayAtPixel(x, y);
-    const intersections: Intersection[] = INSTANCE.getScene().getBoundingBoxHeirarchy().firstIntersectionsWithinMargin(ray, 5);
+    const intersections: Intersection[] = INSTANCE.getScene().getBoundingBoxHeirarchy().firstIntersectionsWithinMargin(ray, 5, sub);
     const list: HTMLElement = document.createElement("ul");
     this.element.innerHTML = "";
     this.element.appendChild(list);

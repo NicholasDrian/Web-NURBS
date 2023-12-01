@@ -58,18 +58,18 @@ class BBHNode {
     }
   }
 
-  public firstIntersectionsWithinMargin(ray: Ray, margin: number): Intersection[] {
+  public firstIntersectionsWithinMargin(ray: Ray, margin: number, sub: boolean): Intersection[] {
     const intersections: Intersection[] = [];
     if (ray.almostIntersectBoundingBox(this.boundingBox, 10) === null) return intersections;
 
     if (this.isLeaf()) {
       this.geometry!.forEach((geo: Geometry) => {
-        const intersection: Intersection | null = geo.intersect(ray);
+        const intersection: Intersection | null = geo.intersect(ray, sub);
         if (intersection !== null) intersections.push(intersection);
       });
     } else {
-      intersections.push(...this.child1!.firstIntersectionsWithinMargin(ray, margin));
-      intersections.push(...this.child2!.firstIntersectionsWithinMargin(ray, margin));
+      intersections.push(...this.child1!.firstIntersectionsWithinMargin(ray, margin, sub));
+      intersections.push(...this.child2!.firstIntersectionsWithinMargin(ray, margin, sub));
     }
     intersections.sort((a: Intersection, b: Intersection) => {
       // TODO: think about this
@@ -112,14 +112,14 @@ class BBHNode {
     }
   }
 
-  public firstPositiveIntersection(ray: Ray): Intersection | null {
+  public firstPositiveIntersection(ray: Ray, sub: boolean): Intersection | null {
 
     if (ray.almostIntersectBoundingBox(this.boundingBox, 10) === null) return null;
 
     if (this.isLeaf()) {
       var res: Intersection | null = null;
       this.geometry!.forEach((geo: Geometry) => {
-        var t: Intersection | null = geo.intersect(ray);
+        var t: Intersection | null = geo.intersect(ray, sub);
         if (t !== null && t.time > 0) {
           if (res === null) res = t;
           else res = res.time < t.time ? res : t;
@@ -127,8 +127,8 @@ class BBHNode {
       });
       return res;
     } else {
-      const t1 = this.child1!.firstPositiveIntersection(ray);
-      const t2 = this.child2!.firstPositiveIntersection(ray);
+      const t1 = this.child1!.firstPositiveIntersection(ray, sub);
+      const t2 = this.child2!.firstPositiveIntersection(ray, sub);
       if (t1 === null) return t2;
       if (t2 === null) return t1;
       return t1.time < t2.time ? t1 : t2;
@@ -238,15 +238,15 @@ export class SceneBoundingBoxHeirarchy {
     return this.root;
   }
 
-  public firstPositiveIntersection(ray: Ray): Intersection | null {
-    const sceneIntersection: Intersection | null = this.root.firstPositiveIntersection(ray);
+  public firstPositiveIntersection(ray: Ray, sub: boolean): Intersection | null {
+    const sceneIntersection: Intersection | null = this.root.firstPositiveIntersection(ray, sub);
     if (sceneIntersection) return sceneIntersection;
     return INSTANCE.getScene().getConstructionPlane().intersect(ray);
   }
 
   // margin is max percentage of distance from camera behind first intersection
-  public firstIntersectionsWithinMargin(ray: Ray, margin: number): Intersection[] {
-    const res: Intersection[] = this.root.firstIntersectionsWithinMargin(ray, margin);
+  public firstIntersectionsWithinMargin(ray: Ray, margin: number, sub: boolean): Intersection[] {
+    const res: Intersection[] = this.root.firstIntersectionsWithinMargin(ray, margin, sub);
     const iGroundPlane: Intersection | null = INSTANCE.getScene().getConstructionPlane().intersect(ray);
     if (res.length === 0) return iGroundPlane ? [iGroundPlane] : [];
     if (iGroundPlane && iGroundPlane.time < res[0].time * (1 + (margin / 100))) {

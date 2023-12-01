@@ -86,13 +86,13 @@ export class Group extends Geometry {
     }
   }
 
-  public override intersect(ray: Ray): Intersection | null {
+  public override intersect(ray: Ray, sub: boolean): Intersection | null {
 
     if (this.isHidden()) return null;
 
     var res: Intersection | null = null;
     for (const child of this.children) {
-      const intersection: Intersection | null = child.intersect(ray);
+      const intersection: Intersection | null = child.intersect(ray, sub);
       if (intersection) {
         if (!res) res = intersection;
         else if (intersection.time < res.time) res = intersection;

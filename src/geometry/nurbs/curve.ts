@@ -157,20 +157,36 @@ export class Curve extends Geometry {
     return this.knots.length;
   }
 
-  public intersect(ray: Ray): Intersection | null {
+  public intersect(ray: Ray, sub: boolean): Intersection | null {
 
     if (this.isHidden()) return null;
 
-    let intersection: Intersection | null = this.controlCage!.intersect(ray);
-    if (intersection) {
-      intersection.description = "control cage";
-      return intersection;
+    let intersection: Intersection | null = null;
+
+    if (sub) { // order of intersection attempts affected by sub
+      intersection = this.controlCage!.intersect(ray, sub);
+      if (intersection) {
+        intersection.description = "control cage";
+        return intersection;
+      }
+      intersection = this.linesBBH!.almostIntersect(ray, 10);
+      if (intersection) {
+        intersection.description = "curve";
+        return intersection;
+      }
+    } else {
+      intersection = this.linesBBH!.almostIntersect(ray, 10);
+      if (intersection) {
+        intersection.description = "curve";
+        return intersection;
+      }
+      intersection = this.controlCage!.intersect(ray, sub);
+      if (intersection) {
+        intersection.description = "control cage";
+        return intersection;
+      }
     }
 
-    intersection = this.linesBBH!.almostIntersect(ray, 10);
-    if (intersection) {
-      intersection.description = "curve";
-    }
     return intersection;
   }
 

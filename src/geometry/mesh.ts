@@ -96,7 +96,7 @@ export class Mesh extends Geometry {
     return this.indices;
   }
 
-  public intersect(ray: Ray): Intersection | null {
+  public intersect(ray: Ray, sub: boolean): Intersection | null {
     if (this.isHidden()) return null;
     return this.boundingBoxHeirarchy.firstIntersection(ray);
   }

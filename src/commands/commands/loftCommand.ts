@@ -66,7 +66,6 @@ export class LoftCommand extends Command {
       default:
         throw new Error("case not implemented");
     }
-
   }
 
   handleClickResult(intersection: Intersection): void {

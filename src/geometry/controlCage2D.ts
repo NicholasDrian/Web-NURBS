@@ -135,7 +135,7 @@ export class ControlCage2D extends Geometry {
     return "Control cage 2d";
   }
 
-  public intersect(ray: Ray): Intersection | null {
+  public intersect(ray: Ray, sub: boolean): Intersection | null {
     if (this.isHidden()) return null;
     let intersection: Intersection | null = this.pointBBH.almostIntersect(ray, 10);
     if (intersection === null) {

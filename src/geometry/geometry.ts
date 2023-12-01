@@ -27,7 +27,7 @@ export abstract class Geometry {
 
   public abstract getBoundingBox(): BoundingBox;
   public abstract getTypeName(): string;
-  public abstract intersect(ray: Ray): Intersection | null;
+  public abstract intersect(ray: Ray, sub: boolean): Intersection | null;
   public abstract isWithinFrustum(frustum: Frustum, inclusive: boolean): boolean;
 
   public abstract addToSubSelection(subID: number): void;

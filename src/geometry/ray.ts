@@ -112,12 +112,6 @@ export class Ray {
 
   }
 
-  public intersectScene(scene: Scene): Intersection | null {
-    const intersection: Intersection | null = scene.getBoundingBoxHeirarchy().firstPositiveIntersection(this);
-    if (intersection !== null) return intersection;
-    return null;
-  }
-
   public intersectTriangle(p1: Vec3, p2: Vec3, p3: Vec3): number | null {
 
     const v12 = vec3.sub(p2, p1);
