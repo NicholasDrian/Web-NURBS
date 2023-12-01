@@ -86,7 +86,7 @@ export class CopyCommand extends Command {
       if (point) {
         const translation: Mat4 = mat4.translation(vec3.sub(point, this.pointToCopyFrom!));
         for (const [copy, model] of this.geometry) {
-          copy.setModel(mat4.translate(translation, model));
+          copy.setModel(mat4.mul(translation, model));
         }
       }
     }
