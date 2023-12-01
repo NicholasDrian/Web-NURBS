@@ -47,16 +47,17 @@ export class RotateCommand extends Command {
   }
 
   handleInputString(input: string): void {
-    throw new Error("Method not implemented.");
+    alert("todo");
+    this.done();
   }
   handleClickResult(input: Intersection): void {
-    throw new Error("Method not implemented.");
+    alert("todo");
   }
   handleClick(): void {
-    throw new Error("Method not implemented.");
+    alert("todo");
   }
   handleMouseMove(): void {
-    throw new Error("Method not implemented.");
+    alert("todo");
   }
   getInstructions(): string {
     switch (this.mode) {
@@ -67,7 +68,7 @@ export class RotateCommand extends Command {
     }
   }
   isFinished(): boolean {
-    throw new Error("Method not implemented.");
+    return this.finished;
   }
 
   private done(): void {

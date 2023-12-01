@@ -23,7 +23,6 @@ export class ConstructionPlaneCommand extends Command {
   }
 
   handleClickResult(input: Intersection): void {
-    throw new Error("Method not implemented.");
   }
 
   public override handleInputString(input: string): void {

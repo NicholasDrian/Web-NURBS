@@ -1,4 +1,3 @@
-import { Mat4 } from "wgpu-matrix";
 import { INSTANCE } from "../cad";
 import { Frustum } from "../geometry/frustum";
 import { Geometry } from "../geometry/geometry";

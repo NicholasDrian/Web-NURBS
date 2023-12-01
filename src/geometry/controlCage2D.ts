@@ -148,7 +148,8 @@ export class ControlCage2D extends Geometry {
   }
 
   public isWithinFrustum(frustum: Frustum, inclusive: boolean): boolean {
-    throw new Error("Method not implemented.");
+    alert("todo within frustum");
+    return false;
   }
 
   public addToSubSelection(subID: number): void {

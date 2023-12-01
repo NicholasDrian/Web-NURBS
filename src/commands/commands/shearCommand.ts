@@ -12,23 +12,26 @@ export class ShearCommand extends Command {
   }
 
   handleInputString(input: string): void {
-    throw new Error("Method not implemented.");
+    alert("todo shear");
+    this.finished = true;
   }
 
   handleClickResult(input: Intersection): void {
-    throw new Error("Method not implemented.");
+    alert("todo shear");
   }
 
   handleClick(): void {
-    throw new Error("Method not implemented.");
+    alert("todo shear");
   }
 
   handleMouseMove(): void {
-    throw new Error("Method not implemented.");
+    alert("todo shear");
+
   }
 
   getInstructions(): string {
-    throw new Error("Method not implemented.");
+    alert("todo shear");
+    return "";
   }
 
   isFinished(): boolean {

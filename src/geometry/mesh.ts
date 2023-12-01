@@ -73,7 +73,7 @@ export class Mesh extends Geometry {
   }
 
   public showControls(on: boolean): void {
-    throw new Error("Method not implemented.");
+    alert("todo");
   }
 
   public setConstantScreenSpaceSize(on: boolean) {

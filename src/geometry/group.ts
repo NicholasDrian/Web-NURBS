@@ -21,13 +21,14 @@ export class Group extends Geometry {
   }
 
   public addToSubSelection(subID: number): void {
-    throw new Error("Method not implemented.");
+    alert("todo group");
   }
   public removeFromSubSelection(subID: number): void {
-    throw new Error("Method not implemented.");
+    alert("todo group");
   }
   public isSubSelected(subID: number): boolean {
-    throw new Error("Method not implemented.");
+    alert("todo group");
+    return false;
   }
 
   public clearSubSelection(): void {

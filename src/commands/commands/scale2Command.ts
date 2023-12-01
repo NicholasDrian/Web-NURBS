@@ -14,19 +14,21 @@ export class Scale2Command extends Command {
   }
 
   handleInputString(input: string): void {
-    throw new Error("Method not implemented.");
+    alert("todo scale2");
+    this.finished = true;
   }
   handleClickResult(input: Intersection): void {
-    throw new Error("Method not implemented.");
+    alert("todo scale2");
   }
   handleClick(): void {
-    throw new Error("Method not implemented.");
+    alert("todo scale2");
   }
   handleMouseMove(): void {
-    throw new Error("Method not implemented.");
+    alert("todo scale2");
   }
   getInstructions(): string {
-    throw new Error("Method not implemented.");
+    alert("todo scale2");
+    return "";
   }
   isFinished(): boolean {
     return this.finished;
