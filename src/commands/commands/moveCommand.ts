@@ -16,6 +16,7 @@ export class MoveCommand extends Command {
   private mode: MoveCommandMode;
   private pointToMoveFrom: Vec3 | null;
   private clicker: Clicker;
+  private clones: Geometry[];
 
   constructor() {
     super();
@@ -23,6 +24,8 @@ export class MoveCommand extends Command {
     this.mode = MoveCommandMode.SelectPointToMoveFrom;
     this.pointToMoveFrom = null;
     this.clicker = new Clicker();
+    this.clones = [];
+
 
     const selection: Set<Geometry> = INSTANCE.getSelector().getSelection();
     if (selection.size === 0) {
@@ -30,6 +33,10 @@ export class MoveCommand extends Command {
       return;
     }
     for (const geo of selection) {
+      this.clones.push(geo.clone());
+      const clone: Geometry = geo.clone();
+      INSTANCE.getScene().addGeometry(clone);
+      this.clones.push(clone);
       INSTANCE.getScene().removeGeometry(geo);
     }
   }
@@ -102,23 +109,15 @@ export class MoveCommand extends Command {
     for (const geo of selection) {
       INSTANCE.getScene().addGeometry(geo);
     }
-    INSTANCE.getSelector().transformSelected();
-    INSTANCE.getMover().setTransform(mat4.identity());
 
-
-    //const selection: Set<Geometry> = INSTANCE.getSelector().getSelection();
-    //for (const geo of selection) geo.onSelectionMoved();
-    //INSTANCE.getMover().updatedSelection();
-    /*
-    const selection: Set<Geometry> = INSTANCE.getSelector().getSelection();
-    for (const geo of selection) {
-      console.log(geo);
-      INSTANCE.getScene().removeGeometry(geo);
-      geo.bakeSelectionTransform();
-      INSTANCE.getScene().addGeometry(geo);
+    for (const clone of this.clones) {
+      INSTANCE.getScene().removeGeometry(clone);
+      clone.delete();
     }
+
+    INSTANCE.getSelector().transformSelected();
     INSTANCE.getMover().updatedSelection();
-    */
+
   }
 
 }
