@@ -74,8 +74,8 @@ class CAD {
 
     //addTestSceneComplex();
     //addTestSceneRevolve();
-    // addTestSceneSphere();
-    addTestSceneSweep2();
+     addTestSceneSphere();
+    //addTestSceneSweep2();
     //addTestSceneCurve();
     //addTestSceneArc();
 
