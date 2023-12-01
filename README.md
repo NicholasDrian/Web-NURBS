@@ -7,8 +7,8 @@ Web NURBS has a CLI inspired by Rhino, Modal editing inspired by Vim, and a reac
 
 Web NURBS is far from complete, and lacking documentation. That being said it is working and ready for use!
 ## What does it look like?
-<img src="./WEB NURBS 1.png"/>
-<img src="./WEB NURBS 3.png"/>
-<img src="./WEB NURBS 2.png"/>
+<img src="./Web NURBS 1.png"/>
+<img src="./Web NURBS 3.png"/>
+<img src="./Web NURBS 2.png"/>
 
 Please Leave a ⭐
