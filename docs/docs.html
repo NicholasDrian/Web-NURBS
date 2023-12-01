@@ -9,19 +9,16 @@
   <style>
     :root{
       font-family: 'Lucida Console', monospace;
+      display:flex;
+      justify-content:center;
+      color: rgba(235,215,215,1);
     }
     .window {
-      border: 1px solid #FFFFFFFF;
+      border: 2px solid #FFFFFFFF;
       border-radius: 10px;
-      color: rgba(235,215,215,1);
       margin: 10px;
       padding: 10px; 
-      max-width:1200px;
-      position:absolute;
-      left: 50%;
-      transform:translate(-50%, 0);
-
-left:50%
+      max-width:800px;
     }
     h1, h2, h3, h4, h5 {
       margin:5px;
@@ -37,10 +34,10 @@ left:50%
 </head>
 
 <body style="background-color:rgb(20,20,40);">
-  <div class="window">
     <h1 style="font-size:3em; text-align:center;">
       Web NURBS Docs
     </h1>
+  <div class="window">
 <br>
 <h1 style="margin-left:10px;">
   <u>
@@ -48,7 +45,7 @@ left:50%
   </u>
 </h1 >
 <p>
-  There are two modes of editing, one for moving around and another for entering commands. use Tab to toggle between these modes. You will know if you are in command mode because a CLI will appear at the bottom.
+  There are two modes of editing, one for moving around and another for entering commands. use tab to toggle between these modes. You will know if you are in command mode because a CLI will appear at the bottom.
 </p>
 <p>
   To move around in the scene, use WASD keys. To look around, use arrow keys.
@@ -60,7 +57,7 @@ left:50%
   Sub selection is similar to selection but allows you to select individual components of geometry. To sub select, simply hold your meta key while selecting. This allows you to select individual vertices and line segments of control cages.
 </p>
 <p>
-  To move things around, simple select them and the move icon will pop up. This icon can be clicked or dragged to move objects in many ways. It supports rotation about each axis, motion on each plane and each axis, uniform scaling, scaling on each plane and scaling on each axis. 
+  To move things around, simply select them and the move icon will pop up. This icon can be clicked or dragged to move objects in many ways. It supports rotation about each axis, motion on each plane and each axis, uniform scaling, scaling on each plane and scaling on each axis. 
 </p>
 <h1 style="margin-left:10px;">
   <u>
