@@ -1,5 +1,14 @@
-# WebCAD
+#<b> Web NURBS<b>
+##Click <a href="https://nicholasdrian.github.io/WebCAD/"> <u>HERE</u> </a> to run Web NURBS
+## What is it?
+Web NURBS is 3D NURBS modeling software designed to run in your browser. It uses WebGPU, a modern repladement for WebGL. The program is written in about 12k lines of TypeScript and Web Graphics Shader Language. 
 
-Click <a href="https://nicholasdrian.github.io/WebCAD/"> here </a> to run WebCAD
+Web NURBS has a CLI inspired by Rhino, Modal editing inspired by Vim, and a reactive Scene Object Model inspired by the Document Object Model.
 
-Docs coming soon...
+Web NURBS is far from complete, and lacking documentation. That being said it is working and ready for use!
+## What does it look like?
+<img src="./WEB NURBS 1.png"/>
+<img src="./WEB NURBS 3.png"/>
+<img src="./WEB NURBS 2.png"/>
+
+Please Leave a ⭐
