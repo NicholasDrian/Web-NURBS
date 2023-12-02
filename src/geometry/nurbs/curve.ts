@@ -282,6 +282,8 @@ export class Curve extends Geometry {
   }
 
   public insertKnot(knot: number): void {
+    console.log("insserting knot at", knot);
+    console.log("knots before", ...this.knots);
     const idx: number = span(this.knots, knot, this.degree);
     const newWeightedControlPoints: Vec4[] = [];
     newWeightedControlPoints.push(this.weightedControlPoints[0]);
@@ -300,6 +302,7 @@ export class Curve extends Geometry {
 
     this.knots.push(knot);
     this.knots.sort();
+    console.log("knots after", ...this.knots);
 
     this.updateSamples();
 

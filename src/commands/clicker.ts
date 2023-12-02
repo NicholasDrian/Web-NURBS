@@ -105,7 +105,6 @@ export class Clicker {
   }
 
   reset() {
-    console.log("reset");
     this.clicked = false;
     this.element.hidden = true;
   }

@@ -21,6 +21,7 @@ export class InsertKnotCommand extends Command {
   handleInputString(input: string): void {
     if (input == "0") {
       this.done();
+      return;
     }
     if (this.curve) {
       const time: number = parseFloat(input);
