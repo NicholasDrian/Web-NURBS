@@ -10,7 +10,7 @@ import { Command } from "../command";
 enum Scale1CommandMode {
   ClickBasePoint,
   ClickFromPoint,
-  ClickToPoint,
+  ClickToPointOrFactor,
 }
 
 export class Scale1Command extends Command {
@@ -21,7 +21,7 @@ export class Scale1Command extends Command {
   private fromPoint: Vec3 | null;
   private toPoint: Vec3 | null;
   private clicker: Clicker;
-  private objectsToScale: Map<Geometry, Mat4>;
+  private clones: Geometry[];
 
   constructor() {
     super();
@@ -31,7 +31,7 @@ export class Scale1Command extends Command {
     this.fromPoint = null;
     this.toPoint = null;
     this.clicker = new Clicker();
-    this.objectsToScale = new Map<Geometry, Mat4>;
+    this.clones = [];
 
     const selection: Set<Geometry> = INSTANCE.getSelector().getSelection();
     if (selection.size === 0) {
@@ -39,9 +39,10 @@ export class Scale1Command extends Command {
       return;
     }
     for (const geo of selection) {
-      this.objectsToScale.set(
-        geo, geo.getModel()
-      )
+      const clone: Geometry = geo.clone();
+      clone.delete(); // invisible clone for intersecting
+      this.clones.push(clone);
+      INSTANCE.getScene().addGeometry(clone);
       INSTANCE.getScene().removeGeometry(geo);
     }
 
@@ -49,8 +50,20 @@ export class Scale1Command extends Command {
 
   handleInputString(input: string): void {
     if (input == "0") {
+      INSTANCE.getMover().setTransform(mat4.identity());
+      INSTANCE.getSelector().onSelectionMoved();
       this.done();
       return;
+    }
+    if (this.mode === Scale1CommandMode.ClickToPointOrFactor) {
+      const factor: number = parseFloat(input);
+      if (!isNaN(factor)) {
+        const vFrom: Vec3 = vec3.sub(this.fromPoint!, this.basePoint!);
+        const transform: Mat4 = getScale1Transform(new Plane(this.basePoint!, vFrom), factor);
+        INSTANCE.getMover().setTransform(transform);
+        INSTANCE.getSelector().onSelectionMoved();
+        this.done();
+      }
     }
   }
 
@@ -63,10 +76,10 @@ export class Scale1Command extends Command {
         break;
       case Scale1CommandMode.ClickFromPoint:
         this.fromPoint = intersection.point;
-        this.mode = Scale1CommandMode.ClickToPoint;
+        this.mode = Scale1CommandMode.ClickToPointOrFactor;
         this.clicker.reset();
         break;
-      case Scale1CommandMode.ClickToPoint:
+      case Scale1CommandMode.ClickToPointOrFactor:
         this.toPoint = intersection.point;
         this.setScale();
         this.done();
@@ -82,7 +95,7 @@ export class Scale1Command extends Command {
 
   handleMouseMove(): void {
     this.clicker.onMouseMove();
-    if (this.mode == Scale1CommandMode.ClickToPoint) {
+    if (this.mode == Scale1CommandMode.ClickToPointOrFactor) {
       const point: Vec3 | null = this.clicker.getPoint();
       if (point) {
         this.toPoint = point;
@@ -97,8 +110,8 @@ export class Scale1Command extends Command {
         return "0:Exit  Click base point.  $";
       case Scale1CommandMode.ClickFromPoint:
         return "0:Exit  Click from point.  $";
-      case Scale1CommandMode.ClickToPoint:
-        return "0:Exit  Click to point.  $";
+      case Scale1CommandMode.ClickToPointOrFactor:
+        return "0:Exit  Click to point or enter factor.  $";
       default:
         throw new Error("case not implemented");
     }
@@ -115,18 +128,25 @@ export class Scale1Command extends Command {
     const lTo: number = vec3.dot(vTo, vec3.normalize(vFrom));
     const factor: number = lTo / lFrom;
     const transform: Mat4 = getScale1Transform(new Plane(this.basePoint!, vFrom), factor);
-    for (let [geo, originalTransform] of this.objectsToScale) {
-      geo.setModel(mat4.mul(transform, originalTransform));
-    }
+    INSTANCE.getMover().setTransform(transform);
+    INSTANCE.getSelector().onSelectionMoved();
   }
 
   private done() {
     this.finished = true;
     this.clicker.destroy();
 
-    for (const geo of this.objectsToScale.keys()) {
+    const selection: Set<Geometry> = INSTANCE.getSelector().getSelection();
+    for (const geo of selection) {
       INSTANCE.getScene().addGeometry(geo);
     }
+
+    for (const clone of this.clones) {
+      INSTANCE.getScene().removeGeometry(clone);
+      clone.delete();
+    }
+
+    INSTANCE.getSelector().transformSelected();
     INSTANCE.getMover().updatedSelection();
   }
 

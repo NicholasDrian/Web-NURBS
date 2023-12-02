@@ -110,7 +110,7 @@ export class ScaleCommand extends Command {
       case ScaleCommandMode.SelectFromPoint:
         return "0:Exit  Click from point.  $"
       case ScaleCommandMode.SelectToPointOrFactor:
-        return "0:Exit  Click to point.  $"
+        return "0:Exit  Click to point or enter factor.  $"
       default:
         throw new Error("case not implemented");
     }
