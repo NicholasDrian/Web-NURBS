@@ -2,13 +2,14 @@ import { mat4, Mat4, vec3, Vec3 } from "wgpu-matrix";
 import { INSTANCE } from "../../cad";
 import { Geometry } from "../../geometry/geometry";
 import { Intersection } from "../../geometry/intersection";
+import { getScaleTransform } from "../../utils/math";
 import { Clicker } from "../clicker";
 import { Command } from "../command";
 
 enum ScaleCommandMode {
   SelectCenterPoint,
   SelectFromPoint,
-  SelectToPoint,
+  SelectToPointOrFactor,
 }
 
 export class ScaleCommand extends Command {
@@ -19,7 +20,7 @@ export class ScaleCommand extends Command {
   private fromPoint: Vec3 | null;
   private toPoint: Vec3 | null;
   private clicker: Clicker;
-  private objectsToScale: Map<Geometry, Mat4>;
+  private clones: Geometry[];
 
   constructor() {
     super();
@@ -29,7 +30,7 @@ export class ScaleCommand extends Command {
     this.fromPoint = null;
     this.toPoint = null;
     this.clicker = new Clicker();
-    this.objectsToScale = new Map<Geometry, Mat4>();
+    this.clones = [];
 
     const selection: Set<Geometry> = INSTANCE.getSelector().getSelection();
     if (selection.size === 0) {
@@ -38,22 +39,33 @@ export class ScaleCommand extends Command {
     }
 
     for (const geo of selection) {
-      this.objectsToScale.set(
-        geo, geo.getModel()
-      );
+      const clone: Geometry = geo.clone();
+      clone.delete(); // invisible clones for intersection
+      this.clones.push(clone);
+      INSTANCE.getScene().addGeometry(clone);
       INSTANCE.getScene().removeGeometry(geo);
     }
 
   }
+
   handleInputString(input: string): void {
     if (input == "0") {
-      for (const [geo, transform] of this.objectsToScale) {
-        geo.setModel(transform);
-      }
+      INSTANCE.getMover().setTransform(mat4.identity());
+      INSTANCE.getSelector().onSelectionMoved();
       this.done();
       return;
     }
+    if (this.mode === ScaleCommandMode.SelectToPointOrFactor) {
+      const factor: number = parseFloat(input);
+      if (!isNaN(factor)) {
+        const scaleTransform = getScaleTransform(this.centerPoint!, factor);
+        INSTANCE.getMover().setTransform(scaleTransform);
+        INSTANCE.getSelector().onSelectionMoved();
+        this.done();
+      }
+    }
   }
+
   handleClickResult(intersection: Intersection): void {
     switch (this.mode) {
       case ScaleCommandMode.SelectCenterPoint:
@@ -64,22 +76,25 @@ export class ScaleCommand extends Command {
       case ScaleCommandMode.SelectFromPoint:
         this.fromPoint = intersection.point;
         this.clicker.reset();
-        this.mode = ScaleCommandMode.SelectToPoint;
+        this.mode = ScaleCommandMode.SelectToPointOrFactor;
         break;
-      case ScaleCommandMode.SelectToPoint:
+      case ScaleCommandMode.SelectToPointOrFactor:
         this.toPoint = intersection.point;
         this.setScale();
         this.done();
+        break;
       default:
         throw new Error("case not implemented");
     }
   }
+
   handleClick(): void {
     this.clicker.click();;
   }
+
   handleMouseMove(): void {
     this.clicker.onMouseMove();
-    if (this.mode == ScaleCommandMode.SelectToPoint) {
+    if (this.mode == ScaleCommandMode.SelectToPointOrFactor) {
       const point: Vec3 | null = this.clicker.getPoint();
       if (point) {
         this.toPoint = point;
@@ -87,13 +102,14 @@ export class ScaleCommand extends Command {
       }
     }
   }
+
   getInstructions(): string {
     switch (this.mode) {
       case ScaleCommandMode.SelectCenterPoint:
         return "0:Exit  Click center point.  $"
       case ScaleCommandMode.SelectFromPoint:
         return "0:Exit  Click from point.  $"
-      case ScaleCommandMode.SelectToPoint:
+      case ScaleCommandMode.SelectToPointOrFactor:
         return "0:Exit  Click to point.  $"
       default:
         throw new Error("case not implemented");
@@ -108,17 +124,24 @@ export class ScaleCommand extends Command {
     const toPos: Mat4 = mat4.translation(this.centerPoint!);
     const scale: Mat4 = mat4.uniformScaling(factor);
     const transform: Mat4 = mat4.mul(mat4.mul(toPos, scale), toOrigin);
-    for (const [geo, originalTransform] of this.objectsToScale) {
-      geo.setModel(mat4.mul(transform, originalTransform));
-    }
+    INSTANCE.getMover().setTransform(transform);
+    INSTANCE.getSelector().onSelectionMoved();
   }
 
   private done(): void {
     this.finished = true;
     this.clicker.destroy();
-    for (const geo of this.objectsToScale.keys()) {
+
+    const selection: Set<Geometry> = INSTANCE.getSelector().getSelection();
+    for (const geo of selection) {
       INSTANCE.getScene().addGeometry(geo);
     }
+
+    for (const clone of this.clones) {
+      INSTANCE.getScene().removeGeometry(clone);
+    }
+
+    INSTANCE.getSelector().transformSelected();
     INSTANCE.getMover().updatedSelection();
   }
 

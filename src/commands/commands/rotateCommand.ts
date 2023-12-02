@@ -24,7 +24,6 @@ export class RotateCommand extends Command {
   private axis: Ray | null;
   private fromPoint: Vec3 | null;
   private finished: boolean;
-  private geometry: Map<Geometry, Mat4>;
   private clones: Geometry[];
 
   constructor() {
@@ -35,7 +34,6 @@ export class RotateCommand extends Command {
     this.axis = null;
     this.fromPoint = null;
     this.finished = false;
-    this.geometry = new Map<Geometry, Mat4>;
     this.clones = [];
 
 
@@ -46,7 +44,6 @@ export class RotateCommand extends Command {
     }
 
     for (const geo of selected) {
-      this.geometry.set(geo, geo.getModel());
       const clone: Geometry = geo.clone();
       clone.delete(); // an invisible clone just for intersecting with.
       this.clones.push(clone);
@@ -64,7 +61,7 @@ export class RotateCommand extends Command {
       return;
     }
     if (this.mode === RotateCommandMode.SelectFromPointOrAngle) {
-      const val: number = parseInt(input);
+      const val: number = parseFloat(input);
       if (!isNaN(val)) {
         const rotationMatrix: Mat4 = getRotationTransform(this.axis!, val / 180 * Math.PI);
         INSTANCE.getMover().setTransform(rotationMatrix);
