@@ -1,25 +1,61 @@
+import { INSTANCE } from "../../cad";
 import { Intersection } from "../../geometry/intersection";
+import { Curve } from "../../geometry/nurbs/curve";
+import { Clicker } from "../clicker";
 import { Command } from "../command";
 
 export class InsertKnotCommand extends Command {
 
+  private finished: boolean;
+  private clicker: Clicker;
+  private curve: Curve | null;
+
+  constructor() {
+    super();
+    this.finished = false;
+    this.clicker = new Clicker();
+    this.curve = null;
+    INSTANCE.getSelector().reset();
+  }
+
   handleInputString(input: string): void {
-    throw new Error("Method not implemented.");
+    if (input == "0") {
+      this.done();
+    }
+    if (this.curve) {
+      const time: number = parseFloat(input);
+      if (!isNaN(time)) {
+        this.curve.insertKnot(time);
+      }
+    }
   }
+
   handleClickResult(intersection: Intersection): void {
-    throw new Error("Method not implemented.");
+    this.curve?.unSelect();
+    this.curve = <Curve>intersection.geometry;
+    this.curve.select();
+    this.clicker.reset();
   }
+
   handleClick(): void {
-    throw new Error("Method not implemented.");
+    this.clicker.click(["curve"]);
   }
+
   handleMouseMove(): void {
-    throw new Error("Method not implemented.");
+    this.clicker.onMouseMove(["curve"]);
   }
+
   getInstructions(): string {
-    throw new Error("Method not implemented.");
+    return "0:Exit  Click curve then enter time for knot insertion.  $";
   }
+
   isFinished(): boolean {
-    throw new Error("Method not implemented.");
+    return this.finished;
+  }
+
+  private done(): void {
+    this.finished = true;
+    this.clicker.destroy();
   }
 
 }

@@ -7,64 +7,82 @@
   <meta http-equiv="X-UA-Compatible" content="ie=edge">
   <title>HTML 5 Boilerplate</title>
   <style>
-    :root{
+    :root {
       font-family: 'Lucida Console', monospace;
-      background-color:rgb(20,20,40);
-      display:flex;
-      justify-content:center;
-      color: rgba(235,215,215,1);
+      background-color: rgb(20, 20, 40);
+      display: flex;
+      justify-content: center;
+      color: rgba(235, 215, 215, 1);
     }
+
     .window {
       border: 2px solid #FFFFFFFF;
       border-radius: 10px;
       margin: 10px;
-      padding: 10px; 
-      max-width:800px;
+      padding: 10px;
+      max-width: 800px;
     }
-    h1, h2, h3, h4, h5 {
-      margin:5px;
-      text-align:center;
+
+    h1,
+    h2,
+    h3,
+    h4,
+    h5 {
+      margin: 5px;
+      text-align: center;
     }
+
     details {
-      margin-left:10px;
+      margin-left: 10px;
     }
+
     p {
-      text-indent:30px;
+      text-indent: 30px;
     }
   </style>
 </head>
 
 <body>
-    <h1 style="font-size:3em; text-align:center;">
-      Web NURBS Docs
-    </h1>
+  <h1 style="font-size:3em; text-align:center;">
+    Web NURBS Docs
+  </h1>
   <div class="window">
-<br>
-<h1 style="margin-left:10px;">
-  <u>
-  Overview:
-  </u>
-</h1 >
-<p>
-  There are two modes of editing, one for moving around and another for entering commands. use tab to toggle between these modes. You will know if you are in command mode because a CLI will appear at the bottom.
-</p>
-<p>
-  To move around in the scene, use WASD keys. To look around, use arrow keys.
-</p>
-<p>
-  There are a few ways to select objects in the scene. Firstly, you can simply click. If the click was ambiguous, you will be met with an options dialog where you can specify which item you are clicking. The second way is dragging your cursor over the things you want to select. If you drag from right to left your selection will be inclusive and otherwise it will be exclusive. Inclusive selection selects everything that intersects the selection rectangle. Exclusive selection on the other hand only selects things completely within the selection rectangle. If shift is held down you can add to the selection or remove from the selection by clicking or dragging. 
-</p>
-<p>
-  Sub selection is similar to selection but allows you to select individual components of geometry. To sub select, simply hold your meta key while selecting. This allows you to select individual vertices and line segments of control cages.
-</p>
-<p>
-  To move things around, simply select them and the move icon will pop up. This icon can be clicked or dragged to move objects in many ways. It supports rotation about each axis, motion on each plane and each axis, uniform scaling, scaling on each plane and scaling on each axis. 
-</p>
-<h1 style="margin-left:10px;">
-  <u>
-  Commands:
-  </u>
-</h1 >
+    <br>
+    <h1 style="margin-left:10px;">
+      <u>
+        Overview:
+      </u>
+    </h1>
+    <p>
+      There are two modes of editing, one for moving around and another for entering commands. use tab to toggle between
+      these modes. You will know if you are in command mode because a CLI will appear at the bottom.
+    </p>
+    <p>
+      To move around in the scene, use WASD keys. To look around, use arrow keys.
+    </p>
+    <p>
+      There are a few ways to select objects in the scene. Firstly, you can simply click. If the click was ambiguous,
+      you will be met with an options dialog where you can specify which item you are clicking. The second way is
+      dragging your cursor over the things you want to select. If you drag from right to left your selection will be
+      inclusive and otherwise it will be exclusive. Inclusive selection selects everything that intersects the selection
+      rectangle. Exclusive selection on the other hand only selects things completely within the selection rectangle. If
+      shift is held down you can add to the selection or remove from the selection by clicking or dragging.
+    </p>
+    <p>
+      Sub selection is similar to selection but allows you to select individual components of geometry. To sub select,
+      simply hold your meta key while selecting. This allows you to select individual vertices and line segments of
+      control cages.
+    </p>
+    <p>
+      To move things around, simply select them and the move icon will pop up. This icon can be clicked or dragged to
+      move objects in many ways. It supports rotation about each axis, motion on each plane and each axis, uniform
+      scaling, scaling on each plane and scaling on each axis.
+    </p>
+    <h1 style="margin-left:10px;">
+      <u>
+        Commands:
+      </u>
+    </h1>
     <details>
       <summary>Camera | cam</summary>
       TODO:
@@ -189,7 +207,15 @@
       <summary>ReverseCurve | rc</summary>
       TODO:
     </details>
-    </div>
+    <details>
+      <summary>Split Curve | sp</summary>
+      TODO:
+    </details>
+    <details>
+      <summary>Insert Knot | ik</summary>
+      TODO:
+    </details>
+  </div>
 </body>
 
 

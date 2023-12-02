@@ -10,6 +10,7 @@ import { ConstructionPlaneCommand } from "./commands/constructionPlaneCommand";
 import { CopyCommand } from "./commands/copyCommand";
 import { CurveCommand } from "./commands/curveCommand";
 import { ExtruedCurveCommand } from "./commands/extrudeCurveCommand";
+import { InsertKnotCommand } from "./commands/insertKnotCommand";
 import { LoftCommand } from "./commands/loftCommand";
 import { MirrorCommand } from "./commands/mirrorCommand";
 import { MoveCommand } from "./commands/moveCommand";
@@ -23,6 +24,7 @@ import { SetMaterialCommand } from "./commands/setMaterialCommand";
 import { ShearCommand } from "./commands/shearCommand";
 import { SnapsCommand } from "./commands/snapsCommand";
 import { SphereCommand } from "./commands/sphereCommand";
+import { SplitCurveCommand } from "./commands/splitCurveCommand";
 import { Sweep2Command } from "./commands/sweep2Command";
 import { WindowCommand } from "./commands/windowCommand";
 import { hide, hideSwap, show } from "./oneTimeCommands/hideCommands";
@@ -145,6 +147,12 @@ export class CommandManager {
           break;
         case "reverse curve": case "rc":
           reverseCurveCommand();
+          break;
+        case "insert knot": case "ik":
+          this.currentCommand = new InsertKnotCommand();
+          break;
+        case "split curve": case "sp":
+          this.currentCommand = new SplitCurveCommand();
           break;
         default: INSTANCE.getLog().log("Invalid Command");
       }

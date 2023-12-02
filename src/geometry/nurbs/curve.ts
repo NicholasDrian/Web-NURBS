@@ -62,6 +62,7 @@ export class Curve extends Geometry {
     vec3.transformMat4(nextPoint, model, nextPoint);
     return new Ray(startPoint, vec3.sub(startPoint, nextPoint));
   }
+
   public getEndRay(): Ray {
     const p1: Vec4 = this.weightedControlPoints[this.getControlPointCount() - 1];
     const p2: Vec4 = this.weightedControlPoints[this.getControlPointCount() - 2];
@@ -230,6 +231,8 @@ export class Curve extends Geometry {
 
   private updateSamples(updateCage: boolean = true): void {
 
+    const cagePreviouslyShowing: boolean = !this.controlCage?.isHidden() ?? false;
+
     if (updateCage) this.controlCage?.delete();
     if (this.lines) INSTANCE.getScene().removeLines(this.lines);
 
@@ -254,6 +257,7 @@ export class Curve extends Geometry {
     INSTANCE.getScene().addRenderLines(this.lines);
     this.linesBBH = new LineBoundingBoxHeirarchy(this, samples, indices);
     if (updateCage) this.controlCage = new ControlCage1D(this, controlPointArray);
+    if (cagePreviouslyShowing) this.controlCage!.show();
 
   }
 
