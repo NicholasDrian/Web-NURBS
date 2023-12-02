@@ -7,7 +7,7 @@ import { Command } from "../command";
 
 enum WindowCommandMode {
   SelectWindow,
-  PlaceWindowStart,
+  PlaceWindowStartOrRemoveWindow,
   PlaceWindowEnd,
 }
 
@@ -37,13 +37,16 @@ export class WindowCommand extends Command {
         }
         if (WINDOW_NAMES.has(parseInt(input))) {
           this.windowName = WINDOW_NAMES.get(parseInt(input))!;
-          this.mode = WindowCommandMode.PlaceWindowStart;
+          this.mode = WindowCommandMode.PlaceWindowStartOrRemoveWindow;
 
           // remove existing window to add it back
           INSTANCE.getWindowManager().removeWindow(this.windowName);
         }
         break;
-      case WindowCommandMode.PlaceWindowStart:
+      case WindowCommandMode.PlaceWindowStartOrRemoveWindow:
+        if (input == "1") {
+          this.mode = WindowCommandMode.SelectWindow;
+        }
         break;
       case WindowCommandMode.PlaceWindowEnd:
         break;
@@ -69,7 +72,7 @@ export class WindowCommand extends Command {
     switch (this.mode) {
       case WindowCommandMode.SelectWindow:
         break;
-      case WindowCommandMode.PlaceWindowStart:
+      case WindowCommandMode.PlaceWindowStartOrRemoveWindow:
         INSTANCE.getWindowManager().addWindow(this.windowName, [x, y]);
         this.mode = WindowCommandMode.PlaceWindowEnd;
         break;
@@ -89,7 +92,7 @@ export class WindowCommand extends Command {
     switch (this.mode) {
       case WindowCommandMode.SelectWindow:
         break;
-      case WindowCommandMode.PlaceWindowStart:
+      case WindowCommandMode.PlaceWindowStartOrRemoveWindow:
         break;
       case WindowCommandMode.PlaceWindowEnd:
         INSTANCE.getWindowManager().getWindows().get(this.windowName)!.updateEnd([x, y]);
@@ -107,8 +110,8 @@ export class WindowCommand extends Command {
           res += value + "(" + key.toString() + ")  ";
         }
         return res + "$";
-      case WindowCommandMode.PlaceWindowStart:
-        return "0:Exit  Click first corner for window.";
+      case WindowCommandMode.PlaceWindowStartOrRemoveWindow:
+        return "0:Exit  1:Remove  Click first corner for window.";
       case WindowCommandMode.PlaceWindowEnd:
         return "0:Exit  Click second corner for window.";
       default:
