@@ -21,14 +21,17 @@ input {
   background-color: var(--floating-window-background-color);
   border-color: var(--floating-window-border-color);
   color: var(--floating-window-text-color);
+  margin: 5px; 
+  border-radius: 0.3rem;
 }
 
 button {
   background-color: var(--floating-window-background-color);
-  border-color: var(--blue);
+  border-color: var(--floating-window-border-color);
   color: var(--floating-window-text-color);
   margin: 5px; 
   width: 6em;
+  border-radius: 0.3rem;
 }
 
 li:hover {

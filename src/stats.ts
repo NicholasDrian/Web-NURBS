@@ -12,19 +12,18 @@ export class RenderStats {
   private trianglesCreated!: number;
 
   constructor() {
+    this.framesOver100ms = 0;
+    this.trianglesCreated = 0;
+    this.drawCalls = 0;
     this.reset();
   }
 
   public reset(): void {
-
     this.renderTime = NaN;
     this.frameTime = NaN;
     this.sceneTime = NaN;
-    this.framesOver100ms = 0;
-    this.totalFrames = 0;
-    this.trianglesCreated = 0;
-    this.drawCalls = 0;
     this.startTime = Date.now();
+    this.totalFrames = 0;
   }
 
   public setRenderTime(renderTime: number): void {
@@ -64,10 +63,9 @@ export class RenderStats {
       "Frames Over 100ms: " + this.framesOver100ms.toString() + "<br>" +
       "<br>" +
       "Draw Calls: " + this.drawCalls.toString() + "<br>" +
-      "Tris Created: " + (this.trianglesCreated / 1000000).toFixed(3) + "m";
+      "Tris Created: " + (this.trianglesCreated / 1000000).toFixed(2) + "m";
     return html;
   }
-
 
 };
 
