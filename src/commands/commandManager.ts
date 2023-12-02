@@ -151,7 +151,7 @@ export class CommandManager {
         case "insert knot": case "ik":
           this.currentCommand = new InsertKnotCommand();
           break;
-        case "split curve": case "sp":
+        case "split curve": case "spc":
           this.currentCommand = new SplitCurveCommand();
           break;
         default: INSTANCE.getLog().log("Invalid Command");

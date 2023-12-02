@@ -203,7 +203,6 @@ export class Surface extends Geometry {
       }
     }
 
-    console.log("what");
     INSTANCE.getStats().onTrianglesCreated(meshIndices.length / 3);
 
     this.mesh = new Mesh(this, meshVerts, meshNormals, meshIndices);

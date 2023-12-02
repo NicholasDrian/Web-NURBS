@@ -11,30 +11,10 @@ import { Geometry } from "./geometry";
 import { Intersection } from "./intersection";
 import { LineBoundingBoxHeirarchy } from "./lineBoundingBoxHeirarchy";
 import { PointBoundingBoxHeirarchy } from "./pointBoundingBoxHeirarchy";
+import { POINT_INDICES, POINT_MODEL, POINT_VERTS } from "./points";
 import { Ray } from "./ray";
 
-const controlPointVerts: Vec3[] = [
-  vec3.create(1, 0, 0),
-  vec3.create(0, 1, 0),
-  vec3.create(0, 0, 1),
-  vec3.create(-1, 0, 0),
-  vec3.create(0, -1, 0),
-  vec3.create(0, 0, -1),
-];
 
-const controlPointIndices: number[] = [
-  0, 1, 2,
-  0, 2, 4,
-  0, 4, 5,
-  0, 5, 1,
-
-  3, 1, 5,
-  3, 5, 4,
-  3, 4, 2,
-  3, 2, 1,
-];
-
-const controlPointModel: Mat4 = mat4.uniformScaling(0.01);
 
 export class ControlCage2D extends Geometry {
 
@@ -90,10 +70,10 @@ export class ControlCage2D extends Geometry {
 
     const transforms: Mat4[] = []
     for (const vert of this.verts) {
-      transforms.push(swizzleYZ(mat4.mul(mat4.translation(vert), controlPointModel)));
+      transforms.push(swizzleYZ(mat4.mul(mat4.translation(vert), POINT_MODEL)));
     }
     this.points = new RenderMeshInstanced(this,
-      controlPointVerts, controlPointVerts, controlPointIndices, transforms, this.accumulatedSubSelection, true);
+      POINT_VERTS, POINT_VERTS, POINT_INDICES, transforms, this.accumulatedSubSelection, true);
     INSTANCE.getScene().addRenderMeshInstanced(this.points);
 
 
@@ -338,7 +318,7 @@ export class ControlCage2D extends Geometry {
     const translation: Vec3 = mat4.getTranslation(model);
     const modelNoTranslation: Mat4 = mat4.mul(mat4.translation(vec3.scale(translation, -1)), model);
     this.points.updateTransforms(points.map((pos: Vec3) => {
-      return swizzleYZ(mat4.mul(mat4.translation(pos), mat4.mul(mat4.inverse(modelNoTranslation), controlPointModel)));
+      return swizzleYZ(mat4.mul(mat4.translation(pos), mat4.mul(mat4.inverse(modelNoTranslation), POINT_MODEL)));
     }));
   }
 

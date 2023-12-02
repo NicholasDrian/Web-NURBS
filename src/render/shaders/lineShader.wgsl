@@ -80,7 +80,8 @@ fn fragmentMain(inputs: VertexOutput) -> FragOutputs {
 
   var scaledFragCoords: vec2<f32> = inputs.position.xy / STRIPE_WIDTH;
   if (inputs.selectedness > 0) {
-   fragColor = (1 - inputs.selectedness) * fragColor + (inputs.selectedness) * SELECTED_COLOR;
+    var test: f32 = pow(inputs.selectedness, 2);
+   fragColor = (1 - test) * fragColor + test * SELECTED_COLOR;
     depth *= 0.9999999;
   }
   if ((flags & HOVER_BIT) == HOVER_BIT) {

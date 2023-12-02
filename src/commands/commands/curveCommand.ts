@@ -47,6 +47,7 @@ export class CurveCommand extends Command {
             if (this.curve.getControlPointCount() < 3) this.curve.delete();
             else {
               this.curve.removeLastControlPoint();
+              this.curve.showControls(false);
               INSTANCE.getScene().addGeometry(this.curve);
             }
           }

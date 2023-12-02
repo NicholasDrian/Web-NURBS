@@ -89,7 +89,7 @@ export class ScaleCommand extends Command {
   }
 
   handleClick(): void {
-    this.clicker.click();;
+    this.clicker.click();
   }
 
   handleMouseMove(): void {

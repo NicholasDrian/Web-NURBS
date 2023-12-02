@@ -26,17 +26,22 @@ export class Clicker {
     cursor.show();
   }
 
-  public onMouseMove(types?: string[]): void {
+  public onMouseMove(types?: string[], ids?: number[], sub: boolean = false): void {
 
     if (this.clicked) return; // currently selecting from dropdown
 
     const mousePos: [number, number] = INSTANCE.getEventManager().getMouseHandler().getMousePos();
     const ray: Ray = INSTANCE.getScene().getCamera().getRayAtPixel(mousePos[0], mousePos[1]);
-    var intersections: Intersection[] = INSTANCE.getScene().getBoundingBoxHeirarchy().firstIntersectionsWithinMargin(ray, 5, false);
+    var intersections: Intersection[] = INSTANCE.getScene().getBoundingBoxHeirarchy().firstIntersectionsWithinMargin(ray, 5, sub);
 
     if (types) {
       intersections = intersections.filter((intersection: Intersection) => {
         return types.includes(intersection.description);
+      });
+    }
+    if (ids) {
+      intersections = intersections.filter((intersection: Intersection) => {
+        return ids.includes(intersection.geometry?.getID() ?? 0);
       });
     }
 
@@ -50,11 +55,13 @@ export class Clicker {
 
   }
 
-  public click(types?: string[], sub: boolean = false): void {
+  public click(types?: string[], ids?: number[], sub: boolean = false): void {
+
     if (this.clicked) {
       this.reset();
       return;
     }
+
     this.clicked = true;
     this.element.hidden = false;
     const mousePos: [number, number] = INSTANCE.getEventManager().getMouseHandler().getMousePos();
@@ -63,6 +70,11 @@ export class Clicker {
     if (types) {
       intersections = intersections.filter((intersection: Intersection) => {
         return types.includes(intersection.description);
+      });
+    }
+    if (ids) {
+      intersections = intersections.filter((intersection: Intersection) => {
+        return ids.includes(intersection.geometry?.getID() ?? 0);
       });
     }
     if (intersections.length === 0) this.reset();
