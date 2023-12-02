@@ -1,5 +1,6 @@
 import { INSTANCE } from "../../cad";
 import { Intersection } from "../../geometry/intersection";
+import { RenderPoints } from "../../render/renderPoints";
 import { Clicker } from "../clicker";
 import { Command } from "../command";
 
@@ -14,6 +15,7 @@ export class SplitCurveCommand extends Command {
   private clicker: Clicker;
   private mode: SplitCurveCommandMode;
   private showSuggestions: boolean;
+  private suggestedPoints: RenderPoints | null;
 
   constructor() {
     super();
@@ -21,6 +23,7 @@ export class SplitCurveCommand extends Command {
     this.clicker = new Clicker();
     this.mode = SplitCurveCommandMode.SelectCurve;
     this.showSuggestions = false;
+    this.suggestedPoints = null;
     INSTANCE.getSelector().reset();
   }
 

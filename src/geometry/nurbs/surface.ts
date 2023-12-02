@@ -203,6 +203,9 @@ export class Surface extends Geometry {
       }
     }
 
+    console.log("what");
+    INSTANCE.getStats().onTrianglesCreated(meshIndices.length / 3);
+
     this.mesh = new Mesh(this, meshVerts, meshNormals, meshIndices);
     if (updateCage) this.controlCage = new ControlCage2D(this, this.weightedControlPoints.map((points: Vec4[]) => {
       return points.map((point: Vec3) => {

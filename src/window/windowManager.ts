@@ -22,8 +22,8 @@ export class WindowManager {
   }
 
   private setupDefaultWindows(): void {
-    this.addWindow("materials", [10, 10], [210, 510]);
-    this.addWindow("stats", [220, 10], [410, 220]);
+    this.addWindow("materials", [10, 10], [210, 560]);
+    this.addWindow("stats", [220, 10], [410, 240]);
     this.addWindow("snaps", [420, 10], [550, 100]);
   }
 

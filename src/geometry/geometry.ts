@@ -10,6 +10,7 @@ import { Ray } from "./ray";
 export abstract class Geometry {
 
   private static idGenerator: number = 1;
+  public static getNewID(): number { return this.idGenerator++; }
 
   private selected: boolean = false;
   private hovered: boolean = false;

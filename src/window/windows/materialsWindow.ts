@@ -27,7 +27,7 @@ export class MaterialsWindow extends CADWindow {
   private renderMaterialList(): void {
     const materials: Map<string, Material> = INSTANCE.getMaterialManager().getMaterials();
 
-    this.element.innerHTML = "<u>Materials:</u><br><br>";
+    this.element.innerHTML = "<u>MATERIALS:</u><br><br>";
 
     const list: HTMLElement = document.createElement("ul");
 

@@ -9,6 +9,7 @@ export class RenderStats {
   private totalFrames!: number;
   private startTime!: number;
   private drawCalls!: number;
+  private trianglesCreated!: number;
 
   constructor() {
     this.reset();
@@ -21,6 +22,8 @@ export class RenderStats {
     this.sceneTime = NaN;
     this.framesOver100ms = 0;
     this.totalFrames = 0;
+    this.trianglesCreated = 0;
+    this.drawCalls = 0;
     this.startTime = Date.now();
   }
 
@@ -42,6 +45,10 @@ export class RenderStats {
     this.drawCalls = count;
   }
 
+  public onTrianglesCreated(count: number) {
+    this.trianglesCreated += count;
+  }
+
   public getInnerHTML(): string {
     const fps: string = (1.0 / this.frameTime).toFixed(3);
     const averageFps: string = (1000.0 * this.totalFrames / (Date.now() - this.startTime)).toFixed(3);
@@ -50,13 +57,14 @@ export class RenderStats {
       "FPS: " + fps + "<br>" +
       "Average FPS: " + averageFps + "<br>" +
       "<br>" +
-      "Render Time: " + this.renderTime?.toFixed(3) + "<br>" +
-      "Frame Time: " + this.frameTime?.toFixed(3) + "<br>" +
-      "Scene Time: " + this.sceneTime?.toFixed(3) + "<br>" +
+      "Render Time: " + this.renderTime.toFixed(3) + "<br>" +
+      "Frame Time: " + this.frameTime.toFixed(3) + "<br>" +
+      "Scene Time: " + this.sceneTime.toFixed(3) + "<br>" +
       "<br>" +
       "Frames Over 100ms: " + this.framesOver100ms.toString() + "<br>" +
       "<br>" +
-      "Draw Calls: " + this.drawCalls?.toString();
+      "Draw Calls: " + this.drawCalls.toString() + "<br>" +
+      "Tris Created: " + (this.trianglesCreated / 1000000).toFixed(3) + "m";
     return html;
   }
 

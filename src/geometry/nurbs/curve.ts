@@ -241,7 +241,8 @@ export class Curve extends Geometry {
     const indices: number[] = [];
     const subSelection: boolean[] = [];
     for (let i = 0; i <= sampleCount; i++) {
-      samples.push(this.sample(i / sampleCount));
+      const u: number = (i / sampleCount) * this.knots.at(-1)!;
+      samples.push(this.sample(u));
       subSelection.push(false);
       indices.push(i, i + 1);
     }
@@ -261,8 +262,7 @@ export class Curve extends Geometry {
 
   }
 
-  private sample(t: number): Vec3 {
-    const u: number = t * (this.knots.at(-1)! - this.knots.at(0)!);
+  public sample(u: number): Vec3 {
     const knotSpan: number = span(this.knots, u, this.degree)
     const funcs: number[] = basisFuncs(this.knots, u, this.degree);
     let res: Vec4 = vec4.create(0, 0, 0, 0);
