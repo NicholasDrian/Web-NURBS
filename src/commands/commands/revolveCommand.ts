@@ -75,6 +75,7 @@ export class RevolveCommand extends Command {
   }
 
   public override handleClickResult(intersection: Intersection): void {
+    console.log(intersection);
     switch (this.mode) {
       case RevolveCommandMode.SelectCurves:
         let geometry = intersection.geometry!;
@@ -87,6 +88,7 @@ export class RevolveCommand extends Command {
         }
         break;
       case RevolveCommandMode.FirstAxisPoint:
+        console.log("here");
         this.temp = intersection.point;
         this.mode = RevolveCommandMode.SecondAxisPoint;
         break;
