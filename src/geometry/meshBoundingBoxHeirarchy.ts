@@ -179,7 +179,7 @@ export class MeshBoundingBoxHeirarchy {
     var model: Mat4 = this.mesh.getModelRecursive();
     const objectSpaceRay: Ray = Ray.transform(ray, mat4.inverse(model));
     const res: Intersection | null = this.root.intersect(objectSpaceRay);
-    res?.transform(model);
+    res?.transform(model, objectSpaceRay);
     return res;
   }
 

@@ -174,7 +174,7 @@ export class LineBoundingBoxHeirarchy {
     const model: Mat4 = this.geometry.getModelRecursive();
     const objectSpaceRay: Ray = Ray.transform(ray, mat4.inverse(model));
     const res: Intersection | null = this.root.almostIntersect(objectSpaceRay, pixels);
-    res?.transform(model);
+    res?.transform(model, objectSpaceRay);
     return res;
   }
 

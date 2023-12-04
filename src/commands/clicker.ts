@@ -66,7 +66,7 @@ export class Clicker {
     this.element.hidden = false;
     const mousePos: [number, number] = INSTANCE.getEventManager().getMouseHandler().getMousePos();
     const ray: Ray = INSTANCE.getScene().getCamera().getRayAtPixel(mousePos[0], mousePos[1]);
-    var intersections: Intersection[] = INSTANCE.getScene().getBoundingBoxHeirarchy().firstIntersectionsWithinMargin(ray, 5, sub);
+    var intersections: Intersection[] = INSTANCE.getScene().getBoundingBoxHeirarchy().firstIntersectionsWithinMargin(ray, 2, sub);
     if (types) {
       intersections = intersections.filter((intersection: Intersection) => {
         return types.includes(intersection.description);

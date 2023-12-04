@@ -1,5 +1,6 @@
-import { mat4, Mat4, vec3, Vec3 } from "wgpu-matrix";
+import { mat4, Mat4, vec3, Vec3, Vec4, vec4 } from "wgpu-matrix";
 import { Geometry } from "./geometry";
+import { Ray } from "./ray";
 
 export class Intersection {
 
@@ -14,14 +15,17 @@ export class Intersection {
     public screenSpaceDist: number
   ) { }
 
-  public transform(transform: Mat4): void {
-    //BUG:
-    // TODO: verify this
-    const scale: Vec3 = mat4.getScaling(transform);
-    const scaleFactor: number = vec3.length(scale) / Math.sqrt(3);
-    this.time *= scaleFactor;
-    this.dist *= scaleFactor;
-    this.screenSpaceDist /= scaleFactor;
+  public transform(transform: Mat4, ray: Ray): void {
+
+    const newDirection: Vec4 = vec4.transformMat4(vec4.create(...ray.getDirection(), 0), transform);
+    const scale: number = vec4.length(newDirection);
+
+
+    this.time *= scale;
+    this.dist *= scale;
+
+    this.screenSpaceDist /= scale; // Maybe?
+
     this.point = vec3.transformMat4(this.point, transform);
   }
 

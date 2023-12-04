@@ -4,6 +4,7 @@ import { Intersection } from "../../geometry/intersection";
 import { Curve } from "../../geometry/nurbs/curve";
 import { splitCurve } from "../../geometry/nurbs/splitCurve";
 import { Points } from "../../geometry/points";
+import { Ray } from "../../geometry/ray";
 import { Clicker } from "../clicker";
 import { Command } from "../command";
 
@@ -66,7 +67,7 @@ export class SplitCurveCommand extends Command {
         if (this.suggestedPoints && intersection.geometry === this.suggestedPoints) {
           var u: number = this.filteredKnots[intersection.objectSubID];
         } else {
-          intersection.transform(mat4.inverse(this.curve!.getModelRecursive()))
+          intersection.transform(mat4.inverse(this.curve!.getModelRecursive()), new Ray([0, 0, 0], [0, 0, 1]));
           var u: number = this.curve!.getU(intersection);
         }
         const res: [Curve, Curve] = splitCurve(this.curve!, u);
