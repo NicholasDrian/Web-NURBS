@@ -109,14 +109,21 @@ struct FragInput {
   @location(2) @interpolate(flat) selected: u32,
 }
 
+struct FragOutputs {
+  @builtin(frag_depth) depth: f32,
+  @location(0) color: vec4f,
+}
+
 
 @fragment
-fn fragmentMain(inputs: FragInput) -> @location(0) vec4f {
+fn fragmentMain(inputs: FragInput) -> FragOutputs {
 
   var normalizedNormal: vec3<f32> = normalize(inputs.normal.xyz);
   var fragColor: vec4<f32> = calculateLighting(inputs.position, normalizedNormal, material);
 
   var scaledFragCoords: vec2<f32> = inputs.fragCoord.xy / STRIPE_WIDTH;
+
+  var depth: f32 = inputs.fragCoord.z;
 
   if (inputs.selected > 0u) {
       var evenX: bool = modf(scaledFragCoords.x).fract < 0.5;
@@ -124,6 +131,7 @@ fn fragmentMain(inputs: FragInput) -> @location(0) vec4f {
       if ((evenX && !evenY) || (evenY && !evenX)) {
         fragColor = vec4<f32>(1.0, 1.0, 0.0, 1.0);
       }
+      depth *= 0.9999999;
   }
   
   if ((flags & HOVER_BIT) == HOVER_BIT) {
@@ -132,9 +140,14 @@ fn fragmentMain(inputs: FragInput) -> @location(0) vec4f {
       if ((evenX && !evenY) || (evenY && !evenX)) {
         fragColor = vec4<f32>(0.0, 0.0, 1.0, 1.0);
       }
+      depth *= 0.9999999;
   }
 
-  return fragColor;
+  var res: FragOutputs;
+  res.depth = depth;
+  res.color = fragColor;
+  return res;
+
 }
 
 
