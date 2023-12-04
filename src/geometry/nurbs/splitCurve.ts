@@ -6,13 +6,11 @@ export const splitCurve = function(curve: Curve, u: number): [Curve, Curve] {
   const temp: Curve = <Curve>curve.clone();
 
   const knots: number[] = temp.getKnots();
-  console.log("knots", ...knots);
 
   let count: number = 0;
   for (let knot of knots) { if (knot === u) count++; }
 
   for (let i = 0; i < temp.getDegree() - count; i++) {
-    console.log("inserting", u);
     temp.insertKnot(u);
   }
 
@@ -34,13 +32,6 @@ export const splitCurve = function(curve: Curve, u: number): [Curve, Curve] {
   const points1: Vec4[] = points.slice(0, knots1.length - curve.getDegree() - 1);
   const points2: Vec4[] = points.slice(points1.length - 1, points.length);
 
-  console.log("knots", ...knots);
-  console.log("knots1", ...knots1);
-  console.log("knots2", ...knots2);
-
-  console.log("points", ...points);
-  console.log("points1", ...points1);
-  console.log("points2", ...points2);
 
   temp.delete();
 

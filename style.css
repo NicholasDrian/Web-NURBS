@@ -20,6 +20,8 @@
 input {
   background-color: var(--floating-window-background-color);
   border-color: var(--floating-window-border-color);
+  border-style: solid;
+  border-width: thin;
   color: var(--floating-window-text-color);
   margin: 5px; 
   border-radius: 0.3rem;
@@ -28,6 +30,8 @@ input {
 button {
   background-color: var(--floating-window-background-color);
   border-color: var(--floating-window-border-color);
+  border-style: solid;
+  border-width: thin;
   color: var(--floating-window-text-color);
   margin: 5px; 
   width: 6em;

@@ -56,8 +56,8 @@ export class RenderStats {
       "FPS: " + fps + "<br>" +
       "Average FPS: " + averageFps + "<br>" +
       "<br>" +
-      "Render Time: " + this.renderTime.toFixed(3) + "<br>" +
       "Frame Time: " + this.frameTime.toFixed(3) + "<br>" +
+      "Render Time: " + this.renderTime.toFixed(3) + "<br>" +
       "Scene Time: " + this.sceneTime.toFixed(3) + "<br>" +
       "<br>" +
       "Frames Over 100ms: " + this.framesOver100ms.toString() + "<br>" +

@@ -101,6 +101,10 @@ export const getScaleTransform = function(center: Vec3, factor: number): Mat4 {
   return mat4.mul(toPos, mat4.mul(scaleTransform, toOrigin));
 }
 
+export const getShearTransform = function(plane: Plane, from: Vec3, to: Vec3): Mat4 {
+  throw new Error("todo");
+}
+
 
 export const lerp = function(a: number, b: number, r: number): number {
   return a * (1 - r) + b * r;

@@ -139,7 +139,7 @@ export class Curve extends Geometry {
     const dBefore: number = vec3.distance(pBefore, intersection.point);
     const dAfter: number = vec3.distance(pAfter, intersection.point);
     const ratio: number = dBefore / (dBefore + dAfter);
-    return ratio * uBefore + (1 - ratio) * uAfter;
+    return ratio * uAfter + (1 - ratio) * uBefore;
   }
 
   public clone(): Geometry {

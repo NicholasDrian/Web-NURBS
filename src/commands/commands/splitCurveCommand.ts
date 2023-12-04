@@ -1,4 +1,4 @@
-import { Vec3 } from "wgpu-matrix";
+import { mat4, Mat4, vec3, Vec3 } from "wgpu-matrix";
 import { INSTANCE } from "../../cad";
 import { Intersection } from "../../geometry/intersection";
 import { Curve } from "../../geometry/nurbs/curve";
@@ -66,6 +66,7 @@ export class SplitCurveCommand extends Command {
         if (this.suggestedPoints && intersection.geometry === this.suggestedPoints) {
           var u: number = this.filteredKnots[intersection.objectSubID];
         } else {
+          intersection.transform(mat4.inverse(this.curve!.getModelRecursive()))
           var u: number = this.curve!.getU(intersection);
         }
         const res: [Curve, Curve] = splitCurve(this.curve!, u);
@@ -85,6 +86,7 @@ export class SplitCurveCommand extends Command {
     const max: number = knots.at(-1)!;
     this.filteredKnots = [];
     var prevKnot: number = NaN;
+
     for (const knot of knots) {
       if (knot === min) continue;
       if (knot === max) continue;
@@ -92,11 +94,14 @@ export class SplitCurveCommand extends Command {
       this.filteredKnots.push(knot);
       prevKnot = knot;
     }
+
     if (this.filteredKnots.length === 0) return;
     const pointsAtKnots: Vec3[] = [];
+    const model: Mat4 = this.curve!.getModelRecursive();
     for (const knot of this.filteredKnots) {
-      pointsAtKnots.push(this.curve!.sample(knot));
+      pointsAtKnots.push(vec3.transformMat4(this.curve!.sample(knot), model));
     }
+
     this.suggestedPoints = new Points(null, pointsAtKnots);
     INSTANCE.getScene().addGeometry(this.suggestedPoints);
   }
@@ -140,7 +145,6 @@ export class SplitCurveCommand extends Command {
   }
 
   private done(): void {
-    console.log("done");
     this.finished = true;
     this.clicker.destroy();
     this.curve?.unSelect();

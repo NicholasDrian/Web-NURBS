@@ -22,7 +22,7 @@ export class WindowManager {
   }
 
   private setupDefaultWindows(): void {
-    this.addWindow("materials", [10, 10], [210, 560]);
+    this.addWindow("materials", [10, 10], [210, 580]);
     this.addWindow("stats", [220, 10], [410, 240]);
     this.addWindow("snaps", [420, 10], [550, 100]);
   }
