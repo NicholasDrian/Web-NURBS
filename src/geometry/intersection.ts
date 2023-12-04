@@ -15,6 +15,7 @@ export class Intersection {
   ) { }
 
   public transform(transform: Mat4): void {
+    //BUG:
     // TODO: verify this
     const scale: Vec3 = mat4.getScaling(transform);
     const scaleFactor: number = vec3.length(scale) / Math.sqrt(3);
