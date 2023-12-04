@@ -17,9 +17,9 @@ export class MaterialManager {
     this.materials.set("lighter grey", new Material("lighter grey", vec4.create(0.9, 0.9, 0.9, 1.0)));
     this.materials.set("light grey", new Material("light grey", vec4.create(0.7, 0.7, 0.7, 1.0)));
     this.materials.set("mid grey", new Material("mid grey", vec4.create(0.5, 0.5, 0.5, 1.0)));
-    this.materials.set("red", new Material("red", vec4.create(1, 0.1, 0.1, 1)));
-    this.materials.set("green", new Material("green", vec4.create(0.1, 1, 0.1, 1)));
-    this.materials.set("blue", new Material("blue", vec4.create(0.1, 0.1, 1, 1)));
+    this.materials.set("red", new Material("red", vec4.create(1, 0, 0, 1)));
+    this.materials.set("green", new Material("green", vec4.create(0, 1, 0, 1)));
+    this.materials.set("blue", new Material("blue", vec4.create(0, 0, 1, 1)));
     this.materials.set("white", new Material("white", vec4.create(1, 1, 1, 1)));
   }
 

@@ -40,7 +40,7 @@ export class CommandManager {
 
   constructor() {
     this.currentCommand = null;
-    this.previousInput = "";
+    this.previousInput = "null";
   }
 
   public handleInput(input: string) {
