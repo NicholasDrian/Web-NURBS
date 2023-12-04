@@ -49,6 +49,10 @@ export abstract class Geometry {
     return this.id;
   }
 
+  public getMaterial(): MaterialName | null {
+    return this.materialName;
+  }
+
   public isOverlay(): boolean {
     return this.overlay || (this.parent && this.parent.isOverlay()) || false;
   }

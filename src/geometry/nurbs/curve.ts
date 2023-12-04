@@ -18,6 +18,7 @@ export class Curve extends Geometry {
   private controlCage: ControlCage1D | null;
   private lines: RenderLines | null;
   private linesBBH: LineBoundingBoxHeirarchy | null;
+  private uPerSample: number[];
 
   constructor(
     parent: Geometry | null,
@@ -32,6 +33,8 @@ export class Curve extends Geometry {
     if (this.knots.length == 0) {
       this.knots = genericKnotVector(this.weightedControlPoints.length, this.degree);
     }
+
+    this.uPerSample = [];
     this.controlCage = null;
     this.lines = null;
     this.linesBBH = null;
@@ -126,6 +129,17 @@ export class Curve extends Geometry {
       this.model = mat4.mul(INSTANCE.getMover().getTransform(), this.model);
     }
     this.controlCage!.bakeSelectionTransform();
+  }
+
+  getU(intersection: Intersection): number {
+    const uBefore: number = this.uPerSample[intersection.objectSubID];
+    const uAfter: number = this.uPerSample[intersection.objectSubID + 1];
+    const pBefore: Vec3 = this.sample(uBefore);
+    const pAfter: Vec3 = this.sample(uAfter);
+    const dBefore: number = vec3.distance(pBefore, intersection.point);
+    const dAfter: number = vec3.distance(pAfter, intersection.point);
+    const ratio: number = dBefore / (dBefore + dAfter);
+    return ratio * uBefore + (1 - ratio) * uAfter;
   }
 
   public clone(): Geometry {
@@ -236,12 +250,14 @@ export class Curve extends Geometry {
     if (updateCage) this.controlCage?.delete();
     if (this.lines) INSTANCE.getScene().removeLines(this.lines);
 
+    this.uPerSample = [];
     const sampleCount: number = Curve.SAMPLES_PER_EDGE * (this.weightedControlPoints.length - 1);
     const samples: Vec3[] = [];
     const indices: number[] = [];
     const subSelection: boolean[] = [];
     for (let i = 0; i <= sampleCount; i++) {
       const u: number = (i / sampleCount) * this.knots.at(-1)!;
+      this.uPerSample.push(u);
       samples.push(this.sample(u));
       subSelection.push(false);
       indices.push(i, i + 1);

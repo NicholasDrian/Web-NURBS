@@ -2,6 +2,7 @@ import { Vec3 } from "wgpu-matrix";
 import { INSTANCE } from "../../cad";
 import { Intersection } from "../../geometry/intersection";
 import { Curve } from "../../geometry/nurbs/curve";
+import { splitCurve } from "../../geometry/nurbs/splitCurve";
 import { Points } from "../../geometry/points";
 import { Clicker } from "../clicker";
 import { Command } from "../command";
@@ -63,12 +64,13 @@ export class SplitCurveCommand extends Command {
         break;
       case SplitCurveCommandMode.SelectSplitPoint:
         if (this.suggestedPoints && intersection.geometry === this.suggestedPoints) {
-          console.log("point clicked");
-          console.log(intersection.objectSubID);
+          var u: number = this.filteredKnots[intersection.objectSubID];
         } else {
-          console.log("curve clicked");
-          console.log(intersection.objectSubID);
+          var u: number = this.curve!.getU(intersection);
         }
+        const res: [Curve, Curve] = splitCurve(this.curve!, u);
+        INSTANCE.getScene().addGeometry(res[0]);
+        INSTANCE.getScene().addGeometry(res[1]);
         this.done();
         break;
       default:
@@ -138,6 +140,7 @@ export class SplitCurveCommand extends Command {
   }
 
   private done(): void {
+    console.log("done");
     this.finished = true;
     this.clicker.destroy();
     this.curve?.unSelect();

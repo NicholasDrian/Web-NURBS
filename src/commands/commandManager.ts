@@ -178,7 +178,9 @@ export class CommandManager {
 
   public handleClickResult(intersection: Intersection): void {
     this.currentCommand?.handleClickResult(intersection);
-    INSTANCE.getCli().render();
+    if (this.currentCommand?.isFinished()) {
+      this.currentCommand = null;
+    } INSTANCE.getCli().render();
   }
 
   public handleMouseMove(): void {

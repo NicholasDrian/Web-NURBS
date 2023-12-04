@@ -68,10 +68,13 @@ export class ControlCage2D extends Geometry {
     this.verts = [];
     for (const list of points) for (const point of list) this.verts.push(point);
 
-    const transforms: Mat4[] = []
-    for (const vert of this.verts) {
-      transforms.push(swizzleYZ(mat4.mul(mat4.translation(vert), POINT_MODEL)));
-    }
+    const modelR: Mat4 = this.getModelRecursive();
+    const translation: Vec3 = mat4.getTranslation(modelR);
+    const modelNoTranslation: Mat4 = mat4.mul(mat4.translation(vec3.scale(translation, -1)), modelR);
+    const transforms: Mat4[] = this.verts.map((pos: Vec3) => {
+      return swizzleYZ(mat4.mul(mat4.translation(pos), mat4.mul(mat4.inverse(modelNoTranslation), POINT_MODEL)));
+    });
+
     this.points = new RenderMeshInstanced(this,
       POINT_VERTS, POINT_VERTS, POINT_INDICES, transforms, this.accumulatedSubSelection, true);
     INSTANCE.getScene().addRenderMeshInstanced(this.points);
