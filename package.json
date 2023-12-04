@@ -4,7 +4,7 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "start": "npm i && npm run build && open index.html",
+    "start": "npm i && npm run build && open ./src/index.html",
     "build": "webpack --config webpack.config.js"
   },
   "keywords": [],
