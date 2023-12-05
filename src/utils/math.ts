@@ -101,8 +101,35 @@ export const getScaleTransform = function(center: Vec3, factor: number): Mat4 {
   return mat4.mul(toPos, mat4.mul(scaleTransform, toOrigin));
 }
 
+// from and to are vectors from planes origin to point
 export const getShearTransform = function(plane: Plane, from: Vec3, to: Vec3): Mat4 {
-  throw new Error("todo");
+
+  const origin: Vec3 = plane.getOrigin();
+  const normal: Vec3 = plane.getNormal();
+
+  const distFrom: number = vec3.dot(normal, from);
+
+  const distTo: number = vec3.dot(normal, to);
+  const newTo: Vec3 = vec3.sub(to, vec3.scale(normal, distTo - distFrom)); //
+
+  const shearVector: Vec3 = vec3.scale(vec3.sub(newTo, from), 1 / distFrom);
+
+  const [xAxis, yAxis] = plane.getXY();
+
+  const fromMat: Mat4 = mat4.create(
+    ...xAxis, 0,
+    ...yAxis, 0,
+    ...normal, 0,
+    ...origin, 1
+  );
+  const toMat: Mat4 = mat4.create(
+    ...xAxis, 0,
+    ...yAxis, 0,
+    ...vec3.add(normal, shearVector), 0,
+    ...origin, 1
+  );
+  return mat4.mul(toMat, mat4.inverse(fromMat));
+
 }
 
 

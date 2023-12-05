@@ -1,8 +1,10 @@
-import { vec3, Vec3 } from "wgpu-matrix";
+import { mat4, Mat4, vec3, Vec3 } from "wgpu-matrix";
 import { INSTANCE } from "../../cad";
 import { Geometry } from "../../geometry/geometry";
 import { Intersection } from "../../geometry/intersection";
 import { Plane } from "../../geometry/plane";
+import { getShearTransform } from "../../utils/math";
+import { printMat4 } from "../../utils/print";
 import { Clicker } from "../clicker";
 import { Command } from "../command";
 
@@ -53,6 +55,8 @@ export class ShearCommand extends Command {
 
   handleInputString(input: string): void {
     if (input == "0") {
+      INSTANCE.getMover().setTransform(mat4.identity());
+      INSTANCE.getSelector().onSelectionMoved();
       this.done();
       return;
     }
@@ -83,10 +87,17 @@ export class ShearCommand extends Command {
         this.mode = ShearCommandMode.SelectToPoint;
         break;
       case ShearCommandMode.SelectToPoint:
-        // TODO:
+        const from: Vec3 = vec3.sub(this.basePoint!, this.plane!.getOrigin());
+        const to: Vec3 = vec3.sub(intersection.point, this.plane!.getOrigin());
+        const t: Mat4 = getShearTransform(this.plane!, from, to);
+        printMat4(t);
+        INSTANCE.getMover().setTransform(t);
+        INSTANCE.getSelector().onSelectionMoved();
+        this.done();
         break;
       default: throw new Error("case not implemented");
     }
+    this.clicker.reset();
   }
 
   handleClick(): void {
@@ -96,7 +107,15 @@ export class ShearCommand extends Command {
   handleMouseMove(): void {
     this.clicker.onMouseMove();
     if (this.mode == ShearCommandMode.SelectToPoint) {
-      // TODO:
+      const point: Vec3 | null = this.clicker.getPoint();
+      if (point) {
+        const from: Vec3 = vec3.sub(this.basePoint!, this.plane!.getOrigin());
+        const to: Vec3 = vec3.sub(point, this.plane!.getOrigin());
+        const t: Mat4 = getShearTransform(this.plane!, from, to);
+        console.log(t);
+        INSTANCE.getMover().setTransform(t);
+        INSTANCE.getSelector().onSelectionMoved();
+      }
     }
 
   }

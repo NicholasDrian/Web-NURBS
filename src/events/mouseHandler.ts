@@ -67,7 +67,7 @@ export class MouseHandler {
           }
         }
       } else { // drag
-        if (!INSTANCE.getMover().isActive()) {
+        if (!INSTANCE.getMover().isActive() && !INSTANCE.getCommandManager().hasActiveCommand()) {
           if (this.drag) { // should be set unless i inspected element
             if (!this.shiftDown) INSTANCE.getSelector().reset();
             const inclusive: boolean = this.drag!.isLeftward();

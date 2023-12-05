@@ -46,6 +46,7 @@ export class MoveCommand extends Command {
       INSTANCE.getMover().setTransform(mat4.identity());
       INSTANCE.getSelector().onSelectionMoved();
       this.done();
+      return;
     }
   }
 
@@ -81,8 +82,7 @@ export class MoveCommand extends Command {
         const translation: Vec3 = vec3.sub(point, this.pointToMoveFrom!);
         const translationTransform: Mat4 = mat4.translation(translation);
         INSTANCE.getMover().setTransform(translationTransform);
-        const selection: Set<Geometry> = INSTANCE.getSelector().getSelection();
-        for (const geo of selection) { geo.onSelectionMoved(); }
+        INSTANCE.getSelector().onSelectionMoved();
       }
     }
   }
