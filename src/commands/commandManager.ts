@@ -148,9 +148,6 @@ export class CommandManager {
         case "reverse curve": case "rc":
           reverseCurveCommand();
           break;
-        case "insert knot": case "ik":
-          this.currentCommand = new InsertKnotCommand();
-          break;
         case "split curve": case "spc":
           this.currentCommand = new SplitCurveCommand();
           break;
