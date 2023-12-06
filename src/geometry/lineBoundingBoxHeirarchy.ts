@@ -70,7 +70,50 @@ class LineBoundingBoxHeirarchyNode {
     }
   }
 
-  isWithinFrustum(frustum: Frustum, inclusive: boolean): boolean {
+  public getWithinFrustumSub(frustum: Frustum, inclusive: boolean): number[] {
+    if (frustum.containsBoundingBoxFully(this.boundingBox)) return this.getAllLines();
+    if (!frustum.intersectsBoundingBox(this.boundingBox)) return [];
+
+    if (this.isLeaf()) {
+      const res: number[] = [];
+      if (inclusive) {
+        for (const line of this.lines!) {
+          if (frustum.containsLinePartially(
+            this.verts[this.indices[line * 2]],
+            this.verts[this.indices[line * 2 + 1]]
+          )) {
+            res.push(line);
+          }
+        }
+      } else {
+        for (const line of this.lines!) {
+          if (frustum.containsLineFully(
+            this.verts[this.indices[line * 2]],
+            this.verts[this.indices[line * 2 + 1]]
+          )) {
+            res.push(line);
+          }
+        }
+      }
+      return res;
+    } else {
+      const res: number[] = this.child1!.getWithinFrustumSub(frustum, inclusive);
+      res.push(...this.child2!.getWithinFrustumSub(frustum, inclusive));
+      return res;
+    }
+  }
+
+  getAllLines(): number[] {
+    if (this.isLeaf()) {
+      return [...this.lines!];
+    } else {
+      const res = this.child1!.getAllLines();
+      res.push(...this.child2!.getAllLines());
+      return res;
+    }
+  }
+
+  public isWithinFrustum(frustum: Frustum, inclusive: boolean): boolean {
     if (frustum.containsBoundingBoxFully(this.boundingBox)) return true;
     if (!frustum.intersectsBoundingBox(this.boundingBox)) return false;
     if (this.isLeaf()) {
@@ -168,6 +211,12 @@ export class LineBoundingBoxHeirarchy {
     this.root.print();
   }
 
+  public getWithinFrustumSub(frustum: Frustum, inclusive: boolean): number[] {
+    frustum.transform(mat4.inverse(this.geometry.getModelRecursive()));
+    const res: number[] = this.root.getWithinFrustumSub(frustum, inclusive);
+    frustum.transform(this.geometry.getModelRecursive());
+    return res;
+  }
 
 
   public almostIntersect(ray: Ray, pixels: number): Intersection | null {
@@ -179,9 +228,17 @@ export class LineBoundingBoxHeirarchy {
   }
 
   public isWithinFrustum(frustum: Frustum, inclusive: boolean): boolean {
+    // BUG: some transforms cannot be inverted
     frustum.transform(mat4.inverse(this.geometry.getModelRecursive()));
     const res: boolean = this.root.isWithinFrustum(frustum, inclusive);
     frustum.transform(this.geometry.getModelRecursive());
     return res;
   }
 }
+
+
+
+
+
+
+

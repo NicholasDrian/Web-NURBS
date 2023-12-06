@@ -45,8 +45,6 @@ export class ControlCage2D extends Geometry {
   ) {
     super(parent, model, materialName);
 
-
-
     this.vertexSubSelection = [];
     this.segmentSubSelection = [];
     this.accumulatedSubSelection = [];
@@ -130,8 +128,21 @@ export class ControlCage2D extends Geometry {
   }
 
   public isWithinFrustum(frustum: Frustum, inclusive: boolean): boolean {
-    alert("todo within frustum");
-    return false;
+    return this.lineBBH.isWithinFrustum(frustum, inclusive);
+  }
+
+  public getWithinFrustumSub(frustum: Frustum, inclusive: boolean): number[] {
+    if (this.isHidden()) return [];
+    const res: number[] = this.lineBBH.getWithinFrustumSub(frustum, inclusive).map((n: number) => {
+      return n + this.u * this.v;
+    });
+    const model: Mat4 = this.getModelRecursive();
+    for (let i = 0; i < this.verts.length; i++) {
+      if (frustum.containsPoint(vec3.transformMat4(this.verts[i], model))) {
+        res.push(i);
+      }
+    }
+    return res;
   }
 
   public addToSubSelection(...subIDs: number[]): void {

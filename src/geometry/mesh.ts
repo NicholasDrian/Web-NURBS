@@ -77,20 +77,24 @@ export class Mesh extends Geometry {
 
   public getSubSelectionBoundingBox(): BoundingBox {
     return new BoundingBox();
-    // TODO: sub seledction
+    // TODO: 
   }
 
   public onSelectionMoved(): void {
-    // TODO: sub seledction
+    // TODO:
   }
 
   public bakeSelectionTransform(): void {
-    this.model = mat4.mul(INSTANCE.getMover().getTransform(), this.model);
-    // TODO: sub seledction
+    // TODO:
+  }
+
+  public getWithinFrustumSub(frustum: Frustum, inclusive: boolean): number[] {
+    alert("todo mesh");
+    return [];
   }
 
   public showControls(on: boolean): void {
-    alert("todo");
+    alert("todo mesh");
   }
 
   public setConstantScreenSpaceSize(on: boolean) {

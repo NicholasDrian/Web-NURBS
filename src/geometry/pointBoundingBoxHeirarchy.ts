@@ -142,6 +142,4 @@ export class PointBoundingBoxHeirarchy {
 
   }
 
-
-
 }

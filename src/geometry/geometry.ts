@@ -36,6 +36,7 @@ export abstract class Geometry {
   public abstract clearSubSelection(): void;
   public abstract isSubSelected(subID: number): boolean;
   public abstract getSubSelectionBoundingBox(): BoundingBox;
+  public abstract getWithinFrustumSub(frustum: Frustum, inclusive: boolean): number[];
 
   public abstract showControls(on: boolean): void;
 

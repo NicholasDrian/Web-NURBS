@@ -30,6 +30,10 @@ export class Group extends Geometry {
     alert("todo group");
     return false;
   }
+  public getWithinFrustumSub(frustum: Frustum, inclusive: boolean): number[] {
+    alert("todo group");
+    return [];
+  }
   public hasSubSelection(): boolean {
     alert("todo group");
     return false;

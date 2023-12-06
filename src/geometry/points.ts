@@ -134,6 +134,18 @@ export class Points extends Geometry {
     this.points.updateSubSelection(this.subSelection);
   }
 
+  public getWithinFrustumSub(frustum: Frustum, _: boolean): number[] {
+    if (this.isHidden()) return [];
+    const res: number[] = [];
+    const model: Mat4 = this.getModelRecursive();
+    for (let i = 0; i < this.verts.length; i++) {
+      if (frustum.containsPoint(vec3.transformMat4(this.verts[i], model))) {
+        res.push(i);
+      }
+    }
+    return res;
+  }
+
   public isSubSelected(subID: number): boolean {
     return this.subSelection[subID];
   }

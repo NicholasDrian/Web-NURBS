@@ -62,8 +62,13 @@ export class Surface extends Geometry {
   public getSubSelectionBoundingBox(): BoundingBox {
     return this.controlCage!.getSubSelectionBoundingBox();
   }
+
   public getControlCage(): ControlCage2D {
     return this.controlCage!;
+  }
+
+  public getWithinFrustumSub(frustum: Frustum, inclusive: boolean): number[] {
+    return this.controlCage!.getWithinFrustumSub(frustum, inclusive);
   }
 
   public onSelectionMoved(): void {
@@ -220,7 +225,8 @@ export class Surface extends Geometry {
 
   public isWithinFrustum(frustum: Frustum, inclusive: boolean): boolean {
     if (this.isHidden()) return false;
-    return this.mesh!.isWithinFrustum(frustum, inclusive);
+    return this.mesh!.isWithinFrustum(frustum, inclusive) ||
+      (!this.controlCage!.isHidden() && this.controlCage!.isWithinFrustum(frustum, inclusive));
   }
 
   public sample(u: number, v: number): Vec3 {

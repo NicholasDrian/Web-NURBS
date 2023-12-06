@@ -89,7 +89,7 @@ class BBHNode {
     return [...this.child1!.getAllGeometry(), ...this.child2!.getAllGeometry()];
   }
 
-  public getWithinFrustum(frustum: Frustum, sub: boolean, inclusive: boolean): Geometry[] {
+  public getWithinFrustum(frustum: Frustum, inclusive: boolean): Geometry[] {
     if (frustum.containsBoundingBoxFully(this.boundingBox)) {
       return this.getAllGeometry();
     }
@@ -106,9 +106,38 @@ class BBHNode {
       return res;
     } else {
       return [
-        ...this.child1!.getWithinFrustum(frustum, sub, inclusive),
-        ...this.child2!.getWithinFrustum(frustum, sub, inclusive)
+        ...this.child1!.getWithinFrustum(frustum, inclusive),
+        ...this.child2!.getWithinFrustum(frustum, inclusive)
       ]
+    }
+  }
+
+  public getWithinFrustumSub(frustum: Frustum, inclusive: boolean): [Geometry[], number[][]] {
+    if (frustum.containsBoundingBoxFully(this.boundingBox)) {
+      const geos: Geometry[] = this.getAllGeometry();
+      const subs: number[][] = [];
+      for (let i = 0; i < geos.length; i++) subs.push([-1]);
+      return [geos, subs];
+    }
+    if (!frustum.intersectsBoundingBox(this.boundingBox)) {
+      return [[], []];
+    }
+    if (this.isLeaf()) {
+      const res: [Geometry[], number[][]] = [[], []];
+      for (const geo of this.geometry!) {
+        const sub: number[] = geo.getWithinFrustumSub(frustum, inclusive);
+        if (sub.length > 0) {
+          res[0].push(geo);
+          res[1].push(sub);
+        }
+      }
+      return res;
+    } else {
+      const res1: [Geometry[], number[][]] = this.child1!.getWithinFrustumSub(frustum, inclusive);
+      const res2: [Geometry[], number[][]] = this.child2!.getWithinFrustumSub(frustum, inclusive);
+      res1[0].push(...res2[0]);
+      res1[1].push(...res2[1]);
+      return res1;
     }
   }
 
@@ -159,7 +188,6 @@ class BBHNode {
       for (let i = 0; i < this.geometry!.length; i++) {
         if (this.geometry![i] === geo) {
           this.geometry!.splice(i, 1);
-          //console.log("removed", geo.getTypeName(), geo.getID());
         }
       }
     } else {
@@ -183,7 +211,6 @@ class BBHNode {
         this.geometry!.push(geo);
         this.setup(this.geometry!, this.depth);
       }
-      //console.log("added", geo.getTypeName(), geo.getID());
     } else {
       // non leaf node
       const nodeCenter: number = this.boundingBox.getCenter()[this.axis];
@@ -224,13 +251,10 @@ export class SceneBoundingBoxHeirarchy {
   }
 
   public add(geo: Geometry): void {
-    //console.log("adding", geo.getTypeName(), geo.getID());
     this.root.add(geo);
   }
 
   public remove(geo: Geometry): void {
-    // TODO: shrink bbx
-    //console.log("removing", geo.getTypeName(), geo.getID());
     this.root.remove(geo);
   }
 
@@ -255,8 +279,12 @@ export class SceneBoundingBoxHeirarchy {
     return res;
   }
 
-  public getWithinFrustum(frustum: Frustum, sub: boolean, inclusive: boolean): Geometry[] {
-    return this.root.getWithinFrustum(frustum, sub, inclusive);
+  public getWithinFrustum(frustum: Frustum, inclusive: boolean): Geometry[] {
+    return this.root.getWithinFrustum(frustum, inclusive);
+  }
+
+  public getWithinFrustumSub(frustum: Frustum, inclusive: boolean): [Geometry[], number[][]] {
+    return this.root.getWithinFrustumSub(frustum, inclusive);
   }
 
   public print(): void {

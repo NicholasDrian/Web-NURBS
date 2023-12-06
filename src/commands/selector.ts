@@ -6,9 +6,6 @@ import { Ray } from "../geometry/ray";
 import { Scene } from "../scene/scene";
 
 
-// TODO: make this use the clicker
-
-
 export class Selector {
 
   private selection: Set<Geometry> = new Set<Geometry>;
@@ -37,11 +34,14 @@ export class Selector {
     for (let i = 0; i < geos.length; i++) {
       let geo: Geometry = geos[i];
       const subIDs: number[] = subIDss[i];
+      if (subIDs.length > 0 && subIDs[0] === -1) {
+        this.addToSelection(geo);
+        continue;
+      }
       while (!INSTANCE.getScene().containsGeometry(geo) && geo.getParent()) geo = geo.getParent()!;
       this.selection.add(geo);
       geo.addToSubSelection(...subIDs);
     }
-    INSTANCE.getMover().updatedSelection();
   }
 
 
@@ -49,13 +49,16 @@ export class Selector {
     for (let i = 0; i < geos.length; i++) {
       let geo: Geometry = geos[i];
       const subIDs: number[] = subIDss[i];
+      if (subIDs.length > 0 && subIDs[0] === -1) {
+        this.removeFromSelection(geo);
+        continue;
+      }
       while (!INSTANCE.getScene().containsGeometry(geo) && geo.getParent()) geo = geo.getParent()!;
       geo.removeFromSubSelection(...subIDs);
       if (!geo.hasSubSelection()) {
         this.selection.delete(geo);
       }
     }
-    INSTANCE.getMover().updatedSelection();
   }
 
   public addToSelection(...geometry: Geometry[]): void {
@@ -64,7 +67,6 @@ export class Selector {
       this.selection.add(geo);
       geo.select();
     }
-    INSTANCE.getMover().updatedSelection();
   }
 
   public removeFromSelection(...geometry: Geometry[]): void {
@@ -73,7 +75,6 @@ export class Selector {
       this.selection.delete(geo);
       geo.unSelect();
     }
-    INSTANCE.getMover().updatedSelection();
   }
 
   public onSelectionMoved(): void {
@@ -160,36 +161,37 @@ export class Selector {
         }
       }
     }
+    INSTANCE.getMover().updatedSelection();
     this.selecting = false;
     this.element.hidden = true;
   }
 
   public selectInRectangle(left: number, right: number, top: number, bottom: number, inclusive: boolean, sub: boolean): void {
     const frustum: Frustum = new Frustum(left, right, top, bottom);
-    // TODO: subselection with frustum
     if (sub) {
-
-
+      const within: [Geometry[], number[][]] = INSTANCE.getScene().getBoundingBoxHeirarchy().getWithinFrustumSub(frustum, inclusive);
+      this.addToSubSelection(...within);
     } else {
-      const within: Geometry[] = INSTANCE.getScene().getBoundingBoxHeirarchy().getWithinFrustum(frustum, sub, inclusive);
+      const within: Geometry[] = INSTANCE.getScene().getBoundingBoxHeirarchy().getWithinFrustum(frustum, inclusive);
       for (const geo of within) {
         this.addToSelection(geo);
       }
     }
+    INSTANCE.getMover().updatedSelection();
   }
 
   public unSelectInRectangle(left: number, right: number, top: number, bottom: number, inclusive: boolean, sub: boolean): void {
     const frustum: Frustum = new Frustum(left, right, top, bottom);
-    // TODO: subselection with frustum
     if (sub) {
-
-
+      const within: [Geometry[], number[][]] = INSTANCE.getScene().getBoundingBoxHeirarchy().getWithinFrustumSub(frustum, inclusive);
+      this.removeFromSubSelection(...within);
     } else {
-      const within: Geometry[] = INSTANCE.getScene().getBoundingBoxHeirarchy().getWithinFrustum(frustum, sub, inclusive);
+      const within: Geometry[] = INSTANCE.getScene().getBoundingBoxHeirarchy().getWithinFrustum(frustum, inclusive);
       for (const geo of within) {
         this.removeFromSelection(geo);
       }
     }
+    INSTANCE.getMover().updatedSelection();
   }
 
   public getSelection(): Set<Geometry> {

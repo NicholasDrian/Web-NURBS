@@ -122,6 +122,10 @@ export class Curve extends Geometry {
     return this.controlCage!.getSubSelectionBoundingBox();
   }
 
+  public getWithinFrustumSub(frustum: Frustum, inclusive: boolean): number[] {
+    return this.controlCage!.getWithinFrustumSub(frustum, inclusive);
+  }
+
   public onSelectionMoved(): void {
     if (this.controlCage!.hasSubSelection()) {
       const newVerts: Vec3[] = this.controlCage!.getVertsSubSelectionTransformed();
@@ -339,8 +343,10 @@ export class Curve extends Geometry {
 
   public isWithinFrustum(frustum: Frustum, inclusive: boolean): boolean {
     if (this.isHidden()) return false;
-    return this.linesBBH!.isWithinFrustum(frustum, inclusive);
+    return this.linesBBH!.isWithinFrustum(frustum, inclusive) ||
+      (!this.controlCage!.isHidden() && this.controlCage!.isWithinFrustum(frustum, inclusive));
   }
+
 
   public elevateDegree(n: number): void {
     // TODO: clean up

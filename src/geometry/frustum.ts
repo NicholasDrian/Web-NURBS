@@ -40,8 +40,6 @@ export class Frustum {
 
   public transform(transform: Mat4): void {
 
-    // if frustum becomes inverted, un invert it
-
     this.origin = vec4.transformMat4(vec4.create(...this.origin, 1), transform);
     this.topLeft = Ray.transform(this.topLeft, transform);
     this.topRight = Ray.transform(this.topRight, transform);

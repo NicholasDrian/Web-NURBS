@@ -114,6 +114,40 @@ class MeshBoundingBoxHeirarchyNode {
 
   }
 
+  public getWithinFrustumSub(frustum: Frustum, inclusive: boolean): number[] {
+    if (frustum.containsBoundingBoxFully(this.boundingBox)) return this.getAllTris();
+    if (!frustum.intersectsBoundingBox(this.boundingBox)) return [];
+
+    if (this.isLeaf()) {
+      const res: number[] = [];
+      for (const tri of this.triangles!) {
+        if (frustum.containsTriangle(
+          this.verts[this.indices[tri * 3]],
+          this.verts[this.indices[tri * 3 + 1]],
+          this.verts[this.indices[tri * 3 + 2]],
+          inclusive
+        )) {
+          res.push(tri);
+        }
+      }
+      return res;
+    } else {
+      const res: number[] = this.child1!.getWithinFrustumSub(frustum, inclusive);
+      res.push(...this.child2!.getWithinFrustumSub(frustum, inclusive));
+      return res;
+    }
+  }
+
+  getAllTris(): number[] {
+    if (this.isLeaf()) {
+      return [...this.triangles!];
+    } else {
+      const res = this.child1!.getAllTris();
+      res.push(...this.child2!.getAllTris());
+      return res;
+    }
+  }
+
   public intersect(ray: Ray): Intersection | null {
     if (ray.intersectBoundingBox(this.boundingBox) === null) return null;
     if (this.isLeaf()) {
@@ -185,8 +219,18 @@ export class MeshBoundingBoxHeirarchy {
 
   public isWithinFrustum(frustum: Frustum, inclusive: boolean): boolean {
 
+    // BUG: some transforms cannot be inverted
     frustum.transform(mat4.inverse(this.mesh.getModelRecursive()));
     const res: boolean = this.root.isWithinFrustum(frustum, inclusive);
+    frustum.transform(this.mesh.getModelRecursive());
+    return res;
+  }
+
+  public getWithinFrustumSub(frustum: Frustum, inclusive: boolean): number[] {
+
+    // BUG: some transforms cannot be inverted
+    frustum.transform(mat4.inverse(this.mesh.getModelRecursive()));
+    const res: number[] = this.root.getWithinFrustumSub(frustum, inclusive);
     frustum.transform(this.mesh.getModelRecursive());
     return res;
   }
