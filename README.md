@@ -11,6 +11,10 @@ Web NURBS has a CLI inspired by Rhino, Modal editing inspired by Vim, and a Scen
 
 Web NURBS is far from complete, and lacking much documentation. That being said it is working well and ready for use!
 
+## Whats to come?
+
+I am currently moving surface sampling to the GPU and expect significant performance gains (100x give or take). Next, I will move the acceleration structures (Bounding Volume Heirarchies) to the GPU. The goal is to move any serious compute away from JavaScript inorder to acheve buttery smooth rendering.
+
 ## What does it look like?
 <img src="./images/Web NURBS 1.png"/>
 <img src="./images/Web NURBS 3.png"/>
