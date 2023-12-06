@@ -39,12 +39,12 @@ export class Surface extends Geometry {
     else this.controlCage!.hide();
   }
 
-  public addToSubSelection(subID: number): void {
-    this.controlCage!.addToSubSelection(subID);
+  public addToSubSelection(...subIDs: number[]): void {
+    this.controlCage!.addToSubSelection(...subIDs);
   }
 
-  public removeFromSubSelection(subID: number): void {
-    this.controlCage!.removeFromSubSelection(subID);
+  public removeFromSubSelection(...subIDs: number[]): void {
+    this.controlCage!.removeFromSubSelection(...subIDs);
   }
 
   public isSubSelected(subID: number): boolean {

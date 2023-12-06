@@ -39,13 +39,17 @@ export class Mesh extends Geometry {
     this.boundingBoxHeirarchy = new MeshBoundingBoxHeirarchy(this, this.verts, this.indices);
   }
 
-  public addToSubSelection(subID: number): void {
-    this.subSelection[subID] = true;
+  public addToSubSelection(...subIDs: number[]): void {
+    for (const subID of subIDs) {
+      this.subSelection[subID] = true;
+    }
     this.renderMesh.updateSubSelection(this.subSelection);
   }
 
-  public removeFromSubSelection(subID: number): void {
-    this.subSelection[subID] = false;
+  public removeFromSubSelection(...subIDs: number[]): void {
+    for (const subID of subIDs) {
+      this.subSelection[subID] = false;
+    }
     this.renderMesh.updateSubSelection(this.subSelection);
   }
 

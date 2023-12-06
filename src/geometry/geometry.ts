@@ -31,8 +31,8 @@ export abstract class Geometry {
   public abstract intersect(ray: Ray, sub: boolean): Intersection | null;
   public abstract isWithinFrustum(frustum: Frustum, inclusive: boolean): boolean;
 
-  public abstract addToSubSelection(subID: number): void;
-  public abstract removeFromSubSelection(subID: number): void;
+  public abstract addToSubSelection(...subIDs: number[]): void;
+  public abstract removeFromSubSelection(...subIDs: number[]): void;
   public abstract clearSubSelection(): void;
   public abstract isSubSelected(subID: number): boolean;
   public abstract getSubSelectionBoundingBox(): BoundingBox;

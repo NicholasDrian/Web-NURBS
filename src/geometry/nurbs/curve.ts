@@ -98,21 +98,26 @@ export class Curve extends Geometry {
     return this.getControlPoint(0);
   }
 
-  public addToSubSelection(subID: number): void {
-    this.controlCage!.addToSubSelection(subID);
+  public addToSubSelection(...subIDs: number[]): void {
+    this.controlCage!.addToSubSelection(...subIDs);
   }
-  public removeFromSubSelection(subID: number): void {
-    this.controlCage!.removeFromSubSelection(subID);
+
+  public removeFromSubSelection(...subIDs: number[]): void {
+    this.controlCage!.removeFromSubSelection(...subIDs);
   }
+
   public isSubSelected(subID: number): boolean {
     return this.controlCage!.isSubSelected(subID);
   }
+
   public clearSubSelection(): void {
     this.controlCage!.clearSubSelection();
   }
+
   public getSubSelectionBoundingBox(): BoundingBox {
     return this.controlCage!.getSubSelectionBoundingBox();
   }
+
   public onSelectionMoved(): void {
     if (this.controlCage!.hasSubSelection()) {
       const newVerts: Vec3[] = this.controlCage!.getVertsSubSelectionTransformed();

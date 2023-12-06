@@ -20,10 +20,10 @@ export class Group extends Geometry {
     }
   }
 
-  public addToSubSelection(subID: number): void {
+  public addToSubSelection(...subIDs: number[]): void {
     alert("todo group");
   }
-  public removeFromSubSelection(subID: number): void {
+  public removeFromSubSelection(...subIDs: number[]): void {
     alert("todo group");
   }
   public isSubSelected(subID: number): boolean {

@@ -112,70 +112,65 @@ export class ControlCage1D extends Geometry {
     return false;
   }
 
-  public addToSubSelection(subID: number): void {
-    if (subID >= this.verts.length) {
-      subID -= this.verts.length;
-      // Line Sub ID
-      if (!this.segmentSubSelection[subID]) {
-        this.segmentSubSelection[subID] = true;
-        this.subSelectedSegmentCount++;
-        this.accumulatedSubSelection[subID] = true;
-        this.accumulatedSubSelection[subID + 1] = true;
-        this.points.updateSubSelection(this.vertexSubSelection);
-        this.renderLines.updateSubSelection(this.accumulatedSubSelection);
-      }
-    } else {
-      // Point Sub ID
-      console.log("sub selecting vert", subID);
-      if (!this.vertexSubSelection[subID]) {
-        this.vertexSubSelection[subID] = true;
-        this.subSelectedVertCount++;
-        this.accumulatedSubSelection[subID] = true;
-        this.points.updateSubSelection(this.vertexSubSelection);
-        this.renderLines.updateSubSelection(this.accumulatedSubSelection);
+  public addToSubSelection(...subIDs: number[]): void {
+    for (let subID of subIDs) {
+      if (subID >= this.verts.length) {
+        subID -= this.verts.length;
+        // Line Sub ID
+        if (!this.segmentSubSelection[subID]) {
+          this.segmentSubSelection[subID] = true;
+          this.subSelectedSegmentCount++;
+          this.accumulatedSubSelection[subID] = true;
+          this.accumulatedSubSelection[subID + 1] = true;
+        }
+      } else {
+        // Point Sub ID
+        console.log("sub selecting vert", subID);
+        if (!this.vertexSubSelection[subID]) {
+          this.vertexSubSelection[subID] = true;
+          this.subSelectedVertCount++;
+          this.accumulatedSubSelection[subID] = true;
+        }
       }
     }
+    this.points.updateSubSelection(this.vertexSubSelection);
+    this.renderLines.updateSubSelection(this.accumulatedSubSelection);
   }
 
-  public removeFromSubSelection(subID: number): void {
-    if (subID >= this.verts.length) {
-      subID -= this.verts.length;
-      // Line Sub ID
-      if (this.segmentSubSelection[subID]) {
-
-        this.segmentSubSelection[subID] = false;
-        this.subSelectedSegmentCount--;
-
-        if (!this.vertexSubSelection[subID] &&
-          (subID === 0 || !this.segmentSubSelection[subID - 1])
-        ) {
-          this.accumulatedSubSelection[subID] = false;
+  public removeFromSubSelection(...subIDs: number[]): void {
+    for (let subID of subIDs) {
+      if (subID >= this.verts.length) {
+        subID -= this.verts.length;
+        // Line Sub ID
+        if (this.segmentSubSelection[subID]) {
+          this.segmentSubSelection[subID] = false;
+          this.subSelectedSegmentCount--;
+          if (!this.vertexSubSelection[subID] &&
+            (subID === 0 || !this.segmentSubSelection[subID - 1])
+          ) {
+            this.accumulatedSubSelection[subID] = false;
+          }
+          if (!this.vertexSubSelection[subID + 1] &&
+            (subID === this.verts.length - 1 || !this.segmentSubSelection[subID + 1])
+          ) {
+            this.accumulatedSubSelection[subID + 1] = false;
+          }
         }
-        if (!this.vertexSubSelection[subID + 1] &&
-          (subID === this.verts.length - 1 || !this.segmentSubSelection[subID + 1])
-        ) {
-          this.accumulatedSubSelection[subID + 1] = false;
+      } else {
+        // Point Sub ID
+        if (this.vertexSubSelection[subID]) {
+          this.vertexSubSelection[subID] = false;
+          this.subSelectedVertCount--;
+          if ((subID == this.verts.length - 1 || !this.segmentSubSelection[subID]) &&
+            (subID === 0 || !this.segmentSubSelection[subID - 1])
+          ) {
+            this.accumulatedSubSelection[subID] = false;
+          }
         }
-        this.points.updateSubSelection(this.vertexSubSelection);
-        this.renderLines.updateSubSelection(this.accumulatedSubSelection);
-      }
-
-    } else {
-      // Point Sub ID
-      if (this.vertexSubSelection[subID]) {
-
-        this.vertexSubSelection[subID] = false;
-        this.subSelectedVertCount--;
-
-        if ((subID == this.verts.length - 1 || !this.segmentSubSelection[subID]) &&
-          (subID === 0 || !this.segmentSubSelection[subID - 1])
-        ) {
-          this.accumulatedSubSelection[subID] = false;
-        }
-        this.points.updateSubSelection(this.vertexSubSelection);
-        this.renderLines.updateSubSelection(this.accumulatedSubSelection);
       }
     }
+    this.points.updateSubSelection(this.vertexSubSelection);
+    this.renderLines.updateSubSelection(this.accumulatedSubSelection);
   }
 
   public getVertsSubSelectionTransformed(): Vec3[] {

@@ -107,20 +107,24 @@ export class Points extends Geometry {
     return true;
   }
 
-  public addToSubSelection(subID: number): void {
-    if (!this.subSelection[subID]) {
-      this.subSelectionCount++;
-      this.subSelection[subID] = true;
-      this.points.updateSubSelection(this.subSelection);
+  public addToSubSelection(...subIDs: number[]): void {
+    for (const subID of subIDs) {
+      if (!this.subSelection[subID]) {
+        this.subSelectionCount++;
+        this.subSelection[subID] = true;
+      }
     }
+    this.points.updateSubSelection(this.subSelection);
   }
 
-  public removeFromSubSelection(subID: number): void {
-    if (this.subSelection[subID]) {
-      this.subSelectionCount--;
-      this.subSelection[subID] = false;
-      this.points.updateSubSelection(this.subSelection);
+  public removeFromSubSelection(...subIDs: number[]): void {
+    for (const subID of subIDs) {
+      if (this.subSelection[subID]) {
+        this.subSelectionCount--;
+        this.subSelection[subID] = false;
+      }
     }
+    this.points.updateSubSelection(this.subSelection);
   }
 
   public clearSubSelection(): void {

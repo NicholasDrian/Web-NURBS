@@ -3,7 +3,6 @@ import { INSTANCE } from "../cad";
 import { MaterialName } from "../materials/material";
 import { RenderLines } from "../render/renderLines";
 import { RenderMeshInstanced } from "../render/renterMeshInstanced";
-import { cloneVec3List, cloneVec3ListList } from "../utils/clone";
 import { swizzleYZ } from "../utils/math";
 import { BoundingBox } from "./boundingBox";
 import { Frustum } from "./frustum";
@@ -135,43 +134,49 @@ export class ControlCage2D extends Geometry {
     return false;
   }
 
-  public addToSubSelection(subID: number): void {
-    if (subID >= this.u * this.v) {
-      subID -= this.u * this.v;
-      // Line Sub ID
-      if (!this.segmentSubSelection[subID]) {
-        this.segmentSubSelection[subID] = true;
-        this.subSelectedSegmentCount++;
-        this.segmentSelectionChanged(subID);
-      }
-    } else {
-      // Point Sub ID
-      if (!this.vertexSubSelection[subID]) {
-        console.log("subSelect vert", subID);
-        this.vertexSubSelection[subID] = true;
-        this.subSelectedVertCount++;
-        this.vertSelectionChanged(subID);
+  public addToSubSelection(...subIDs: number[]): void {
+    for (let subID of subIDs) {
+      if (subID >= this.u * this.v) {
+        subID -= this.u * this.v;
+        // Line Sub ID
+        if (!this.segmentSubSelection[subID]) {
+          this.segmentSubSelection[subID] = true;
+          this.subSelectedSegmentCount++;
+          this.segmentSelectionChanged(subID);
+        }
+      } else {
+        // Point Sub ID
+        if (!this.vertexSubSelection[subID]) {
+          console.log("subSelect vert", subID);
+          this.vertexSubSelection[subID] = true;
+          this.subSelectedVertCount++;
+          this.vertSelectionChanged(subID);
+        }
       }
     }
+    this.onSubSelectionUpdated();
   }
 
-  public removeFromSubSelection(subID: number): void {
-    if (subID >= this.u * this.v) {
-      subID -= this.u * this.v;
-      // Line Sub ID
-      if (this.segmentSubSelection[subID]) {
-        this.segmentSubSelection[subID] = false;
-        this.subSelectedSegmentCount--;
-        this.segmentSelectionChanged(subID);
-      }
-    } else {
-      // Point Sub ID
-      if (this.vertexSubSelection[subID]) {
-        this.vertexSubSelection[subID] = false;
-        this.subSelectedVertCount--;
-        this.vertSelectionChanged(subID);
+  public removeFromSubSelection(...subIDs: number[]): void {
+    for (let subID of subIDs) {
+      if (subID >= this.u * this.v) {
+        subID -= this.u * this.v;
+        // Line Sub ID
+        if (this.segmentSubSelection[subID]) {
+          this.segmentSubSelection[subID] = false;
+          this.subSelectedSegmentCount--;
+          this.segmentSelectionChanged(subID);
+        }
+      } else {
+        // Point Sub ID
+        if (this.vertexSubSelection[subID]) {
+          this.vertexSubSelection[subID] = false;
+          this.subSelectedVertCount--;
+          this.vertSelectionChanged(subID);
+        }
       }
     }
+    this.onSubSelectionUpdated();
   }
 
 
@@ -203,9 +208,6 @@ export class ControlCage2D extends Geometry {
         this.accumulatedSubSelection[id] = false;
       }
     }
-
-
-    this.onSubSelectionUpdated();
   }
 
   private segmentSelectionChanged(id: number): void {
@@ -233,7 +235,6 @@ export class ControlCage2D extends Geometry {
       this.accumulatedSubSelection[vert1Index] = false;
       this.accumulatedSubSelection[vert2Index] = false;
     }
-    this.onSubSelectionUpdated();
 
   }
 
