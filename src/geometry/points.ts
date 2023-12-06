@@ -138,6 +138,10 @@ export class Points extends Geometry {
     return this.subSelection[subID];
   }
 
+  public hasSubSelection(): boolean {
+    return this.subSelectionCount > 0;
+  }
+
   public getSubSelectionBoundingBox(): BoundingBox {
     const bb: BoundingBox = new BoundingBox();
     if (this.subSelectionCount == 0) return bb;

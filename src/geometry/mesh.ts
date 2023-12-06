@@ -1,3 +1,4 @@
+import { pbkdf2 } from "crypto";
 import { mat4, Mat4, vec3, Vec3 } from "wgpu-matrix";
 import { INSTANCE } from "../cad";
 import { MaterialName } from "../materials/material";
@@ -17,6 +18,7 @@ export class Mesh extends Geometry {
   private renderMesh: RenderMesh;
   private boundingBoxHeirarchy: MeshBoundingBoxHeirarchy;
   private subSelection: boolean[];
+  private subSelectionCount: number;
 
   constructor(
     parent: Geometry | null,
@@ -30,6 +32,7 @@ export class Mesh extends Geometry {
     super(parent, model, material);
 
     this.subSelection = [];
+    this.subSelectionCount = 0;
     for (let i = 0; i < this.indices.length / 3; i++) {
       this.subSelection.push(false);
     }
@@ -41,20 +44,30 @@ export class Mesh extends Geometry {
 
   public addToSubSelection(...subIDs: number[]): void {
     for (const subID of subIDs) {
-      this.subSelection[subID] = true;
+      if (!this.subSelection[subID]) {
+        this.subSelection[subID] = true;
+        this.subSelectionCount++;
+      }
     }
     this.renderMesh.updateSubSelection(this.subSelection);
   }
 
   public removeFromSubSelection(...subIDs: number[]): void {
     for (const subID of subIDs) {
-      this.subSelection[subID] = false;
+      if (this.subSelection[subID]) {
+        this.subSelection[subID] = false;
+        this.subSelectionCount--;
+      }
     }
     this.renderMesh.updateSubSelection(this.subSelection);
   }
 
   public isSubSelected(subID: number): boolean {
     return this.subSelection[subID];
+  }
+
+  public hasSubSelection(): boolean {
+    return this.subSelectionCount > 0;
   }
 
   public clearSubSelection(): void {

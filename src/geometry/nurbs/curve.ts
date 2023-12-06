@@ -110,6 +110,10 @@ export class Curve extends Geometry {
     return this.controlCage!.isSubSelected(subID);
   }
 
+  public hasSubSelection(): boolean {
+    return this.controlCage!.hasSubSelection();
+  }
+
   public clearSubSelection(): void {
     this.controlCage!.clearSubSelection();
   }

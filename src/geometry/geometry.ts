@@ -41,6 +41,7 @@ export abstract class Geometry {
 
   public abstract onSelectionMoved(): void;
   public abstract bakeSelectionTransform(): void;
+  public abstract hasSubSelection(): boolean;
 
   public abstract delete(): void;
   public abstract clone(): Geometry;

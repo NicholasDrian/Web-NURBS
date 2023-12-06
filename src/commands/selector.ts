@@ -33,16 +33,28 @@ export class Selector {
     INSTANCE.getMover().updatedSelection();
   }
 
-  public addToSubSelection(geo: Geometry, subID: number): void {
-    while (!INSTANCE.getScene().containsGeometry(geo) && geo.getParent()) geo = geo.getParent()!;
-    this.selection.add(geo);
-    geo.addToSubSelection(subID);
+  public addToSubSelection(geos: Geometry[], subIDss: number[][]): void {
+    for (let i = 0; i < geos.length; i++) {
+      let geo: Geometry = geos[i];
+      const subIDs: number[] = subIDss[i];
+      while (!INSTANCE.getScene().containsGeometry(geo) && geo.getParent()) geo = geo.getParent()!;
+      this.selection.add(geo);
+      geo.addToSubSelection(...subIDs);
+    }
     INSTANCE.getMover().updatedSelection();
   }
 
-  public removeFromSubSelection(geo: Geometry, subID: number): void {
-    while (!INSTANCE.getScene().containsGeometry(geo) && geo.getParent()) geo = geo.getParent()!;
-    geo.removeFromSubSelection(subID);
+
+  public removeFromSubSelection(geos: Geometry[], subIDss: number[][]): void {
+    for (let i = 0; i < geos.length; i++) {
+      let geo: Geometry = geos[i];
+      const subIDs: number[] = subIDss[i];
+      while (!INSTANCE.getScene().containsGeometry(geo) && geo.getParent()) geo = geo.getParent()!;
+      geo.removeFromSubSelection(...subIDs);
+      if (!geo.hasSubSelection()) {
+        this.selection.delete(geo);
+      }
+    }
     INSTANCE.getMover().updatedSelection();
   }
 
@@ -136,9 +148,9 @@ export class Selector {
       geo.unHover();
       if (subID !== undefined && subID !== -1) {
         if (geo.isSubSelected(subID)) {
-          this.removeFromSubSelection(geo, subID);
+          this.removeFromSubSelection([geo], [[subID]]);
         } else {
-          this.addToSubSelection(geo, subID);
+          this.addToSubSelection([geo], [[subID]]);
         }
       } else {
         if (geo.isSelected()) {
@@ -156,6 +168,8 @@ export class Selector {
     const frustum: Frustum = new Frustum(left, right, top, bottom);
     // TODO: subselection with frustum
     if (sub) {
+
+
     } else {
       const within: Geometry[] = INSTANCE.getScene().getBoundingBoxHeirarchy().getWithinFrustum(frustum, sub, inclusive);
       for (const geo of within) {
@@ -168,6 +182,8 @@ export class Selector {
     const frustum: Frustum = new Frustum(left, right, top, bottom);
     // TODO: subselection with frustum
     if (sub) {
+
+
     } else {
       const within: Geometry[] = INSTANCE.getScene().getBoundingBoxHeirarchy().getWithinFrustum(frustum, sub, inclusive);
       for (const geo of within) {

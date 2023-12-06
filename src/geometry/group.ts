@@ -30,6 +30,10 @@ export class Group extends Geometry {
     alert("todo group");
     return false;
   }
+  public hasSubSelection(): boolean {
+    alert("todo group");
+    return false;
+  }
 
   public clearSubSelection(): void {
     for (const geo of this.children) geo.clearSubSelection();
