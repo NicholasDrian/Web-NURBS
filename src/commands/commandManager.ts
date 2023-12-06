@@ -10,7 +10,6 @@ import { ConstructionPlaneCommand } from "./commands/constructionPlaneCommand";
 import { CopyCommand } from "./commands/copyCommand";
 import { CurveCommand } from "./commands/curveCommand";
 import { ExtruedCurveCommand } from "./commands/extrudeCurveCommand";
-import { InsertKnotCommand } from "./commands/insertKnotCommand";
 import { LoftCommand } from "./commands/loftCommand";
 import { MirrorCommand } from "./commands/mirrorCommand";
 import { MoveCommand } from "./commands/moveCommand";
