@@ -13,7 +13,9 @@ Web NURBS is far from complete, and lacking much documentation. That being said 
 
 ## Whats to come?
 
-I am currently moving surface sampling to the GPU and expect significant performance gains (100x give or take). Next, I will move the acceleration structures (Bounding Volume Heirarchies) to the GPU. The goal is to move any serious compute away from JavaScript inorder to acheve buttery smooth rendering.
+I am currently moving surface sampling to compute shaders and expect significant performance gains (100x give or take). Next, I will move the acceleration structures (Bounding Volume Heirarchies) to the GPU. The goal is to move any serious compute away from JavaScript inorder to acheve buttery smooth rendering. 
+
+I also need to get alpha blending up and running... So stay tuned for transparency, GPU acceleration, and various other improvements!
 
 ## What does it look like?
 <img src="./images/Web NURBS 1.png"/>
