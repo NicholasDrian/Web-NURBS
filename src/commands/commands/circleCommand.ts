@@ -60,25 +60,27 @@ export class CircleCommand extends Command {
         break;
     }
   }
-  public override handleClickResult(input: Intersection): void {
-    throw new Error();
+
+  public override handleClickResult(intersection: Intersection): void {
+    if (this.clicker.getPoint()) {
+      switch (this.mode) {
+        case CircleCommandMode.CenterPointPoint:
+          this.handleClickCenterPointPoint(intersection.point);
+          break;
+        case CircleCommandMode.ThreePoints:
+          this.handleClickThreePoints(intersection.point);
+          break;
+        case CircleCommandMode.CenterNormalRadius:
+          this.handleClickCenterNormalRadius(intersection.point);
+          break;
+      }
+    }
+    this.clicker.reset();
   }
 
 
   public override handleClick(): void {
-    if (this.clicker.getPoint()) {
-      switch (this.mode) {
-        case CircleCommandMode.CenterPointPoint:
-          this.handleClickCenterPointPoint(this.clicker.getPoint()!);
-          break;
-        case CircleCommandMode.ThreePoints:
-          this.handleClickThreePoints(this.clicker.getPoint()!);
-          break;
-        case CircleCommandMode.CenterNormalRadius:
-          this.handleClickCenterNormalRadius(this.clicker.getPoint()!);
-          break;
-      }
-    }
+    this.clicker.click();
   }
 
   public override handleMouseMove(): void {
