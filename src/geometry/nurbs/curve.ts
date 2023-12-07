@@ -194,11 +194,13 @@ export class Curve extends Geometry {
     intersection = this.controlCage!.intersect(ray, sub);
     if (intersection) {
       intersection.description = "control cage";
+      intersection.geometry = this;
       return intersection;
     }
     intersection = this.linesBBH!.almostIntersect(ray, 10);
     if (intersection) {
       intersection.description = "curve";
+      intersection.geometry = this;
       return intersection;
     }
 

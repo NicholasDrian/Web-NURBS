@@ -105,7 +105,7 @@ export class Selector {
         intersection.objectSubID = -1;
       }
 
-      let geo: Geometry = intersection.geometry;
+      let geo: Geometry = intersection.geometry;// TODO: chase parent
       geometryAtPixel.push([geo, intersection.objectSubID]);
 
       const li = document.createElement("li");

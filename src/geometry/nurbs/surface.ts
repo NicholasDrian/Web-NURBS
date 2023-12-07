@@ -133,11 +133,13 @@ export class Surface extends Geometry {
     intersection = this.controlCage!.intersect(ray, sub);
     if (intersection) {
       intersection.description = "control cage";
+      intersection.geometry = this;
       return intersection;
     }
     intersection = this.mesh!.intersect(ray, sub);
     if (intersection) {
       intersection.description = "surface";
+      intersection.geometry = this;
       return intersection;
     }
     return intersection;
