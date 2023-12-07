@@ -167,6 +167,8 @@ export class Selector {
   }
 
   public selectInRectangle(left: number, right: number, top: number, bottom: number, inclusive: boolean, sub: boolean): void {
+    right = Math.max(right, left + 1);
+    bottom = Math.max(bottom, top + 1);
     const frustum: Frustum = new Frustum(left, right, top, bottom);
     if (sub) {
       const within: [Geometry[], number[][]] = INSTANCE.getScene().getBoundingBoxHeirarchy().getWithinFrustumSub(frustum, inclusive);
@@ -181,6 +183,8 @@ export class Selector {
   }
 
   public unSelectInRectangle(left: number, right: number, top: number, bottom: number, inclusive: boolean, sub: boolean): void {
+    right = Math.max(right, left + 1);
+    bottom = Math.max(bottom, top + 1);
     const frustum: Frustum = new Frustum(left, right, top, bottom);
     if (sub) {
       const within: [Geometry[], number[][]] = INSTANCE.getScene().getBoundingBoxHeirarchy().getWithinFrustumSub(frustum, inclusive);

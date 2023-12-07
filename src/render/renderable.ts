@@ -35,8 +35,6 @@ export abstract class Renderable {
       usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST,
     });
 
-
-
     // id
     this.objectIDBuffer = INSTANCE.getRenderer().getDevice().createBuffer({
       label: "id buffer",
@@ -46,7 +44,6 @@ export abstract class Renderable {
     const objectIDArray: Int32Array = new Int32Array([this.parent.getID()]);
     INSTANCE.getRenderer().getDevice().queue.writeBuffer(this.objectIDBuffer, 0, objectIDArray);
 
-
     //flags
     this.flagsBuffer = INSTANCE.getRenderer().getDevice().createBuffer({
       label: "renderable flag buffer",
@@ -55,7 +52,6 @@ export abstract class Renderable {
     })
     this.flags = new Int32Array([0]);
     if (this.constantScreenSize) this.flags[0] |= CONSTANT_SCREEN_SIZE_BIT;
-
 
     this.subSelectionBuffer = null;
     this.updateSubSelection(subSelection);

@@ -189,22 +189,21 @@ export class Curve extends Geometry {
 
     if (this.isHidden()) return null;
 
-    let intersection: Intersection | null = null;
 
-    intersection = this.controlCage!.intersect(ray, sub);
-    if (intersection) {
-      intersection.description = "control cage";
-      intersection.geometry = this;
-      return intersection;
+    let intersection1 = this.controlCage!.intersect(ray, sub);
+    if (intersection1) {
+      intersection1.description = "control cage";
+      intersection1.geometry = this;
     }
-    intersection = this.linesBBH!.almostIntersect(ray, 10);
-    if (intersection) {
-      intersection.description = "curve";
-      intersection.geometry = this;
-      return intersection;
+    let intersection2 = this.linesBBH!.almostIntersect(ray, 10);
+    if (intersection2) {
+      intersection2.description = "curve";
+      intersection2.geometry = this;
     }
 
-    return intersection;
+    if (intersection1 === null) return intersection2;
+    if (intersection2 === null) return intersection1;
+    return (intersection1.time < intersection2.time) ? intersection1 : intersection2;
   }
 
   public getBoundingBox(): BoundingBox {

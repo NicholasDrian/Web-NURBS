@@ -128,21 +128,21 @@ export class Surface extends Geometry {
 
     if (this.isHidden()) return null;
 
-    let intersection: Intersection | null = null;
 
-    intersection = this.controlCage!.intersect(ray, sub);
-    if (intersection) {
-      intersection.description = "control cage";
-      intersection.geometry = this;
-      return intersection;
+    let intersection1 = this.controlCage!.intersect(ray, sub);
+    if (intersection1) {
+      intersection1.description = "control cage";
+      intersection1.geometry = this;
     }
-    intersection = this.mesh!.intersect(ray, sub);
-    if (intersection) {
-      intersection.description = "surface";
-      intersection.geometry = this;
-      return intersection;
+    let intersection2 = this.mesh!.intersect(ray, sub);
+    if (intersection2) {
+      intersection2.description = "surface";
+      intersection2.geometry = this;
     }
-    return intersection;
+
+    if (intersection1 === null) return intersection2;
+    if (intersection2 === null) return intersection1;
+    return (intersection1.time < intersection2.time) ? intersection1 : intersection2;
 
   }
 
