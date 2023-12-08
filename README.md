@@ -18,9 +18,9 @@ I am currently moving surface sampling to compute shaders and expect significant
 I also need to get alpha blending up and running... So stay tuned for transparency, GPU acceleration, and various other improvements!
 
 ## What does it look like?
-<img src="./images/Web NURBS 1.png"/>
-<img src="./images/Web NURBS 4.png"/>
 <img src="./images/Web NURBS 3.png"/>
 <img src="./images/Web NURBS 2.png"/>
+<img src="./images/Web NURBS 1.png"/>
+<img src="./images/Web NURBS 4.png"/>
 
 Please Leave a ⭐
