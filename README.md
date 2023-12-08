@@ -19,6 +19,7 @@ I also need to get alpha blending up and running... So stay tuned for transparen
 
 ## What does it look like?
 <img src="./images/Web NURBS 1.png"/>
+<img src="./images/Web NURBS 4.png"/>
 <img src="./images/Web NURBS 3.png"/>
 <img src="./images/Web NURBS 2.png"/>
 
