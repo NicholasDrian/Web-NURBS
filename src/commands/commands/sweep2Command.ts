@@ -128,7 +128,6 @@ export class Sweep2Command extends Command {
 
     // Align directions
     const face = (a: Curve, b: Curve, c: Curve) => {
-      // TODO: debug
 
       // make a face b not c
       const aEnd: Vec3 = a.getEndPoint();
@@ -156,8 +155,8 @@ export class Sweep2Command extends Command {
 
     const controls: Vec4[][] = [];
 
-    const c1Controls: Vec4[] = c1.getWeightedControlPoints();
-    const c2Controls: Vec4[] = c2.getWeightedControlPoints();
+    const c1Controls: Vec4[] = c1.getWeightedControlPointsWorldSpace();
+    const c2Controls: Vec4[] = c2.getWeightedControlPointsWorldSpace();
 
     const fromO1Start: Vec3 = p1.getStartPoint();
     const fromO2Start: Vec3 = p2.getStartPoint();
