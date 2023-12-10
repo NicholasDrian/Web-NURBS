@@ -84,8 +84,10 @@ export class Curve extends Geometry {
 
   public getControlPoints(): Vec3[] {
     const res: Vec3[] = [];
+    const model: Mat4 = this.getModelRecursive();
     for (let i = 0; i < this.weightedControlPoints.length; i++) {
-      res.push(this.getControlPoint(i));
+      const pw: Vec4 = this.weightedControlPoints[i];
+      res.push(vec3.transformMat4(vec3.create(pw[0] / pw[3], pw[1] / pw[3], pw[2] / pw[3]), model));
     }
     return res;
   }
@@ -179,6 +181,16 @@ export class Curve extends Geometry {
 
   public getWeightedControlPoints(): Vec4[] {
     return this.weightedControlPoints;
+  }
+
+  public getWeightedControlPointsWorldSpace(): Vec4[] {
+    const res: Vec4[] = [];
+    const model: Mat4 = this.getModelRecursive();
+    this.weightedControlPoints.forEach((pw: Vec4) => {
+      const p: Vec3 = vec3.transformMat4(vec3.create(pw[0] / pw[3], pw[1] / pw[3], pw[2] / pw[3]), model);
+      res.push(vec4.create(p[0] * pw[3], p[1] * pw[3], p[2] * pw[3], pw[3]));
+    })
+    return res;
   }
 
   public getKnotCount(): number {
@@ -299,8 +311,6 @@ export class Curve extends Geometry {
   }
 
   public insertKnot(knot: number): void {
-    console.log("insserting knot at", knot);
-    console.log("knots before", ...this.knots);
     const idx: number = span(this.knots, knot, this.degree);
     const newWeightedControlPoints: Vec4[] = [];
     newWeightedControlPoints.push(this.weightedControlPoints[0]);
@@ -319,7 +329,6 @@ export class Curve extends Geometry {
 
     this.knots.push(knot);
     this.knots.sort();
-    console.log("knots after", ...this.knots);
 
     this.updateSamples();
 

@@ -76,8 +76,6 @@ export class Sweep2Command extends Command {
         this.generateSurface();
         this.mode = Sweep2CommandMode.Preview;
         break;
-      default:
-        throw new Error("case not handled");
     }
     this.clicker.reset();
   }
@@ -130,14 +128,20 @@ export class Sweep2Command extends Command {
 
     // Align directions
     const face = (a: Curve, b: Curve, c: Curve) => {
+      // TODO: debug
+
       // make a face b not c
       const aEnd: Vec3 = a.getEndPoint();
+
       const bStart: Vec3 = b.getStartPoint();
       const bEnd: Vec3 = b.getEndPoint();
+
       const cStart: Vec3 = c.getStartPoint();
       const cEnd: Vec3 = c.getEndPoint();
+
       const distB: number = Math.min(vec3.dist(aEnd, bEnd), vec3.dist(aEnd, bStart));
       const distC: number = Math.min(vec3.dist(aEnd, cEnd), vec3.dist(aEnd, cStart));
+
       if (distC < distB) a.reverse();
     };
     face(c1, p2, p1);
@@ -150,7 +154,7 @@ export class Sweep2Command extends Command {
     const p1Controls: Vec3[] = p1.getControlPoints();
     const p2Controls: Vec3[] = p2.getControlPoints();
 
-    const controls: Curve[] = [];
+    const controls: Vec4[][] = [];
 
     const c1Controls: Vec4[] = c1.getWeightedControlPoints();
     const c2Controls: Vec4[] = c2.getWeightedControlPoints();
@@ -185,7 +189,7 @@ export class Sweep2Command extends Command {
       c2Ratios.push(c2StartDist / (c2StartDist + c2EndDist));
     }
 
-    controls.push(c1);
+    controls.push(c1.getWeightedControlPointsWorldSpace());
     for (let i = 1; i < p1.getControlPointCount() - 1; i++) {
       const toO1: Vec3 = p1Controls[i];
       const toO2: Vec3 = p2Controls[i];
@@ -239,11 +243,16 @@ export class Sweep2Command extends Command {
         const combined: Vec3 = vec3.lerp(c1Combined, c2Combined,
           i / (p1.getControlPointCount() - 1)
         );
-        const combinedWeight: number = lerp(
-          c1.getWeightedControlPoints()[j][3],
-          c2.getWeightedControlPoints()[j][3],
-          i / (p1.getControlPointCount() - 1)
-        );
+        const combinedWeight: number =
+          lerp(
+            c1.getWeightedControlPoints()[j][3],
+            c2.getWeightedControlPoints()[j][3],
+            i / (p1.getControlPointCount() - 1)) *
+          lerp(
+            p1.getWeightedControlPoints()[i][3],
+            p2.getWeightedControlPoints()[i][3],
+            j / (c1.getControlPointCount() - 1));
+
         controlRow.push(vec4.create(
           combined[0] * combinedWeight,
           combined[1] * combinedWeight,
@@ -252,21 +261,23 @@ export class Sweep2Command extends Command {
         ));
 
       }
-      controls.push(new Curve(null, controlRow, c1.getDegree(), c1.getKnots()));
+      controls.push(controlRow);
     }
-    controls.push(c2);
+    controls.push(c2.getWeightedControlPointsWorldSpace());
+
+    console.log(controls);
+    console.log("#######");
 
     // loft
-    this.surface = loft(controls, p1.getDegree());
+    this.surface = new Surface(controls, p1.getKnots(), c1.getKnots(), p1.getDegree(), c1.getDegree());
     this.surface.showControls(true);
 
 
     // clean up
     p1.delete();
     p2.delete();
-    for (const curve of controls) {
-      curve.delete();
-    }
+    c1.delete();
+    c2.delete();
 
   }
 

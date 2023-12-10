@@ -45,5 +45,6 @@ export const loft = function(curves: Curve[], degree: number): Surface {
 
   for (const c of duplicates) c.delete();
 
+
   return res;
 }
