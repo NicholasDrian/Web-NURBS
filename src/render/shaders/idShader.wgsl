@@ -1,5 +1,5 @@
 struct VertexOutput {
-  @builtin(position) position : vec4<f32>,
+  @builtin(position) position: vec4<f32>,
 }
 
 // local uniforms;
@@ -25,22 +25,20 @@ const STRIPE_WIDTH: f32 = 10.0;
 
 @vertex
 fn vertexMain(
-    @location(0) objectSpacePosition : vec4<f32>,
-    @location(1) normal : vec4<f32>
-    ) -> VertexOutput
-{
-  var worldSpacePosition = model * objectSpacePosition.xzyw;
+    @location(0) objectSpacePosition: vec4<f32>,
+    @location(1) normal: vec4<f32>
+) -> VertexOutput {
+    var worldSpacePosition = model * objectSpacePosition.xzyw;
 
-  if ((flags & CONSTANT_SCREEN_SIZE_BIT) != 0) {
-    var dist: f32 = distance(worldSpacePosition.xyz, cameraPos.xyz);
-    worldSpacePosition = model * vec4<f32>(objectSpacePosition.xzy * dist, objectSpacePosition.w);
-  } 
+    if (flags & CONSTANT_SCREEN_SIZE_BIT) != 0 {
+        var dist: f32 = distance(worldSpacePosition.xyz, cameraPos.xyz);
+        worldSpacePosition = model * vec4<f32>(objectSpacePosition.xzy * dist, objectSpacePosition.w);
+    }
 
-  var output: VertexOutput;
-  output.position = cameraViewProj * worldSpacePosition;
-  return output;
+    var output: VertexOutput;
+    output.position = cameraViewProj * worldSpacePosition;
+    return output;
 }
-
 
 struct FragInputs {
   @builtin(position) fragCoords: vec4<f32>,
@@ -48,9 +46,7 @@ struct FragInputs {
 
 @fragment
 fn fragmentMain(inputs: FragInputs) -> @location(0) i32 {
-
-  return id;
-
+    return id;
 }
 
 

@@ -12,9 +12,20 @@
 
 <body>
   <canvas id="screen"></canvas>
+  <div>
+    <p>
+      If your seeing this message, your WebGPU is not supported by your either browser or your hardware.
+      New versions of Chrome have WebGPU enabled by default, and most other popular browsers allow you to enable WebGPU
+      in
+      settings.
+    </p>
+    <p>
+      For a comprehensive realtime list of supporting browsers, check
+      <a href="https://caniuse.com/webgpu">HERE</a>
+    </p>
+  </div>
   <div class="floating-window" id="cli"><u>$</u></div>
   <div class="floating-window" id="selection-rectangle"></div>
-  <h1 id="compatibility-check"></h1>
   <script src="../dist/main.js"></script>
 </body>
 

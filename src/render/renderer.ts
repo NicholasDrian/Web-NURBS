@@ -10,7 +10,6 @@ import { Pipeline, PipelinePrimitive } from "./pipeline"
 import { INSTANCE } from "../cad";
 import { GlobalUniforms } from "./globalUniforms";
 
-const compatibilityCheck: HTMLElement = <HTMLElement>document.getElementById("compatibility-check");
 
 export class Renderer {
 
@@ -78,8 +77,6 @@ export class Renderer {
   private async createDevice() {
 
     if (!navigator.gpu) {
-      alert("Your browser / computer does not support WebGPU.");
-      compatibilityCheck.innerText = "This browser does not support WebGPU. Check here for a list of supported browsers https://caniuse.com/webgpu";
       return;
     }
 
@@ -87,12 +84,10 @@ export class Renderer {
     try {
       adapter = await navigator.gpu.requestAdapter();
     } catch (error) {
-      console.log(error);
+      return;
     }
 
     if (adapter! == null) {
-      alert("Your browser / computer does not support WebGPU.");
-      compatibilityCheck.innerText = "No valid gpu adapter. Check here for a list of supported browsers https://caniuse.com/webgpu";
       return;
     }
 
@@ -387,7 +382,6 @@ export class Renderer {
         {
           view: this.idTexture.createView(),
           loadOp: "clear",
-          clearValue: [0, 0, 0, 0], // TODO: delete after debug
           storeOp: "store",
         },
       ],
@@ -395,7 +389,7 @@ export class Renderer {
         view: this.depthTexture.createView(),
         depthClearValue: 1.0,
         depthLoadOp: "clear",
-        depthStoreOp: "store" // prolly dont need to store this TODO:
+        depthStoreOp: "store"
       }
     });
     idPass.setPipeline(this.idRasterPipeline.get());

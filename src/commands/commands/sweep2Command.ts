@@ -149,11 +149,9 @@ export class Sweep2Command extends Command {
     face(p2, c2, c1);
 
     // create new controls 
-
     const p1Controls: Vec3[] = p1.getControlPoints();
     const p2Controls: Vec3[] = p2.getControlPoints();
 
-    const controls: Vec4[][] = [];
 
     const c1Controls: Vec4[] = c1.getWeightedControlPointsWorldSpace();
     const c2Controls: Vec4[] = c2.getWeightedControlPointsWorldSpace();
@@ -188,7 +186,8 @@ export class Sweep2Command extends Command {
       c2Ratios.push(c2StartDist / (c2StartDist + c2EndDist));
     }
 
-    controls.push(c1.getWeightedControlPointsWorldSpace());
+    const controls: Vec4[][] = [c1.getWeightedControlPointsWorldSpace()];
+
     for (let i = 1; i < p1.getControlPointCount() - 1; i++) {
       const toO1: Vec3 = p1Controls[i];
       const toO2: Vec3 = p2Controls[i];
@@ -264,13 +263,8 @@ export class Sweep2Command extends Command {
     }
     controls.push(c2.getWeightedControlPointsWorldSpace());
 
-    console.log(controls);
-    console.log("#######");
-
-    // loft
     this.surface = new Surface(controls, p1.getKnots(), c1.getKnots(), p1.getDegree(), c1.getDegree());
     this.surface.showControls(true);
-
 
     // clean up
     p1.delete();
@@ -289,6 +283,7 @@ export class Sweep2Command extends Command {
     this.crossSection2?.unSelect();
     if (this.surface) {
       INSTANCE.getScene().addGeometry(this.surface);
+      this.surface.showControls(false);
     }
   }
 
