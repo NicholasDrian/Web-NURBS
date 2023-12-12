@@ -29,7 +29,6 @@ fn span(u: f32) -> u32 {
 
 // Need scratch pad mem for basis funcs? ay ya yiy
 // Weary of unsigned int underflow....
-// res has large w...
 
 @compute @workgroup_size(1,1,1) 
 fn main(
@@ -59,7 +58,7 @@ fn main(
     res += weightedControls[s - params.degree + i] * basisFuncs[i];
   }
 
-  samples[id.x] = res;
+  return res.xyz / res.w;
 
 }
 

@@ -47,7 +47,11 @@ export class CurveSampler {
           visibility: GPUShaderStage.COMPUTE,
           buffer: { type: "read-only-storage" }
         }, {
-          binding: 3, // Samples
+          binding: 3, // Basis funcs
+          visibility: GPUShaderStage.COMPUTE,
+          buffer: { type: "storage" }
+        }, {
+          binding: 4, // Samples
           visibility: GPUShaderStage.COMPUTE,
           buffer: { type: "storage" }
         }
@@ -55,7 +59,7 @@ export class CurveSampler {
     });
     this.uniformBuffer = this.device.createBuffer({
       label: "curve sampler uniform buffer",
-      size: 8, // control count, degree
+      size: 12, // control count, knot count, degree
       usage: GPUBufferUsage.UNIFORM
     });
   }
@@ -83,13 +87,18 @@ export class CurveSampler {
 
   public async sampleCurve(weightedControls: Vec4[], knots: number[], degree: number): Promise<GPUBuffer> {
 
-    this.device.queue.writeBuffer(this.uniformBuffer, 0, new Uint32Array([weightedControls.length, degree]));
+    this.device.queue.writeBuffer(this.uniformBuffer, 0, new Uint32Array([weightedControls.length, knots.length, degree]));
 
     const sampleCount: number = weightedControls.length * (SAMPLES_PER_EDGE - 1) + 1;
 
     const samples: GPUBuffer = this.device.createBuffer({
       label: "curve sampler output buffer",
       size: sampleCount * 16,
+      usage: GPUBufferUsage.STORAGE
+    });
+    const basisFuncs: GPUBuffer = this.device.createBuffer({
+      label: "curve sampler basis funcs buffer",
+      size: sampleCount * (degree + 1) * 4,
       usage: GPUBufferUsage.STORAGE
     });
 
@@ -126,6 +135,9 @@ export class CurveSampler {
           resource: { buffer: knotBuffer },
         }, {
           binding: 3,
+          resource: { buffer: basisFuncs },
+        }, {
+          binding: 4,
           resource: { buffer: samples },
         }
       ],

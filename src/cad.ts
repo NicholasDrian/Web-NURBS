@@ -20,6 +20,7 @@ import { addTestSceneRevolve } from "./tests/testSceneRevolve";
 import { EventQueue } from "./events/eventQueue";
 import { addTestSceneSphere } from "./tests/testSceneSphere";
 import { addTestSceneSweep2 } from "./tests/testSceneSweep2";
+import { CurveSampler } from "./gpuSampling/sampleCurve";
 
 /*
   * Browser Based NURBS Modeling Software
@@ -47,6 +48,8 @@ class CAD {
   private cli!: CLI;
   private log!: Log
 
+  private curveSampler!: CurveSampler;
+
   public async init() {
 
     this.eventQueue = new EventQueue();
@@ -58,6 +61,9 @@ class CAD {
 
     this.renderer = new Renderer();
     await this.renderer.init();
+
+    this.curveSampler = new CurveSampler();
+    await this.curveSampler.init();
 
     this.materialManager = new MaterialManager();
 
