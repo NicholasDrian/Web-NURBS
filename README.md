@@ -1,7 +1,7 @@
-<h1 style="font-size:3em"><b> Web NURBS<b></h1>
+<h1 style="font-size:3em"><b> Web NURBS<\b></h1>
 
-<h4 style="margin:0px; padding:0px;"> Click <a href="https://nicholasdrian.github.io/Web-NURBS/src"> <u>HERE</u> </a> to run Web NURBS </h2>
-<h4 style="margin:0px; padding:0px;">Click <a href="https://nicholasdrian.github.io/Web-NURBS/docs/docs.html"> <u>HERE</u> </a> to see the docs.
+<h4 style="margin:0px; padding:0px;"> Click <a href="https://nicholasdrian.github.io/Web-NURBS/src"> <u>HERE</u> </a> to run Web NURBS </h4>
+<h4 style="margin:0px; padding:0px;">Click <a href="https://nicholasdrian.github.io/Web-NURBS/docs/docs.html"> <u>HERE</u> </a> to see the docs. </h4>
 
 ## What is it?
 
