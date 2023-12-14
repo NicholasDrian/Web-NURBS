@@ -1,32 +1,28 @@
 import { Vec4 } from "wgpu-matrix";
+import { INSTANCE } from "../cad";
 import curveSampler from "./curveSampler.wgsl"
 
 const SAMPLES_PER_EDGE: number = 10;
 
 export class CurveSampler {
 
-  private device!: GPUDevice;
   private shaderModule!: GPUShaderModule;
   private bindGroupLayout!: GPUBindGroupLayout;
 
   private uniformBuffer!: GPUBuffer;
 
   private pipeline!: GPUComputePipeline;
+  private device!: GPUDevice;
 
-  constructor() { }
-
-  public async init(): Promise<void> {
-    await this.setupDevice();
+  constructor() {
+    this.device = INSTANCE.getRenderer().getDevice();
     this.setupResources();
     this.setupPipeline();
   }
 
-  private async setupDevice(): Promise<void> {
-    const adapter = await navigator.gpu.requestAdapter();
-    this.device = <GPUDevice>await adapter?.requestDevice();
-  }
 
   private setupResources(): void {
+
     this.shaderModule = this.device.createShaderModule({
       label: "curve sampler compute shader",
       code: curveSampler,
@@ -60,7 +56,7 @@ export class CurveSampler {
     this.uniformBuffer = this.device.createBuffer({
       label: "curve sampler uniform buffer",
       size: 12, // control count, knot count, degree
-      usage: GPUBufferUsage.UNIFORM
+      usage: GPUBufferUsage.UNIFORM | GPUBufferUsage.COPY_DST
     });
   }
 
@@ -85,17 +81,23 @@ export class CurveSampler {
   }
 
 
-  public async sampleCurve(weightedControls: Vec4[], knots: number[], degree: number): Promise<GPUBuffer> {
+  public async sampleCurve(weightedControls: Vec4[], knots: number[], degree: number): Promise<[GPUBuffer, number]> {
 
     this.device.queue.writeBuffer(this.uniformBuffer, 0, new Uint32Array([weightedControls.length, knots.length, degree]));
 
     const sampleCount: number = weightedControls.length * (SAMPLES_PER_EDGE - 1) + 1;
+    console.log(sampleCount);
 
     const samples: GPUBuffer = this.device.createBuffer({
+      label: "curve sampler output sample buffer",
+      size: sampleCount * 16,
+      usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_SRC
+    });
+    const output: GPUBuffer = this.device.createBuffer({
       label: "curve sampler output buffer",
       size: sampleCount * 16,
-      usage: GPUBufferUsage.STORAGE
-    });
+      usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST
+    })
     const basisFuncs: GPUBuffer = this.device.createBuffer({
       label: "curve sampler basis funcs buffer",
       size: sampleCount * (degree + 1) * 4,
@@ -108,7 +110,7 @@ export class CurveSampler {
     const controlPointBuffer: GPUBuffer = this.device.createBuffer({
       label: "curve sample control point buffer",
       size: controlPointArray.byteLength,
-      usage: GPUBufferUsage.STORAGE | GPUBufferUsage.MAP_WRITE
+      usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST
     });
     this.device.queue.writeBuffer(controlPointBuffer, 0, controlPointArray);
 
@@ -116,7 +118,7 @@ export class CurveSampler {
     const knotBuffer: GPUBuffer = this.device.createBuffer({
       label: "curve sample knot buffer",
       size: knotArray.byteLength,
-      usage: GPUBufferUsage.STORAGE | GPUBufferUsage.MAP_WRITE
+      usage: GPUBufferUsage.STORAGE | GPUBufferUsage.COPY_DST
     });
     this.device.queue.writeBuffer(knotBuffer, 0, knotArray);
 
@@ -149,14 +151,16 @@ export class CurveSampler {
     computePass.setPipeline(this.pipeline);
     computePass.setBindGroup(0, bindGroup);
 
-    computePass.dispatchWorkgroups(sampleCount, 0, 0);
+    computePass.dispatchWorkgroups(sampleCount, 1, 1);
 
     computePass.end();
 
+    encoder.copyBufferToBuffer(samples, 0, output, 0, sampleCount * 16);
+
     this.device.queue.submit([encoder.finish()]);
 
-    await this.device.queue.onSubmittedWorkDone();
+    await this.device.queue.onSubmittedWorkDone(); // TODO: look into this, thread safe?
 
-    return samples;
+    return [output, sampleCount];
   }
 }

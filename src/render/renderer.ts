@@ -326,6 +326,10 @@ export class Renderer {
       lines.draw(mainPass);
       drawCallCounter++;
     };
+    for (let curve of scene.getAllCurves()) {
+      curve.draw(mainPass);
+      drawCallCounter++;
+    };
 
     mainPass.setPipeline(this.pointPipeline.get());
     for (let points of scene.getAllPoints()) {

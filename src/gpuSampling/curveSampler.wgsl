@@ -56,7 +56,7 @@ fn main(
 
   var res: vec4<f32> = vec4<f32>(0, 0, 0, 0);
   for (var i: u32 = 0; i <= params.degree; i++) {
-    res += weightedControls[s - params.degree + i] * basisFuncs[i];
+    res += weightedControls[s - params.degree + i] * basisFuncs[i + offset];
   }
 
   samples[id.x] = res;

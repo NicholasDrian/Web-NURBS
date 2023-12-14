@@ -63,7 +63,6 @@ class CAD {
     await this.renderer.init();
 
     this.curveSampler = new CurveSampler();
-    await this.curveSampler.init();
 
     this.materialManager = new MaterialManager();
 
@@ -80,9 +79,9 @@ class CAD {
 
     //addTestSceneComplex();
     //addTestSceneRevolve();
-    addTestSceneSphere();
+    //addTestSceneSphere();
     //addTestSceneSweep2();
-    //addTestSceneCurve();
+    addTestSceneCurve();
     //addTestSceneArc();
 
   }
@@ -185,6 +184,10 @@ class CAD {
 
   public getEventQueue(): EventQueue {
     return this.eventQueue;
+  }
+
+  public getCurveSampler(): CurveSampler {
+    return this.curveSampler;
   }
 
 }

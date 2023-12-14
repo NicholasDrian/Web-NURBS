@@ -1,6 +1,7 @@
 import { mat4, Mat4, vec3, Vec3, vec4, Vec4 } from "wgpu-matrix";
 import { INSTANCE } from "../../cad";
 import { MaterialName } from "../../materials/material";
+import { RenderCurve } from "../../render/renderCurve";
 import { RenderLines } from "../../render/renderLines";
 import { cloneVec4List } from "../../utils/clone";
 import { BoundingBox } from "../boundingBox";
@@ -16,7 +17,7 @@ export class Curve extends Geometry {
   public static readonly SAMPLES_PER_EDGE = 20;
 
   private controlCage: ControlCage1D | null;
-  private lines: RenderLines | null;
+  private renderCurve: RenderCurve | null;
   private linesBBH: LineBoundingBoxHeirarchy | null;
   private uPerSample: number[];
 
@@ -36,7 +37,7 @@ export class Curve extends Geometry {
 
     this.uPerSample = [];
     this.controlCage = null;
-    this.lines = null;
+    this.renderCurve = null;
     this.linesBBH = null;
     this.updateSamples();
   }
@@ -172,7 +173,7 @@ export class Curve extends Geometry {
 
   public delete(): void {
     this.controlCage!.delete();
-    INSTANCE.getScene().removeLines(this.lines!);
+    INSTANCE.getScene().removeCurve(this.renderCurve!);
   }
 
   public getKnots(): number[] {
@@ -261,7 +262,7 @@ export class Curve extends Geometry {
     const cagePreviouslyShowing: boolean = !this.controlCage?.isHidden() ?? false;
 
     if (updateCage) this.controlCage?.delete();
-    if (this.lines) INSTANCE.getScene().removeLines(this.lines);
+    if (this.renderCurve) INSTANCE.getScene().removeCurve(this.renderCurve);
 
     this.uPerSample = [];
     const sampleCount: number = Curve.SAMPLES_PER_EDGE * (this.weightedControlPoints.length - 1);
@@ -283,8 +284,14 @@ export class Curve extends Geometry {
     });
 
 
+    /*
     this.lines = new RenderLines(this, samples, indices, subSelection);
     INSTANCE.getScene().addRenderLines(this.lines);
+    */
+
+    this.renderCurve = new RenderCurve(this, this.weightedControlPoints, this.knots, this.degree, subSelection);
+    INSTANCE.getScene().addRenderCurve(this.renderCurve);
+
     this.linesBBH = new LineBoundingBoxHeirarchy(this, samples, indices);
     if (updateCage) this.controlCage = new ControlCage1D(this, controlPointArray);
     if (cagePreviouslyShowing) this.controlCage!.show();

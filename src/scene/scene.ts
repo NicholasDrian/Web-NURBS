@@ -8,6 +8,7 @@ import { SceneBoundingBoxHeirarchy } from "../geometry/sceneBoundingBoxHeirarcy"
 import { Geometry } from "../geometry/geometry"
 import { RenderMeshInstanced } from "../render/renterMeshInstanced"
 import { INSTANCE } from "../cad"
+import { RenderCurve } from "../render/renderCurve"
 
 export class Scene {
 
@@ -16,6 +17,7 @@ export class Scene {
 
 
   private renderLines: Set<RenderLines> = new Set<RenderLines>();
+  private renderCurves: Set<RenderCurve> = new Set<RenderCurve>();
   private renderMeshes: Set<RenderMesh> = new Set<RenderMesh>();
   private renderPoints: Set<RenderPoints> = new Set<RenderPoints>();
   private renderMeshesInstanced: Set<RenderMeshInstanced> = new Set<RenderMeshInstanced>();
@@ -71,15 +73,18 @@ export class Scene {
   public addRenderMesh(mesh: RenderMesh): void { this.renderMeshes.add(mesh); }
   public addRenderMeshInstanced(mesh: RenderMeshInstanced): void { this.renderMeshesInstanced.add(mesh); }
   public addRenderLines(lines: RenderLines): void { this.renderLines.add(lines); }
+  public addRenderCurve(curve: RenderCurve): void { this.renderCurves.add(curve); }
   public addRenderPoints(points: RenderPoints): void { this.renderPoints.add(points); }
 
   public getAllLines(): IterableIterator<RenderLines> { return this.renderLines.values(); }
+  public getAllCurves(): IterableIterator<RenderCurve> { return this.renderCurves.values(); }
   public getAllMeshes(): IterableIterator<RenderMesh> { return this.renderMeshes.values(); }
   public getAllPoints(): IterableIterator<RenderPoints> { return this.renderPoints.values(); }
   public getAllMeshesInstanced(): IterableIterator<RenderMeshInstanced> { return this.renderMeshesInstanced.values(); }
 
   public removeMesh(renderMesh: RenderMesh): void { this.renderMeshes.delete(renderMesh); }
   public removeLines(renderLines: RenderLines): void { this.renderLines.delete(renderLines); }
+  public removeCurve(renderCurve: RenderCurve): void { this.renderCurves.delete(renderCurve); }
   public removePoints(renderPoints: RenderPoints): void { this.renderPoints.delete(renderPoints); }
   public removeMeshInstanced(renderMeshInstanced: RenderMeshInstanced): void { this.renderMeshesInstanced.delete(renderMeshInstanced); }
 
@@ -109,6 +114,9 @@ export class Scene {
     }
     for (const mesh of this.renderMeshesInstanced.values()) {
       mesh.update();
+    }
+    for (const curve of this.renderCurves.values()) {
+      curve.update();
     }
 
   }

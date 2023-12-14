@@ -1,9 +1,9 @@
-import { Vec3 } from "wgpu-matrix";
+import { Vec3, Vec4 } from "wgpu-matrix";
 import { INSTANCE } from "../cad"
 import { Geometry } from "../geometry/geometry";
 import { Renderable } from "./renderable";
 
-export class RenderLines extends Renderable {
+export class RenderCurve extends Renderable {
 
   private static readonly vertexBufferLayout: GPUVertexBufferLayout = {
     arrayStride: 16,
@@ -16,34 +16,31 @@ export class RenderLines extends Renderable {
     ]
   };
 
-  private vertexBuffer: GPUBuffer;
-  private indexBuffer: GPUBuffer;
-  private indexCount: number;
+  private vertexBuffer!: GPUBuffer;
+  private indexBuffer!: GPUBuffer;
+  private indexCount!: number;
+  private ready: boolean;
 
 
   constructor(
     parent: Geometry,
-    vertices: Vec3[],
-    indices: number[],
+    weightedControls: Vec4[],
+    knots: number[],
+    degree: number,
     subSelection: boolean[]
   ) {
-
     super(parent, subSelection);
+    this.ready = false;
+    this.updateSamples(weightedControls, knots, degree);
+  }
 
-    // vertex
-    const vertexList: number[] = []
-    for (const vert of vertices) {
-      vertexList.push(...vert, 1);
-    }
-    const vertexArray: Float32Array = new Float32Array(vertexList);
-    this.vertexBuffer = INSTANCE.getRenderer().getDevice().createBuffer({
-      label: "vertex buffer",
-      size: vertexArray.byteLength,
-      usage: GPUBufferUsage.VERTEX | GPUBufferUsage.COPY_DST,
-    });
-    INSTANCE.getRenderer().getDevice().queue.writeBuffer(this.vertexBuffer, 0, vertexArray);
+  public async updateSamples(weightedControls: Vec4[], knots: number[], degree: number): Promise<void> {
 
-    // index
+    let vertexCount: number;
+    [this.vertexBuffer, vertexCount] = await INSTANCE.getCurveSampler().sampleCurve(weightedControls, knots, degree);
+
+    const indices: number[] = [];
+    for (let i = 0; i < vertexCount - 1; i++) { indices.push(i, i + 1); }
     const indexArray: Uint32Array = new Uint32Array(indices);
     this.indexBuffer = INSTANCE.getRenderer().getDevice().createBuffer({
       label: "index buffer",
@@ -53,23 +50,19 @@ export class RenderLines extends Renderable {
     INSTANCE.getRenderer().getDevice().queue.writeBuffer(this.indexBuffer, 0, indexArray);
     this.indexCount = indices.length;
 
-  }
+    this.ready = true;
 
-  updateVerts(verts: Vec3[]) {
-    const vertexList: number[] = []
-    for (const vert of verts) {
-      vertexList.push(...vert, 1);
-    }
-    const vertexArray: Float32Array = new Float32Array(vertexList);
-    INSTANCE.getRenderer().getDevice().queue.writeBuffer(this.vertexBuffer, 0, vertexArray);
   }
 
   public draw(pass: GPURenderPassEncoder): void {
-    if (this.parent.isHidden()) return;
+
+    if (this.parent.isHidden() || !this.ready) return;
+
     pass.setBindGroup(0, this.bindGroup);
     pass.setVertexBuffer(0, this.vertexBuffer);
     pass.setIndexBuffer(this.indexBuffer, "uint32");
     pass.drawIndexed(this.indexCount);
+
   }
 
   public static getVertexBufferLayout(): GPUVertexBufferLayout {
