@@ -4,7 +4,7 @@
 
 ## What is it?
 
-Web NURBS is 3D modeling software designed to run in your browser. It uses WebGPU (the successor to WebGL) for a modern and performant GPU workflow. The program is written in about 12k lines of TypeScript and WGSL. 
+Web NURBS is 3D modeling software designed to run in your browser. It uses WebGPU (the successor to WebGL) for a modern and performant GPU workflow. The program is written in about 15k lines of TypeScript and WGSL. 
 
 Web NURBS has a CLI inspired by Rhino, Modal editing inspired by Vim, and a Scene Object Model inspired by the Document Object Model.
 
