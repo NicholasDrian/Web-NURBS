@@ -98,7 +98,7 @@ export class LinearArrayCommand extends Command {
           }
         }
         this.arrayedGeometry = [];
-        this.mode = LinearArrayCommandMode.EnterCount;
+        this.done();
         break;
       default:
         throw new Error("case not implemented");
