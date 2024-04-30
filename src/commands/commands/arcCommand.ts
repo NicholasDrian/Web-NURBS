@@ -38,7 +38,9 @@ export class ArcCommand extends Command {
 
   public override handleInputString(input: string): void {
     if (input == "0") {
+      this.curve?.delete();
       this.finished = true;
+      this.clicker.destroy();
       return;
     }
     if (this.mode == ArcCommandMode.Menu) {
@@ -213,7 +215,7 @@ export class ArcCommand extends Command {
   private done(): void {
     this.finished = true;
     this.clicker.destroy();
-    if (this.curve) {
+    if (this.curve && this.finished) {
       INSTANCE.getScene().addGeometry(this.curve);
     }
   }

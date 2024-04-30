@@ -105,9 +105,9 @@ export class WindowCommand extends Command {
   public override getInstructions(): string {
     switch (this.mode) {
       case WindowCommandMode.SelectWindow:
-        var res: string = "Exit:0  ";
+        var res: string = "0:Exit  ";
         for (let [key, value] of WINDOW_NAMES) {
-          res += value + "(" + key.toString() + ")  ";
+          res += key.toString() + ":" + value + " ";
         }
         return res + "$";
       case WindowCommandMode.PlaceWindowStartOrRemoveWindow:

@@ -34,10 +34,14 @@
 
     details {
       margin-left: 10px;
+      font-size: 20px;
     }
 
     p {
       text-indent: 30px;
+      font-size: 15px;
+      border: 2px;
+      margin: 2px;
     }
   </style>
 </head>
@@ -83,139 +87,154 @@
         Commands:
       </u>
     </h1>
-    <details>
-      <summary>Camera | cam</summary>
-      TODO:
-    </details>
-    <details>
-      <summary>ConstructionPlane | cpl</summary>
-      TODO:
-    </details>
-    <details>
-      <summary>Curve | c</summary>
-      TODO:
-    </details>
-    <details>
-      <summary>DarkMode | dm</summary>
-      TODO:
-    </details>
-    <details>
-      <summary>Window | w</summary>
-      TODO:
-    </details>
-    <details>
-      <summary>Snaps | s</summary>
-      TODO:
-    </details>
-    <details>
-      <summary>Circle | ci</summary>
-      TODO:
-    </details>
-    <details>
-      <summary>Arc | a</summary>
-      TODO:
-    </details>
-    <details>
-      <summary>Loft | l</summary>
-      TODO:
-    </details>
-    <details>
-      <summary>Revolve | re</summary>
-      TODO:
-    </details>
-    <details>
-      <summary>Copy | cp</summary>
-      TODO:
-    </details>
-    <details>
-      <summary>Move | m</summary>
-      TODO:
-    </details>
-    <details>
-      <summary>Scale | s</summary>
-      TODO:
-    </details>
-    <details>
-      <summary>Scale1 | s1</summary>
-      TODO:
-    </details>
-    <details>
-      <summary>Scale2 | s2</summary>
-      TODO:
-    </details>
-    <details>
-      <summary>Shear | sh</summary>
-      TODO:
-    </details>
-    <details>
-      <summary>PollarArray | pa</summary>
-      TODO:
-    </details>
-    <details>
-      <summary>LinearArray | la</summary>
-      TODO:
-    </details>
-    <details>
-      <summary>Mirror | mi</summary>
-      TODO:
-    </details>
-    <details>
-      <summary>Rotate | r</summary>
-      TODO:
-    </details>
-    <details>
-      <summary>ShowControls | sc</summary>
-      TODO:
-    </details>
-    <details>
-      <summary>HideControls | hc</summary>
-      TODO:
-    </details>
-    <details>
-      <summary>Sphere | sp</summary>
-      TODO:
-    </details>
-    <details>
-      <summary>SetMaterial | sm</summary>
-      TODO:
-    </details>
-    <details>
-      <summary>Show | sh</summary>
-      TODO:
-    </details>
-    <details>
-      <summary>Hide | h</summary>
-      TODO:
-    </details>
-    <details>
-      <summary>HideSwap | hs</summary>
-      TODO:
-    </details>
-    <details>
-      <summary>BlendCurves | bc</summary>
-      TODO:
-    </details>
-    <details>
-      <summary>ExtrudeCurve | e</summary>
-      TODO:
-    </details>
-    <details>
-      <summary>Sweep2 | sw2</summary>
-      TODO:
-    </details>
-    <details>
-      <summary>ReverseCurve | rc</summary>
-      TODO:
-    </details>
-    <details>
-      <summary>Split Curve | sp</summary>
-      TODO:
-    </details>
-    <details>
-      <summary>Insert Knot | ik</summary>
-      TODO:
-    </details>
+    <div id="commands">
+      <details>
+        <summary>Camera | cam</summary>
+        <p>1:FOVY</p>
+        <p>Set the vertical field of view of the camera.</p>
+      </details>
+      <details>
+        <summary>ConstructionPlane | cpl</summary>
+        <p>1:MajorCount</p>
+        <p>Set the number of large grid cells.</p>
+        <p>2:MinorCount</p>
+        <p>Set the number of cells within each large grid cell</p>
+        <p>3:CellSize</p>
+        <p>Set the size of each cell</p>
+      </details>
+      <details>
+        <summary>Curve | c</summary>
+        <p>1:Degree</p>
+        <p>Change the desired degree of the curve.</p>
+        <p>If the degree is too high for the number of control points, it will be reduced.</p>
+      </details>
+      <details>
+        <summary>DarkMode | dm</summary>
+        <p>toggle dark mode</p>
+      </details>
+      <details>
+        <summary>Window | w</summary>
+        <p>1:Stats</p>
+      </details>
+      <details>
+        <summary>Snaps | s</summary>
+        TODO:
+      </details>
+      <details>
+        <summary>Circle | ci</summary>
+        TODO:
+      </details>
+      <details>
+        <summary>Arc | a</summary>
+        <p>1: Start, Middle, End </p>
+        <p>Create a curcular arc from start middle and end points.</p>
+        <p>2: Center, Start, End </p>
+        <p>Create a curcular arc from center start and end points.</p>
+      </details>
+      <details>
+        <summary>Loft | l</summary>
+        TODO:
+      </details>
+      <details>
+        <summary>Revolve | re</summary>
+        TODO:
+      </details>
+      <details>
+        <summary>Copy | cp</summary>
+        TODO:
+      </details>
+      <details>
+        <summary>Move | m</summary>
+        TODO:
+      </details>
+      <details>
+        <summary>Scale | s</summary>
+        TODO:
+      </details>
+      <details>
+        <summary>Scale1 | s1</summary>
+        TODO:
+      </details>
+      <details>
+        <summary>Scale2 | s2</summary>
+        TODO:
+      </details>
+      <details>
+        <summary>Shear | sh</summary>
+        TODO:
+      </details>
+      <details>
+        <summary>PollarArray | pa</summary>
+        TODO:
+      </details>
+      <details>
+        <summary>LinearArray | la</summary>
+        TODO:
+      </details>
+      <details>
+        <summary>Mirror | mi</summary>
+        TODO:
+      </details>
+      <details>
+        <summary>Rotate | r</summary>
+        TODO:
+      </details>
+      <details>
+        <summary>ShowControls | sc</summary>
+        TODO:
+      </details>
+      <details>
+        <summary>HideControls | hc</summary>
+        TODO:
+      </details>
+      <details>
+        <summary>Sphere | sp</summary>
+        TODO:
+      </details>
+      <details>
+        <summary>SetMaterial | sm</summary>
+        TODO:
+      </details>
+      <details>
+        <summary>Show | sh</summary>
+        TODO:
+      </details>
+      <details>
+        <summary>Hide | h</summary>
+        TODO:
+      </details>
+      <details>
+        <summary>HideSwap | hs</summary>
+        TODO:
+      </details>
+      <details>
+        <summary>BlendCurves | bc</summary>
+        TODO:
+      </details>
+      <details>
+        <summary>ExtrudeCurve | e</summary>
+        TODO:
+      </details>
+      <details>
+        <summary>Sweep2 | sw2</summary>
+        TODO:
+      </details>
+      <details>
+        <summary>ReverseCurve | rc</summary>
+        TODO:
+      </details>
+    </div>
   </div>
+  <script>
+    window.onload = function () {
+      // sort commands
+      let commands = document.getElementById('commands');
+      let listItems = Array.from(commands.getElementsByTagName('details'));
+      listItems.sort((a, b) => a.textContent.localeCompare(b.textContent));
+      commands.innerHtml = "";
+      listItems.forEach(item => commands.appendChild(item));
+    };
+  </script>
 </body>
 
 

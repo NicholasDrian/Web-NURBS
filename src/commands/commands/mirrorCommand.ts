@@ -39,7 +39,12 @@ export class MirrorCommand extends Command {
   }
 
   public handleInputString(input: string): void {
-    if (input == "0") this.done();
+    if (input == "0") {
+      for (let geo of this.oldToNew) geo[1].delete();
+      this.clicker.destroy();
+      this.finished = true;
+      return;
+    }
     switch (this.mode) {
       case MirrorCommandMode.SelectFirstPoint:
         break;

@@ -1,4 +1,3 @@
-
 <img src="./images/Web NURBS 1.png"/>
 <h2 style="margin:0px; padding:0px;"> Click <a href="https://nicholasdrian.github.io/Web-NURBS/src"> <u>HERE</u> </a> to run Web NURBS </h2>
 <h2 style="margin:0px; padding:0px;">Click <a href="https://nicholasdrian.github.io/Web-NURBS/docs/docs.html"> <u>HERE</u> </a> to see the docs. </h2>
