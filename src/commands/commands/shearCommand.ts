@@ -16,6 +16,7 @@ enum ShearCommandMode {
   SelectToPoint,
 }
 
+// FIX:
 export class ShearCommand extends Command {
 
   private finished: boolean;
