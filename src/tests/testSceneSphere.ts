@@ -16,7 +16,10 @@ export const addTestSceneSphere = function() {
   const sphereBlue: Surface = createSphere(vec3.create(30, 0, 15), 15);
   sphereBlue.setMaterial("blue");
 
+  sphereGreen.showControls(true);
+
   INSTANCE.getScene().addGeometry(sphereRed);
   INSTANCE.getScene().addGeometry(sphereGreen);
   INSTANCE.getScene().addGeometry(sphereBlue);
+
 }
