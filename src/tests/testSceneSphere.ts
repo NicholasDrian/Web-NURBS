@@ -18,6 +18,7 @@ export const addTestSceneSphere = function() {
 
   sphereGreen.showControls(true);
 
+
   INSTANCE.getScene().addGeometry(sphereRed);
   INSTANCE.getScene().addGeometry(sphereGreen);
   INSTANCE.getScene().addGeometry(sphereBlue);
