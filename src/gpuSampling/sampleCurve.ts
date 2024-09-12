@@ -85,8 +85,7 @@ export class CurveSampler {
 
     this.device.queue.writeBuffer(this.uniformBuffer, 0, new Uint32Array([weightedControls.length, knots.length, degree]));
 
-    const sampleCount: number = weightedControls.length * (SAMPLES_PER_EDGE - 1) + 1;
-    console.log(sampleCount);
+    const sampleCount: number = (weightedControls.length - 1) * (SAMPLES_PER_EDGE) + 1;
 
     const samples: GPUBuffer = this.device.createBuffer({
       label: "curve sampler output sample buffer",

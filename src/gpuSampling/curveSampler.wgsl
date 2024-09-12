@@ -38,6 +38,7 @@ fn main(
   ) {
 
   let u: f32 = f32(id.x) / f32(size.x - 1) * knots[params.knotCount - 1];
+
   let s: u32 = span(u);
 
   let offset: u32 = id.x * (params.degree + 1);

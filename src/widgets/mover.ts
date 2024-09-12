@@ -520,7 +520,6 @@ export class Mover {
         return;
       }
       if (event.code == "Delete" || event.code == "Backspace" && this.element.innerHTML.at(-1) != ":") {
-        console.log("here");
         this.element.innerHTML = this.element.innerHTML.slice(0, -1);
       } else if (event.key.length === 1) {
         this.element.innerHTML += event.key;
